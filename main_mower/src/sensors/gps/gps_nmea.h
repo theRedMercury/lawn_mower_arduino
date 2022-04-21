@@ -1,0 +1,56 @@
+/**
+ *  @brief  lawn mower home
+ *  @author Nicolas Masson <https://github.com/theRedMercury>
+ *  @date   2021 - 2022
+ */
+
+#ifndef GPS_NMEA_h
+#define GPS_NMEA_h
+
+#include <Arduino.h>
+
+#include "../../tools/tools.hpp"
+
+#define NMEA_SIZE_PACKET 150
+
+struct PACKING gps_result
+{
+  bool gps_success = false;
+  char gps_rmc[NMEA_SIZE_PACKET] = {0};
+  char gps_time[10] = {0};
+  char gps_valid = 0;
+  char gps_lat[15] = {0};
+  char gps_ns = 0;
+  char gps_lon[15] = {0};
+  char gps_ew = 0;
+  char gps_spd[10] = {0};
+  char gps_cse[10] = {0};
+  char gps_date[10] = {0};
+  int checksum = 0;
+  bool checksum_valid = false;
+};
+
+class gps_nmea
+{
+public:
+  static const uint32_t gps_parse_unsigned_int(const char *s, uint8_t len, uint32_t defaultInt = 0, uint32_t minInt = 0, uint32_t maxInt = 60);
+  static const bool gps_reset(HardwareSerial &ser);
+  static const void gps_parse(HardwareSerial &ser, gps_result &result);
+
+private:
+  static void _generic_parse_nmea(char gps_nmea[], char *gps_out, uint32_t pos_coma, const uint32_t size);
+  static void _parse_rmc_time(char *gps_str, char *gps_time, const uint32_t size);
+  static void _parse_rmc_valid(char *gps_str, char *gpsValid, const uint32_t size);
+  static void _parse_rmc_lat(char *gps_str, char *gpsLat, const uint32_t size);
+  static void _parse_rmc_NS(char *gps_str, char *gpsNS, const uint32_t size);
+  static void _parse_rmc_lon(char *gps_str, char *gpsLon, const uint32_t size);
+  static void _parse_rmc_ew(char *gps_str, char *gpsEW, const uint32_t size);
+  static void _parse_rmc_spd(char *gps_str, char *gpsSpeed, const uint32_t size);
+  static void _parse_rmc_cse(char *gps_str, char *gpsCSE, const uint32_t size);
+  static void _parse_rmc_date(char *gps_str, char *gpsDate, const uint32_t size);
+  static bool _nmea0183_checksum_valid(char *gps_data, int checksum);
+
+  gps_nmea();
+};
+
+#endif

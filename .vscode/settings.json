@@ -1,0 +1,13 @@
+{
+    "arduino.commandPath": "arduino.exe",
+    "arduino.logLevel": "verbose",
+    "arduino.allowPDEFiletype": false,
+    "arduino.enableUSBDetection": true,
+    "arduino.disableTestingOpen": false,
+    "arduino.skipHeaderProvider": false,
+    "arduino.additionalUrls": [],
+    "arduino.defaultBaudRate": 115200,
+    "arduino.path": "C:\\Program Files (x86)\\Arduino",
+    "editor.formatOnSave": true,
+    "arduino.clearOutputOnBuild": true,
+}
