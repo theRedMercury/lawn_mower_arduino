@@ -59,7 +59,7 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().print(mower->rain.get_value());
         mower->lcd.get_screen().setCursor(7, 1);
         mower->lcd.get_screen().print("> ");
-        mower->lcd.get_screen().print((mower->rain.is_rainning()) ? "True" : "False");
+        mower->lcd.get_screen().print(mower->rain.is_rainning() ? "True" : "False");
         break;
 
     case SENSOR_TEMP:
@@ -77,33 +77,33 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().print("> GYRO a");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_ax());
+        mower->lcd.get_screen().print(mower->gyro.get_ax(), 1);
         mower->lcd.get_screen().setCursor(5, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_ay());
+        mower->lcd.get_screen().print(mower->gyro.get_ay(), 1);
         mower->lcd.get_screen().setCursor(10, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_az());
+        mower->lcd.get_screen().print(mower->gyro.get_az(), 1);
         break;
 
     case SENSOR_GYRO_A:
         mower->lcd.get_screen().print("> GYRO A");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_AX());
+        mower->lcd.get_screen().print(mower->gyro.get_AX(), 1);
         mower->lcd.get_screen().setCursor(5, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_AY());
+        mower->lcd.get_screen().print(mower->gyro.get_AY(), 1);
         mower->lcd.get_screen().setCursor(10, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_AZ());
+        mower->lcd.get_screen().print(mower->gyro.get_AZ(), 1);
         break;
 
     case SENSOR_GYRO_G:
         mower->lcd.get_screen().print("> GYRO Gy");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_GX());
+        mower->lcd.get_screen().print(mower->gyro.get_GX(), 1);
         mower->lcd.get_screen().setCursor(5, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_GY());
+        mower->lcd.get_screen().print(mower->gyro.get_GY(), 1);
         mower->lcd.get_screen().setCursor(10, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_GZ());
+        mower->lcd.get_screen().print(mower->gyro.get_GZ(), 1);
         break;
 
     case SENSOR_GYRO_A_SQRT:
@@ -120,9 +120,9 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
         mower->lcd.get_screen().print("> Safe ");
-        mower->lcd.get_screen().print(mower->gyro.in_safe_status());
+        mower->lcd.get_screen().print(mower->gyro.in_safe_status() ? "yes" : "no");
         mower->lcd.get_screen().setCursor(12, 1);
-        mower->lcd.get_screen().print(mower->gyro.is_moving());
+        mower->lcd.get_screen().print(mower->gyro.is_moving() ? "yes" : "no");
         break;
 
     case SENSOR_ELEC:
@@ -131,14 +131,7 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().setCursor(0, 1);
         mower->lcd.get_screen().print(mower->elec.get_curent_volt());
         mower->lcd.get_screen().print("V ");
-        if (mower->elec.is_battery_low())
-        {
-            mower->lcd.get_screen().print("LOW");
-        }
-        else
-        {
-            mower->lcd.get_screen().print("OK ");
-        }
+        mower->lcd.get_screen().print(mower->elec.is_battery_low() ? "LOW" : "OK");
         mower->lcd.get_screen().setCursor(11, 1);
         mower->lcd.get_screen().print(mower->elec.get_curent_amp());
         mower->lcd.get_screen().print("A");

@@ -45,11 +45,13 @@ public:
     void show_message(int posX, int posY, const char *line);
     void show_main_info();
 
+    void return_main_info();
     void exit_sub_menu();
+
     LiquidCrystal_I2C get_screen() const;
-    current_flag_input get_current_input() const;
+    const current_flag_input get_current_input() const;
     template <typename T>
-    current_flag_input process_sub_menu_input(T &current_menu, uint8_t max);
+    const current_flag_input process_sub_menu_input(T &current_menu, uint8_t max);
 
 private:
     void _process_input();

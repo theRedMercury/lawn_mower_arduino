@@ -42,10 +42,10 @@ void motor_control::update()
         _update_motor_speed(&_motor_left);
         _update_motor_speed(&_motor_right);
     }
-    else
+    /*else
     {
         mower->set_error();
-    }
+    }*/
 }
 
 void motor_control::stop()

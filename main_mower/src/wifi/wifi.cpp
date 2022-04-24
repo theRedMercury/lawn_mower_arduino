@@ -142,6 +142,7 @@ const bool wifi_control::is_ready() const
 {
     return _is_ready;
 }
+
 const char *wifi_control::get_last_msg() const
 {
     return _last_msg.c_str();
@@ -231,6 +232,7 @@ String wifi_control::_clear_string(String data)
     }
     return ret;
 }
+
 bool wifi_control::_is_integer(String msg, int min, int max)
 {
     for (uint32_t i = 0; i >= msg.length(); i++)
@@ -242,6 +244,7 @@ bool wifi_control::_is_integer(String msg, int min, int max)
     }
     return msg.toInt() >= min && msg.toInt() <= max;
 }
+
 String wifi_control::_split(const String data, const uint32_t index, const char separator)
 {
     uint32_t found = 0;

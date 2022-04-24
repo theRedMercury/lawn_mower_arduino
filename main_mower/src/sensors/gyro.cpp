@@ -16,14 +16,15 @@ void gyro_sensor::setup()
     // GY-91 is ok
     _gy91Ok = _bmp280.begin();
     _bmp280.setOversampling(4);
-
     _mpu9250.beginAccel();
     _mpu9250.beginGyro();
     _gy91Ok |= _bmp280.getError();
     _counter_temp = COUNTER_MAX_TEMP_REFRESH;
     _counter_moving = COUNTER_MOVING_REFRESH;
+    _cumulation_is_safe = COUNTER_IS_SAFE;
     DEBUG_PRINTLN(" : DONE");
 }
+
 void gyro_sensor::update()
 {
     _mpu9250.accelUpdate();
@@ -71,6 +72,24 @@ void gyro_sensor::update()
         _counter_moving = 0;
     }
 
+    // is_safe
+    if (_is_safe())
+    {
+        _cumulation_is_safe++;
+        if (_cumulation_is_safe > COUNTER_IS_SAFE)
+        {
+            _cumulation_is_safe--;
+        }
+    }
+    else
+    {
+        _cumulation_is_safe--;
+        if (_cumulation_is_safe == 0)
+        {
+            _cumulation_is_safe = 0;
+        }
+    }
+
     // Print degrees
     DEBUG_PRINT("ACCEL > ");
     DEBUG_PRINT("AX = ");
@@ -101,6 +120,7 @@ const float gyro_sensor::get_temp() const
 {
     return _current_temp;
 }
+
 const float gyro_sensor::get_pression() const
 {
     return _current_pression;
@@ -118,25 +138,25 @@ const bool gyro_sensor::have_shock() const
 
 const bool gyro_sensor::in_safe_status() const
 {
-    const float threshold_A = 15.0f;
-    return ((-threshold_A < get_AX() && get_AX() < threshold_A) &&
-            (-threshold_A < get_AY() && get_AY() < threshold_A) &&
-            (-threshold_A < get_AZ() && get_AZ() < threshold_A));
+    return _cumulation_is_safe > COUNTER_IS_SAFE - 2;
 }
 
 const bool gyro_sensor::is_moving() const
 {
-    return _counter_moving < (COUNTER_MOVING_REFRESH - 2);
+    return _counter_moving < COUNTER_MOVING_REFRESH - 2;
 }
+
 // a XYZ
 const float gyro_sensor::get_ax() const
 {
     return _accel.x;
 }
+
 const float gyro_sensor::get_ay() const
 {
     return _accel.y;
 }
+
 const float gyro_sensor::get_az() const
 {
     return _accel.z;
@@ -166,10 +186,12 @@ const float gyro_sensor::get_GX() const
 {
     return _gyro.x;
 }
+
 const float gyro_sensor::get_GY() const
 {
     return _gyro.y;
 }
+
 const float gyro_sensor::get_GZ() const
 {
     return _gyro.z;
@@ -187,4 +209,12 @@ const bool gyro_sensor::_is_moving() const
     return ((-threshold_a < get_ax() || get_ax() > threshold_a) &&
             (-threshold_a < get_ay() || get_ay() > threshold_a) &&
             (-threshold_a < get_az() || get_az() > threshold_a));
+}
+
+const bool gyro_sensor::_is_safe() const
+{
+    const float threshold_a = 15.0f;
+    return ((-threshold_a < get_AX() && get_AX() < threshold_a) &&
+            (-threshold_a < get_AY() && get_AY() < threshold_a) &&
+            (-threshold_a < get_AZ() && get_AZ() < threshold_a));
 }

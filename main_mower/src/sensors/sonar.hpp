@@ -50,7 +50,7 @@ public:
     const float get_center() const;
     const float get_right() const;
 
-    const void get_collisions(bool *collision, const float threshold = 50.f) const;
+    const void get_collisions(uint8_t *collision, const float threshold = 50.f) const;
 
 private:
     _sensor sonar_left{PIN_USOUND_TRIG_03, PIN_USOUND_ECHO_03};

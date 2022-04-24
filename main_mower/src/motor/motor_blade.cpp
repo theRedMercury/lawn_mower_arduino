@@ -27,6 +27,7 @@ void motor_control_blade::update()
         mower->set_error();
         return;
     }
+
     if (_blade_on && _speed <= MAX_RPWW_SPEED)
     {
         _speed += 4; // Linear acceleration

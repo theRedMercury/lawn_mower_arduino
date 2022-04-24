@@ -9,7 +9,14 @@
 
 #define PACKING __attribute__((packed)) // Pack the struct
 
-struct PACKING XYZ
+struct PACKING XYZ_INT
+{
+    int x = 0;
+    int y = 0;
+    int z = 0;
+};
+
+struct PACKING XYZ_FLOAT
 {
     float x = 0.f;
     float y = 0.f;

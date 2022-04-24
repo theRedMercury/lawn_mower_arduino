@@ -31,10 +31,12 @@ public:
     void setup();
     void update();
 
+    void retry_init();
+
     void update_gps();
     void update_mag();
     const gps_data *get_gps_data() const;
-    const float get_heading_deg() const;
+    const uint16_t get_heading_deg() const;
 
     const bool is_ready() const;
     const bool is_time_valid() const;
@@ -48,7 +50,7 @@ private:
 
     gps_data _gps_data;
     unsigned long _last_gps_update = 0;
-    XYZ _magne;
+    XYZ_INT _magne;
     float _heading_deg = 0;
     bool _is_init_ok = false;
     bool _is_ready = false;

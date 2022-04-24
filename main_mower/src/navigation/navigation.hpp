@@ -8,8 +8,9 @@
 #define NAVIGATION_H
 #include "../mower/abs_mower.hpp"
 
-#define MAX_DELAY_COUNTER 14 // const unsigned short _max_delay_counter = 14;
+#define MAX_DELAY_COUNTER 22 // const unsigned short _max_delay_counter = 14;
 #define MAX_CIRCLE_DELAY_COUNTER 5000
+#define MIN_COLLITION_DETECT 3
 
 class navigation : public abs_mower_class
 {
@@ -41,18 +42,22 @@ public:
     void setup();
     void update();
 
+    void start_mowing();
+
     void update_target_angle();
     const char *get_current_pattern_str(const navigation_pattern n) const;
 
+    const uint16_t get_target() const;
+
 private:
-    float _target_angle = 0.f;
-    bool _collision[3] = {true, true, true};
+    uint16_t _target_angle = 0;
+    uint8_t _collision[3] = {0, 0, 0};
     bool _wire_find = false;
     navigation_pattern _nav_patter = navigation_pattern::BYPASS;
     navigation_exit _nav_exit = navigation_exit::BYPASS;
 
-    unsigned short _delay_next_pattern = 0;
-    unsigned short _delay_exit_pattern = 0;
+    uint16_t _delay_exit_pattern = 0;
+    unsigned long _delay_next_pattern = 0;
     unsigned long _circle_milli = 0;
 
     void _update();

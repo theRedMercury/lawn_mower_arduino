@@ -35,14 +35,14 @@ static constexpr PROGMEM const char *const PROGMEM _month_names[] = {
     _month_str_0, _month_str_1, _month_str_2, _month_str_3, _month_str_4, _month_str_5, _month_str_6,
     _month_str_7, _month_str_8, _month_str_9, _month_str_10, _month_str_11, _month_str_12};
 
-static constexpr char _day_str_0[] PROGMEM = "Err";
-static constexpr char _day_str_1[] PROGMEM = "Sun";
-static constexpr char _day_str_2[] PROGMEM = "Mon";
-static constexpr char _day_str_3[] PROGMEM = "Tues";
+static constexpr char _day_str_0[] PROGMEM = "Err   ";
+static constexpr char _day_str_1[] PROGMEM = "Sun   ";
+static constexpr char _day_str_2[] PROGMEM = "Mon   ";
+static constexpr char _day_str_3[] PROGMEM = "Tues  ";
 static constexpr char _day_str_4[] PROGMEM = "Wednes";
-static constexpr char _day_str_5[] PROGMEM = "Thurs";
-static constexpr char _day_str_6[] PROGMEM = "Fri";
-static constexpr char _day_str_7[] PROGMEM = "Satur";
+static constexpr char _day_str_5[] PROGMEM = "Thurs ";
+static constexpr char _day_str_6[] PROGMEM = "Fri   ";
+static constexpr char _day_str_7[] PROGMEM = "Satur ";
 
 static constexpr const PROGMEM char *const PROGMEM _day_names[] = {
     _day_str_0, _day_str_1, _day_str_2, _day_str_3, _day_str_4, _day_str_5, _day_str_6, _day_str_7};
@@ -70,26 +70,32 @@ const uint8_t time_manager::get_second() const
 {
     return _current_tm.second;
 }
+
 const uint8_t time_manager::get_minute() const
 {
     return _current_tm.minute;
 }
+
 const uint8_t time_manager::get_hour() const
 {
     return _current_tm.hour;
 }
+
 const uint8_t time_manager::get_day() const
 {
     return _current_tm.day;
 }
+
 const time_day_week time_manager::get_day_week_num() const
 {
     return _current_tm.wday;
 }
+
 const uint8_t time_manager::get_month() const
 {
     return _current_tm.month;
 }
+
 const uint16_t time_manager::get_year() const
 {
     return _current_tm.year_offset + 1970;

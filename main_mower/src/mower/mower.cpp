@@ -104,11 +104,19 @@ const mower_status mower_manager::get_current_status() const
 {
     return _current_status;
 }
+
 void mower_manager::set_current_status(const mower_status new_status)
 {
-    if (_current_status != mower_status::ERROR_INIT)
+    if (_current_status == mower_status::ERROR_INIT)
     {
-        _current_status = new_status;
-        wifi.send_msg("status", get_current_status_str());
+        return;
     }
+    // Start mowing
+    if (new_status == mower_status::RUNNING && _current_status != mower_status::RUNNING)
+    {
+        nav.start_mowing();
+    }
+
+    _current_status = new_status;
+    wifi.send_msg("status", get_current_status_str());
 }

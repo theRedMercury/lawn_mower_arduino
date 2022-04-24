@@ -12,9 +12,9 @@
 #define PIN_A_VOLT PIN_A1 // A1
 #define PIN_A_AMP PIN_A0  // A0
 #define AMP_CHARGING 0.6f
-#define BATERRY_MIN 11.2f
+#define BATERRY_MIN 10.2f
 #define BATERRY_MAX 13.0f
-#define BARERRY_TIME_OUT 100 // 8 sec+-
+#define BARERRY_TIME_OUT 255 // 8 sec+-
 
 class elec_sensor : public abs_mower_class
 {

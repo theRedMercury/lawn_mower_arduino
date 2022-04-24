@@ -100,8 +100,8 @@ void gps_sensor::update()
     if (_is_init_ok)
     {
         update_gps();
-        update_mag();
     }
+    update_mag();
 }
 
 void gps_sensor::update_gps()
@@ -222,18 +222,14 @@ void gps_sensor::update_mag()
 
     // Read data from each axis, 2 registers per axis
     Wire.requestFrom(MAG_ADRESS, 6);
-    if (6 <= Wire.available())
+    if (Wire.available() >= 6)
     {
-        uint8_t _magXi = Wire.read(); // X msb
-        uint8_t _magXo = Wire.read(); // X lsb
-        uint8_t _magZi = Wire.read(); // Z msb
-        uint8_t _magZo = Wire.read(); // Z lsb
-        uint8_t _magYi = Wire.read(); // Y msb
-        uint8_t _magYo = Wire.read(); // Y lsb
-
-        _magne.x = (int16_t)(_magXo | ((int16_t)_magXi << 8));
-        _magne.y = (int16_t)(_magYo | ((int16_t)_magYi << 8));
-        _magne.z = (int16_t)(_magZo | ((int16_t)_magZi << 8));
+        _magne.x = Wire.read() << 8; // X msb
+        _magne.x |= Wire.read();     // X lsb
+        _magne.z = Wire.read() << 8; // Z msb
+        _magne.z |= Wire.read();     // Z lsb
+        _magne.y = Wire.read() << 8; // Y msb
+        _magne.y |= Wire.read();     // Y lsb
 
         float heading = atan2(_magne.y, _magne.x) + 1.115192f;
         // Once you have your heading, you must then add your 'Declination Angle', which is the 'Error' of the magnetic field in your location.
@@ -255,8 +251,7 @@ void gps_sensor::update_mag()
         }
 
         // Convert radians to degrees for readability.
-        _heading_deg = 360.f - (heading * 180.f / PI);
-
+        _heading_deg = static_cast<uint16_t>(abs(round(360.f - (heading * 180.f / PI))));
         _is_ready = true;
     }
 
@@ -273,7 +268,7 @@ const gps_data *gps_sensor::get_gps_data() const
     return &_gps_data;
 }
 
-const float gps_sensor::get_heading_deg() const
+const uint16_t gps_sensor::get_heading_deg() const
 {
     return _heading_deg;
 }

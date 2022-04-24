@@ -15,15 +15,18 @@ void rain_sensor::setup()
     pinMode(PIN_A_RAIN, INPUT);
     DEBUG_PRINTLN(" : DONE");
 }
+
 void rain_sensor::update()
 {
     _current_rain_value = adc_manager::analogue_read_channel(PIN_A_RAIN);
     DEBUG_PRINTLN("RAIN >\t" + String(_current_rain_value));
 }
+
 const uint16_t rain_sensor::get_value() const
 {
     return _current_rain_value;
 }
+
 const bool rain_sensor::is_rainning() const
 {
     return _current_rain_value > THRESHOLD_RAIN;

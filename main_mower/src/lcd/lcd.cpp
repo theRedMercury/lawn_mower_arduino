@@ -42,6 +42,7 @@ void lcd_control::setup()
 
     DEBUG_PRINTLN(" : DONE");
 }
+
 void lcd_control::update()
 {
     // Screen idle sleep
@@ -63,7 +64,7 @@ void lcd_control::update()
         switch (_current_input)
         {
         case current_flag_input::INPUT_RIGHT:
-            _lcd_I2C.clear();
+            clear();
             if (static_cast<int>(_current_main_menu) < 8)
             {
                 _current_main_menu = static_cast<lcd_menu>(static_cast<int>(_current_main_menu) + 1);
@@ -71,7 +72,7 @@ void lcd_control::update()
             break;
 
         case current_flag_input::INPUT_LEFT:
-            _lcd_I2C.clear();
+            clear();
             if (static_cast<int>(_current_main_menu) > 0)
             {
                 _current_main_menu = static_cast<lcd_menu>(static_cast<int>(_current_main_menu) - 1);
@@ -201,15 +202,18 @@ void lcd_control::on_backlight()
     _screen_is_off = false;
     _lcd_I2C.setBacklight(HIGH);
 }
+
 void lcd_control::off_backlight()
 {
     _screen_is_off = true;
     _lcd_I2C.setBacklight(LOW);
 }
+
 void lcd_control::clear()
 {
     _lcd_I2C.clear();
 }
+
 void lcd_control::clear_line(const uint8_t line)
 {
     _lcd_I2C.setCursor(0, line);
@@ -243,12 +247,9 @@ void lcd_control::show_message(int posX, int posY, const char *line)
 
 void lcd_control::show_main_info()
 {
-    //_lcdI2C.setCursor(10, 0);
-    //_lcd_I2C.print(_current_input);
-
     // Current wire status
-    _lcd_I2C.setCursor(9, 0);
-    _lcd_I2C.print(mower->perim.is_inside());
+    _lcd_I2C.setCursor(7, 0);
+    _lcd_I2C.print(mower->perim.is_inside() ? "IN" : "OUT");
 
     // Current Hour
     _lcd_I2C.setCursor(11, 0);
@@ -264,11 +265,22 @@ void lcd_control::show_main_info()
     }
     _lcd_I2C.print(String(mower->time.get_minute()));
 
+    // Collision
+    _lcd_I2C.setCursor(7, 1);
+    _lcd_I2C.print(mower->nav.get_target());
+
     // Volt robot
     _lcd_I2C.setCursor(11, 1);
     _lcd_I2C.print(String(mower->elec.get_curent_volt(), 1));
     _lcd_I2C.setCursor(15, 1);
     _lcd_I2C.print('v');
+}
+
+void lcd_control::return_main_info()
+{
+    _in_sub_menu = false;
+    clear();
+    _current_main_menu = lcd_menu::STATUS;
 }
 
 void lcd_control::exit_sub_menu()
@@ -281,13 +293,13 @@ LiquidCrystal_I2C lcd_control::get_screen() const
     return _lcd_I2C;
 }
 
-current_flag_input lcd_control::get_current_input() const
+const current_flag_input lcd_control::get_current_input() const
 {
     return _current_input;
 }
 
 template <typename T>
-current_flag_input lcd_control::process_sub_menu_input(T &current_menu, uint8_t max)
+const current_flag_input lcd_control::process_sub_menu_input(T &current_menu, uint8_t max)
 {
     on_backlight();
     switch (get_current_input())

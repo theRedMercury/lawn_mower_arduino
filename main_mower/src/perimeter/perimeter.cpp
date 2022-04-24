@@ -121,6 +121,7 @@ const float perimeter::get_filter_quality() const
 {
     return _filter_quality;
 }
+
 const bool perimeter::is_inside() const
 {
 #ifdef DEBUG_SIMULATE_WIRE

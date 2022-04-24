@@ -15,6 +15,7 @@ _sensor::_sensor(const byte pin_trig, const byte pin_echo)
     digitalWrite(_pin_trig, LOW);
     pinMode(_pin_echo, INPUT);
 }
+
 void _sensor::update()
 {
     digitalWrite(_pin_trig, HIGH);
@@ -24,6 +25,7 @@ void _sensor::update()
     _value = pulseIn(_pin_echo, HIGH, MEASURE_TIME_OUT) / 2.0f * SOUND_SPEED;
     interrupts();
 }
+
 const float _sensor::get_value() const
 {
     return _value;
@@ -53,20 +55,22 @@ const float sonar_sensor::get_left() const
 {
     return sonar_left.get_value();
 }
+
 const float sonar_sensor::get_center() const
 {
     return sonar_center.get_value();
 }
+
 const float sonar_sensor::get_right() const
 {
     return sonar_right.get_value();
 }
 
-const void sonar_sensor::get_collisions(bool *collision, const float threshold) const
+const void sonar_sensor::get_collisions(uint8_t *collision, const float threshold) const
 {
-    collision[0] = get_left() < threshold && get_left() != 0;
-    collision[1] = get_center() < threshold && get_center() != 0;
-    collision[2] = get_right() < threshold && get_right() != 0;
+    collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(collision[0] + 1, 0, 255) : 0;
+    collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(collision[1] + 1, 0, 255) : 0;
+    collision[2] = (get_right() < threshold && get_right() != 0) ? constrain(collision[2] + 1, 0, 255) : 0;
 
     DEBUG_PRINT("COLLISION >");
     DEBUG_PRINT("\tLeft : " + String(collision[0]));

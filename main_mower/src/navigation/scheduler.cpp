@@ -80,6 +80,10 @@ const bool scheduler::is_time_to_mown() const
 
 const bool scheduler::is_time_to_return_station() const
 {
+#ifdef DEBUG_IS_TIME_TO_MOWN
+    return false;
+#endif
+
     if (!mower->gps.is_time_valid())
     {
         return false;

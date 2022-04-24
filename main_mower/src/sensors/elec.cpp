@@ -83,7 +83,6 @@ void elec_sensor::update_volt()
 
     DEBUG_PRINT("Volt  >\t");
     DEBUG_PRINTLN(_current_volt);
-    // CurrentVolt = ((int)(float(analogue_read_channel(PIN_A_VOLT)) / 4092.f) % 100) /10;
 }
 
 void elec_sensor::update_amp()
@@ -123,10 +122,12 @@ const bool elec_sensor::is_charging() const
 {
     return (_cumulation_charge_max_time >= BARERRY_TIME_OUT);
 }
+
 const float elec_sensor::get_curent_volt() const
 {
     return _current_volt;
 }
+
 const float elec_sensor::get_curent_amp() const
 {
     return _current_amp;

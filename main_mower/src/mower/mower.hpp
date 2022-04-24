@@ -39,6 +39,8 @@
     }
 #endif
 
+#define BOOL_STR(b) ((b) ? "yes" : "no")
+
 enum class mower_status
 {
     READY,
