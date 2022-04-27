@@ -130,7 +130,7 @@ const bool perimeter::is_inside() const
     return _is_inside;
 }
 
-const boolean perimeter::signal_timed_out() const
+const bool perimeter::signal_timed_out() const
 {
 #ifdef DEBUG_SIMULATE_WIRE
     return false;

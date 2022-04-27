@@ -23,7 +23,7 @@ struct adc_channel
 
 volatile unsigned char _current_cha_index;
 volatile unsigned char _current_position;
-volatile boolean _is_capturing;
+volatile bool _is_capturing;
 volatile adc_channel _analogChannels[CHANNELS];
 
 void adc_manager::define_channel_to_capture(const unsigned char channel, unsigned char sampleCount)

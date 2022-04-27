@@ -104,9 +104,9 @@ private:
    bool pingOutstanding;
    MQTT_CALLBACK_SIGNATURE;
    unsigned int readPacket(unsigned char *);
-   boolean readByte(unsigned char *result);
-   boolean readByte(unsigned char *result, unsigned short *index);
-   boolean write(unsigned char header, unsigned char *buf, unsigned short length);
+   bool readByte(unsigned char *result);
+   bool readByte(unsigned char *result, unsigned short *index);
+   bool write(unsigned char header, unsigned char *buf, unsigned short length);
    unsigned short writeString(const char *string, unsigned char *buf, unsigned short pos);
    // Build up the header ready to send
    // Returns the size of the header
@@ -146,21 +146,21 @@ public:
    PubSubClient &setKeepAlive(unsigned short keepAlive);
    PubSubClient &setSocketTimeout(unsigned short timeout);
 
-   boolean setBufferSize(unsigned short size);
+   bool setBufferSize(unsigned short size);
    unsigned short getBufferSize();
 
-   boolean connect(const char *id);
-   boolean connect(const char *id, const char *user, const char *pass);
-   boolean connect(const char *id, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage);
-   boolean connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage);
-   boolean connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage, boolean cleanSession);
+   bool connect(const char *id);
+   bool connect(const char *id, const char *user, const char *pass);
+   bool connect(const char *id, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage);
+   bool connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage);
+   bool connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage, bool cleanSession);
    void disconnect();
-   boolean publish(const char *topic, const char *payload);
-   boolean publish(const char *topic, const char *payload, boolean retained);
-   boolean publish(const char *topic, const unsigned char *payload, unsigned int plength);
-   boolean publish(const char *topic, const unsigned char *payload, unsigned int plength, boolean retained);
-   boolean publish_P(const char *topic, const char *payload, boolean retained);
-   boolean publish_P(const char *topic, const unsigned char *payload, unsigned int plength, boolean retained);
+   bool publish(const char *topic, const char *payload);
+   bool publish(const char *topic, const char *payload, bool retained);
+   bool publish(const char *topic, const unsigned char *payload, unsigned int plength);
+   bool publish(const char *topic, const unsigned char *payload, unsigned int plength, bool retained);
+   bool publish_P(const char *topic, const char *payload, bool retained);
+   bool publish_P(const char *topic, const unsigned char *payload, unsigned int plength, bool retained);
    // Start to publish a message.
    // This API:
    //   beginPublish(...)
@@ -169,7 +169,7 @@ public:
    // Allows for arbitrarily large payloads to be sent without them having to be copied into
    // a new buffer and held in memory at one time
    // Returns 1 if the message was started successfully, 0 if there was an error
-   boolean beginPublish(const char *topic, unsigned int plength, boolean retained);
+   bool beginPublish(const char *topic, unsigned int plength, bool retained);
    // Finish off this publish message (started with beginPublish)
    // Returns 1 if the packet was sent successfully, 0 if there was an error
    int endPublish();
@@ -178,11 +178,11 @@ public:
    // Write size bytes from buffer into the payload (only to be used with beginPublish/endPublish)
    // Returns the number of bytes written
    virtual size_t write(const unsigned char *buffer, size_t size);
-   boolean subscribe(const char *topic);
-   boolean subscribe(const char *topic, unsigned char qos);
-   boolean unsubscribe(const char *topic);
-   boolean loop();
-   boolean connected();
+   bool subscribe(const char *topic);
+   bool subscribe(const char *topic, unsigned char qos);
+   bool unsubscribe(const char *topic);
+   bool loop();
+   bool connected();
    int state();
 };
 

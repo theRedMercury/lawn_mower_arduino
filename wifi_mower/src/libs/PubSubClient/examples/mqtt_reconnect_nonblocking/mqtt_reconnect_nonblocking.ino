@@ -27,7 +27,7 @@ PubSubClient client(ethClient);
 
 long lastReconnectAttempt = 0;
 
-boolean reconnect()
+bool reconnect()
 {
   if (client.connect("arduinoClient"))
   {

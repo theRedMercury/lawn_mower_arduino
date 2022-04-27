@@ -177,27 +177,27 @@ PubSubClient::~PubSubClient()
     free(this->buffer);
 }
 
-boolean PubSubClient::connect(const char *id)
+bool PubSubClient::connect(const char *id)
 {
     return connect(id, NULL, NULL, 0, 0, 0, 0, 1);
 }
 
-boolean PubSubClient::connect(const char *id, const char *user, const char *pass)
+bool PubSubClient::connect(const char *id, const char *user, const char *pass)
 {
     return connect(id, user, pass, 0, 0, 0, 0, 1);
 }
 
-boolean PubSubClient::connect(const char *id, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage)
+bool PubSubClient::connect(const char *id, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage)
 {
     return connect(id, NULL, NULL, willTopic, willQos, willRetain, willMessage, 1);
 }
 
-boolean PubSubClient::connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage)
+bool PubSubClient::connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage)
 {
     return connect(id, user, pass, willTopic, willQos, willRetain, willMessage, 1);
 }
 
-boolean PubSubClient::connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, boolean willRetain, const char *willMessage, boolean cleanSession)
+bool PubSubClient::connect(const char *id, const char *user, const char *pass, const char *willTopic, unsigned char willQos, bool willRetain, const char *willMessage, bool cleanSession)
 {
     if (!connected())
     {
@@ -330,7 +330,7 @@ boolean PubSubClient::connect(const char *id, const char *user, const char *pass
 }
 
 // reads a unsigned char into result
-boolean PubSubClient::readByte(unsigned char *result)
+bool PubSubClient::readByte(unsigned char *result)
 {
     unsigned int previousMillis = millis();
     while (!_client->available())
@@ -347,7 +347,7 @@ boolean PubSubClient::readByte(unsigned char *result)
 }
 
 // reads a unsigned char into result[*index] and increments index
-boolean PubSubClient::readByte(unsigned char *result, unsigned short *index)
+bool PubSubClient::readByte(unsigned char *result, unsigned short *index)
 {
     unsigned short current_index = *index;
     unsigned char *write_address = &(result[current_index]);
@@ -432,7 +432,7 @@ unsigned int PubSubClient::readPacket(unsigned char *lengthLength)
     return len;
 }
 
-boolean PubSubClient::loop()
+bool PubSubClient::loop()
 {
     if (connected())
     {
@@ -520,22 +520,22 @@ boolean PubSubClient::loop()
     return false;
 }
 
-boolean PubSubClient::publish(const char *topic, const char *payload)
+bool PubSubClient::publish(const char *topic, const char *payload)
 {
     return publish(topic, (const unsigned char *)payload, payload ? strnlen(payload, this->bufferSize) : 0, false);
 }
 
-boolean PubSubClient::publish(const char *topic, const char *payload, boolean retained)
+bool PubSubClient::publish(const char *topic, const char *payload, bool retained)
 {
     return publish(topic, (const unsigned char *)payload, payload ? strnlen(payload, this->bufferSize) : 0, retained);
 }
 
-boolean PubSubClient::publish(const char *topic, const unsigned char *payload, unsigned int plength)
+bool PubSubClient::publish(const char *topic, const unsigned char *payload, unsigned int plength)
 {
     return publish(topic, payload, plength, false);
 }
 
-boolean PubSubClient::publish(const char *topic, const unsigned char *payload, unsigned int plength, boolean retained)
+bool PubSubClient::publish(const char *topic, const unsigned char *payload, unsigned int plength, bool retained)
 {
     if (connected())
     {
@@ -567,12 +567,12 @@ boolean PubSubClient::publish(const char *topic, const unsigned char *payload, u
     return false;
 }
 
-boolean PubSubClient::publish_P(const char *topic, const char *payload, boolean retained)
+bool PubSubClient::publish_P(const char *topic, const char *payload, bool retained)
 {
     return publish_P(topic, (const unsigned char *)payload, payload ? strnlen(payload, this->bufferSize) : 0, retained);
 }
 
-boolean PubSubClient::publish_P(const char *topic, const unsigned char *payload, unsigned int plength, boolean retained)
+bool PubSubClient::publish_P(const char *topic, const unsigned char *payload, unsigned int plength, bool retained)
 {
     unsigned char llen = 0;
     unsigned char digit;
@@ -626,7 +626,7 @@ boolean PubSubClient::publish_P(const char *topic, const unsigned char *payload,
     return (rc == expectedLength);
 }
 
-boolean PubSubClient::beginPublish(const char *topic, unsigned int plength, boolean retained)
+bool PubSubClient::beginPublish(const char *topic, unsigned int plength, bool retained)
 {
     if (connected())
     {
@@ -691,7 +691,7 @@ size_t PubSubClient::buildHeader(unsigned char header, unsigned char *buf, unsig
     return llen + 1; // Full header size is variable length bit plus the 1-unsigned char fixed header
 }
 
-boolean PubSubClient::write(unsigned char header, unsigned char *buf, unsigned short length)
+bool PubSubClient::write(unsigned char header, unsigned char *buf, unsigned short length)
 {
     unsigned short rc;
     unsigned char hlen = buildHeader(header, buf, length);
@@ -700,7 +700,7 @@ boolean PubSubClient::write(unsigned char header, unsigned char *buf, unsigned s
     unsigned char *writeBuf = buf + (MQTT_MAX_HEADER_SIZE - hlen);
     unsigned short bytesRemaining = length + hlen; // Match the length type
     unsigned char bytesToWrite;
-    boolean result = true;
+    bool result = true;
     while ((bytesRemaining > 0) && result)
     {
         bytesToWrite = (bytesRemaining > MQTT_MAX_TRANSFER_SIZE) ? MQTT_MAX_TRANSFER_SIZE : bytesRemaining;
@@ -717,12 +717,12 @@ boolean PubSubClient::write(unsigned char header, unsigned char *buf, unsigned s
 #endif
 }
 
-boolean PubSubClient::subscribe(const char *topic)
+bool PubSubClient::subscribe(const char *topic)
 {
     return subscribe(topic, 0);
 }
 
-boolean PubSubClient::subscribe(const char *topic, unsigned char qos)
+bool PubSubClient::subscribe(const char *topic, unsigned char qos)
 {
     size_t topicLength = strnlen(topic, this->bufferSize);
     if (topic == 0)
@@ -756,7 +756,7 @@ boolean PubSubClient::subscribe(const char *topic, unsigned char qos)
     return false;
 }
 
-boolean PubSubClient::unsubscribe(const char *topic)
+bool PubSubClient::unsubscribe(const char *topic)
 {
     size_t topicLength = strnlen(topic, this->bufferSize);
     if (topic == 0)
@@ -810,9 +810,9 @@ unsigned short PubSubClient::writeString(const char *string, unsigned char *buf,
     return pos;
 }
 
-boolean PubSubClient::connected()
+bool PubSubClient::connected()
 {
-    boolean rc;
+    bool rc;
     if (_client == NULL)
     {
         rc = false;
@@ -881,7 +881,7 @@ int PubSubClient::state()
     return this->_state;
 }
 
-boolean PubSubClient::setBufferSize(unsigned short size)
+bool PubSubClient::setBufferSize(unsigned short size)
 {
     if (size == 0)
     {

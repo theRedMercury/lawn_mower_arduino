@@ -20,9 +20,9 @@
 #define MAX_RELAY_STILL_ON 5
 
 volatile int index = 0;
-volatile boolean enableWire = true;
+volatile bool enableWire = true;
 volatile const char signalCode[] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
-boolean mower_detected = false;
+bool mower_detected = false;
 
 unsigned long time_wire_still_on = 0;
 unsigned long time_relay_still_on = 0;

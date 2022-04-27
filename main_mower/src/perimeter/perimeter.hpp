@@ -27,7 +27,7 @@ public:
     const float get_filter_quality() const;
     const bool is_inside() const;
 
-    const boolean signal_timed_out() const;
+    const bool signal_timed_out() const;
     const String get_json() const;
 
 private:
