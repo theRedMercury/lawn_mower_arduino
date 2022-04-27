@@ -12,12 +12,12 @@
 class adc_manager
 {
 public:
-    static void define_channel_to_capture(const uint8_t channel, uint8_t sampleCount);
-    static uint16_t analogue_read_channel(const uint8_t channel, const uint8_t sample = 8);
-    static uint16_t *analogue_reads_channel(const uint8_t channel, const uint8_t sample = 8);
-    static bool is_read_data_channel_done(const uint8_t channel);
-    static uint16_t *read_data_channel(const uint8_t channel);
-    static uint16_t get_avg_channel_value(const uint8_t channel);
+    static void define_channel_to_capture(const unsigned char channel, unsigned char sampleCount);
+    static unsigned short analogue_read_channel(const unsigned char channel, const unsigned char sample = 8);
+    static unsigned short *analogue_reads_channel(const unsigned char channel, const unsigned char sample = 8);
+    static const bool is_read_data_channel_done(const unsigned char channel);
+    static unsigned short *read_data_channel(const unsigned char channel);
+    static unsigned short get_avg_channel_value(const unsigned char channel);
 
 private:
     adc_manager() = delete;

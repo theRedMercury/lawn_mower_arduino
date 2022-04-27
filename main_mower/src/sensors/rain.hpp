@@ -20,10 +20,10 @@ public:
     void setup();
     void update();
 
-    const uint16_t get_value() const;
+    const unsigned short get_value() const;
     const bool is_rainning() const;
 
 private:
-    uint16_t _current_rain_value;
+    unsigned short _current_rain_value;
 };
 #endif

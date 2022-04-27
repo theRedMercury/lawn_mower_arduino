@@ -32,9 +32,9 @@ const bool scheduler::is_time_to_mown() const
         return false;
     }
 
-    const uint8_t day_week_num = static_cast<uint8_t>(mower->time.get_day_week_num());
-    const uint8_t h = mower->time.get_hour();
-    const uint8_t m = mower->time.get_minute();
+    const unsigned char day_week_num = static_cast<unsigned char>(mower->time.get_day_week_num());
+    const unsigned char h = mower->time.get_hour();
+    const unsigned char m = mower->time.get_minute();
     bool b_start, b_end;
     switch (day_week_num)
     {
@@ -89,9 +89,9 @@ const bool scheduler::is_time_to_return_station() const
         return false;
     }
 
-    const uint8_t day_week_num = static_cast<uint8_t>(mower->time.get_day_week_num());
-    const uint8_t h = mower->time.get_hour();
-    const uint8_t m = mower->time.get_minute();
+    const unsigned char day_week_num = static_cast<unsigned char>(mower->time.get_day_week_num());
+    const unsigned char h = mower->time.get_hour();
+    const unsigned char m = mower->time.get_minute();
 
     switch (day_week_num)
     {
@@ -126,7 +126,7 @@ const schedul_week *scheduler::get_schedul() const
     return &_shedul;
 }
 
-const String scheduler::get_string_schedul_day(const uint8_t day_week_num) const
+const String scheduler::get_string_schedul_day(const unsigned char day_week_num) const
 {
     switch (day_week_num)
     {
@@ -157,7 +157,7 @@ const String scheduler::get_string_schedul_day(const uint8_t day_week_num) const
     }
 }
 
-void scheduler::set_scheduler(const uint8_t day_week_num, const uint8_t h_start, const uint8_t m_start, const uint8_t h_end, const uint8_t m_end)
+void scheduler::set_scheduler(const unsigned char day_week_num, const unsigned char h_start, const unsigned char m_start, const unsigned char h_end, const unsigned char m_end)
 {
     // 1 = Monday -> 7 = Sunday
     switch (day_week_num)
@@ -212,7 +212,7 @@ void scheduler::set_scheduler(const uint8_t day_week_num, const uint8_t h_start,
     DEBUG_PRINTLN("scheduler save");
 }
 
-const bool scheduler::_comp_hours(const uint8_t h_01, const uint8_t m_01, const uint8_t h_02, const uint8_t m_02) const
+const bool scheduler::_comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const
 {
     return ((h_01 * 100) + m_01) >= ((h_02 * 100) + m_02);
 }

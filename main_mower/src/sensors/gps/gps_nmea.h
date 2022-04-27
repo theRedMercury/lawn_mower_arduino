@@ -33,21 +33,21 @@ struct PACKING gps_result
 class gps_nmea
 {
 public:
-  static const uint32_t gps_parse_unsigned_int(const char *s, uint8_t len, uint32_t defaultInt = 0, uint32_t minInt = 0, uint32_t maxInt = 60);
+  static const unsigned int gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int defaultInt = 0, unsigned int minInt = 0, unsigned int maxInt = 60);
   static const bool gps_reset(HardwareSerial &ser);
   static const void gps_parse(HardwareSerial &ser, gps_result &result);
 
 private:
-  static void _generic_parse_nmea(char gps_nmea[], char *gps_out, uint32_t pos_coma, const uint32_t size);
-  static void _parse_rmc_time(char *gps_str, char *gps_time, const uint32_t size);
-  static void _parse_rmc_valid(char *gps_str, char *gpsValid, const uint32_t size);
-  static void _parse_rmc_lat(char *gps_str, char *gpsLat, const uint32_t size);
-  static void _parse_rmc_NS(char *gps_str, char *gpsNS, const uint32_t size);
-  static void _parse_rmc_lon(char *gps_str, char *gpsLon, const uint32_t size);
-  static void _parse_rmc_ew(char *gps_str, char *gpsEW, const uint32_t size);
-  static void _parse_rmc_spd(char *gps_str, char *gpsSpeed, const uint32_t size);
-  static void _parse_rmc_cse(char *gps_str, char *gpsCSE, const uint32_t size);
-  static void _parse_rmc_date(char *gps_str, char *gpsDate, const uint32_t size);
+  static void _generic_parse_nmea(char gps_nmea[], char *gps_out, unsigned int pos_coma, const unsigned int size);
+  static void _parse_rmc_time(char *gps_str, char *gps_time, const unsigned int size);
+  static void _parse_rmc_valid(char *gps_str, char *gpsValid, const unsigned int size);
+  static void _parse_rmc_lat(char *gps_str, char *gpsLat, const unsigned int size);
+  static void _parse_rmc_NS(char *gps_str, char *gpsNS, const unsigned int size);
+  static void _parse_rmc_lon(char *gps_str, char *gpsLon, const unsigned int size);
+  static void _parse_rmc_ew(char *gps_str, char *gpsEW, const unsigned int size);
+  static void _parse_rmc_spd(char *gps_str, char *gpsSpeed, const unsigned int size);
+  static void _parse_rmc_cse(char *gps_str, char *gpsCSE, const unsigned int size);
+  static void _parse_rmc_date(char *gps_str, char *gpsDate, const unsigned int size);
   static bool _nmea0183_checksum_valid(char *gps_data, int checksum);
 
   gps_nmea();

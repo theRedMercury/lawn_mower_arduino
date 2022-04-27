@@ -12,11 +12,12 @@
 #include <PubSubClient.h>
 
 // Update these with values suitable for your network.
-byte mac[]    = {  0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED };
+unsigned char mac[] = {0xDE, 0xED, 0xBA, 0xFE, 0xFE, 0xED};
 IPAddress ip(172, 16, 0, 100);
 IPAddress server(172, 16, 0, 2);
 
-void callback(char* topic, byte* payload, unsigned int length) {
+void callback(char *topic, byte *payload, unsigned int length)
+{
   // handle message arrived
 }
 
@@ -30,9 +31,10 @@ void setup()
   // combined length of clientId, username and password exceed this use the
   // following to increase the buffer size:
   // client.setBufferSize(255);
-  
-  if (client.connect("arduinoClient", "testuser", "testpass")) {
-    client.publish("outTopic","hello world");
+
+  if (client.connect("arduinoClient", "testuser", "testpass"))
+  {
+    client.publish("outTopic", "hello world");
     client.subscribe("inTopic");
   }
 }

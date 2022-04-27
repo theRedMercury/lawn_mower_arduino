@@ -25,22 +25,22 @@ void elec_sensor::update()
     // is_charging
     if (_current_amp > AMP_CHARGING)
     {
-        _cumulation_charge_max_time++;
-        if (_cumulation_charge_max_time > BARERRY_TIME_OUT)
-        {
-            _cumulation_charge_max_time--;
-        }
+        _cumulation_charge_max_time = BARERRY_TIME_OUT;
     }
     else
     {
-        _cumulation_charge_max_time = 0;
+        if (_cumulation_charge_max_time == 0)
+        {
+            _cumulation_charge_max_time++;
+        }
+        _cumulation_charge_max_time--;
     }
 
     // is_battery_charged
     if (_current_volt >= BATERRY_MAX)
     {
         _cumulation_volt_max_time++;
-        if (_cumulation_volt_max_time > BARERRY_TIME_OUT)
+        if (_cumulation_volt_max_time > BARERRY_TIME_OUT + 1)
         {
             _cumulation_volt_max_time--;
         }
@@ -63,6 +63,20 @@ void elec_sensor::update()
     {
         _cumulation_volt_min_time = 0;
     }
+
+    // Battery process
+    if (is_charging() && mower->get_current_status() != mower_status::CHARGING)
+    {
+        mower->set_current_status(mower_status::CHARGING);
+    }
+    if (!is_charging() && mower->get_current_status() == mower_status::CHARGING && !is_battery_charged())
+    {
+        mower->set_current_status(mower_status::READY);
+    }
+    if (is_battery_critical())
+    {
+        mower->set_error(mower_status::ERROR_POWER);
+    }
 }
 
 void elec_sensor::update_volt()
@@ -75,7 +89,7 @@ void elec_sensor::update_volt()
     // 460 = 12
     // 505 = 13
 
-    uint16_t val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
+    unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
     DEBUG_PRINT("Volt brut >\t");
     DEBUG_PRINT(val);
     DEBUG_PRINT("  >\t");
@@ -90,7 +104,7 @@ void elec_sensor::update_amp()
     // 509 = 0.00  - 0
     // 516 = 0.32  - 7
     // 523 = 0.76  - 14
-    uint16_t val = adc_manager::analogue_read_channel(PIN_A_AMP, 32);
+    unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP, 32);
     DEBUG_PRINT("Amp brut  >\t");
     DEBUG_PRINT(val);
     DEBUG_PRINT("  >\t");
@@ -116,6 +130,11 @@ const bool elec_sensor::is_battery_charged() const
 const bool elec_sensor::is_battery_low() const
 {
     return (_cumulation_volt_min_time >= BARERRY_TIME_OUT);
+}
+
+const bool elec_sensor::is_battery_critical() const
+{
+    return (_current_volt <= BATERRY_CRI);
 }
 
 const bool elec_sensor::is_charging() const

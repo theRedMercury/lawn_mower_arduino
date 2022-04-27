@@ -1,9 +1,9 @@
-//YWROBOT
+// YWROBOT
 #ifndef LiquidCrystal_I2C_h
 #define LiquidCrystal_I2C_h
 
 #include <inttypes.h>
-#include "Print.h" 
+#include "Print.h"
 #include <Wire.h>
 
 // commands
@@ -48,14 +48,15 @@
 #define LCD_BACKLIGHT 0x08
 #define LCD_NOBACKLIGHT 0x00
 
-#define En B00000100  // Enable bit
-#define Rw B00000010  // Read/Write bit
-#define Rs B00000001  // Register select bit
+#define En B00000100 // Enable bit
+#define Rw B00000010 // Read/Write bit
+#define Rs B00000001 // Register select bit
 
-class LiquidCrystal_I2C : public Print {
+class LiquidCrystal_I2C : public Print
+{
 public:
-  LiquidCrystal_I2C(uint8_t lcd_Addr,uint8_t lcd_cols,uint8_t lcd_rows);
-  void begin(uint8_t cols, uint8_t rows, uint8_t charsize = LCD_5x8DOTS );
+  LiquidCrystal_I2C(unsigned char lcd_Addr, unsigned char lcd_cols, unsigned char lcd_rows);
+  void begin(unsigned char cols, unsigned char rows, unsigned char charsize = LCD_5x8DOTS);
   void clear();
   void home();
   void noDisplay();
@@ -75,52 +76,51 @@ public:
   void noBacklight();
   void backlight();
   void autoscroll();
-  void noAutoscroll(); 
-  void createChar(uint8_t, uint8_t[]);
-  void setCursor(uint8_t, uint8_t); 
+  void noAutoscroll();
+  void createChar(unsigned char, unsigned char[]);
+  void setCursor(unsigned char, unsigned char);
 #if defined(ARDUINO) && ARDUINO >= 100
-  virtual size_t write(uint8_t);
+  virtual size_t write(unsigned char);
 #else
-  virtual void write(uint8_t);
+  virtual void write(unsigned char);
 #endif
-  void command(uint8_t);
+  void command(unsigned char);
   void init();
 
-////compatibility API function aliases
-void blink_on();						// alias for blink()
-void blink_off();       					// alias for noBlink()
-void cursor_on();      	 					// alias for cursor()
-void cursor_off();      					// alias for noCursor()
-void setBacklight(uint8_t new_val);				// alias for backlight() and nobacklight()
-void load_custom_character(uint8_t char_num, uint8_t *rows);	// alias for createChar()
-void printstr(const char[]);
+  ////compatibility API function aliases
+  void blink_on();                                                         // alias for blink()
+  void blink_off();                                                        // alias for noBlink()
+  void cursor_on();                                                        // alias for cursor()
+  void cursor_off();                                                       // alias for noCursor()
+  void setBacklight(unsigned char new_val);                                // alias for backlight() and nobacklight()
+  void load_custom_character(unsigned char char_num, unsigned char *rows); // alias for createChar()
+  void printstr(const char[]);
 
-////Unsupported API functions (not implemented in this library)
-uint8_t status();
-void setContrast(uint8_t new_val);
-uint8_t keypad();
-void setDelay(int,int);
-void on();
-void off();
-uint8_t init_bargraph(uint8_t graphtype);
-void draw_horizontal_graph(uint8_t row, uint8_t column, uint8_t len,  uint8_t pixel_col_end);
-void draw_vertical_graph(uint8_t row, uint8_t column, uint8_t len,  uint8_t pixel_col_end);
-	 
+  ////Unsupported API functions (not implemented in this library)
+  unsigned char status();
+  void setContrast(unsigned char new_val);
+  unsigned char keypad();
+  void setDelay(int, int);
+  void on();
+  void off();
+  unsigned char init_bargraph(unsigned char graphtype);
+  void draw_horizontal_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_col_end);
+  void draw_vertical_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_col_end);
 
 private:
   void init_priv();
-  void send(uint8_t, uint8_t);
-  void write4bits(uint8_t);
-  void expanderWrite(uint8_t);
-  void pulseEnable(uint8_t);
-  uint8_t _Addr;
-  uint8_t _displayfunction;
-  uint8_t _displaycontrol;
-  uint8_t _displaymode;
-  uint8_t _numlines;
-  uint8_t _cols;
-  uint8_t _rows;
-  uint8_t _backlightval;
+  void send(unsigned char, unsigned char);
+  void write4bits(unsigned char);
+  void expanderWrite(unsigned char);
+  void pulseEnable(unsigned char);
+  unsigned char _Addr;
+  unsigned char _displayfunction;
+  unsigned char _displaycontrol;
+  unsigned char _displaymode;
+  unsigned char _numlines;
+  unsigned char _cols;
+  unsigned char _rows;
+  unsigned char _backlightval;
 };
 
 #endif

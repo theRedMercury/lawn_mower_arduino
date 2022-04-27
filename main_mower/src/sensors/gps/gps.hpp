@@ -36,7 +36,7 @@ public:
     void update_gps();
     void update_mag();
     const gps_data *get_gps_data() const;
-    const uint16_t get_heading_deg() const;
+    const unsigned short get_heading_deg() const;
 
     const bool is_ready() const;
     const bool is_time_valid() const;
@@ -56,7 +56,7 @@ private:
     bool _is_ready = false;
     bool _time_is_valid = false;
     bool _is_updated = false;
-    uint8_t _counter_gps_update = 0;
+    unsigned char _counter_gps_update = 0;
 };
 
 #endif

@@ -26,13 +26,13 @@ enum class time_day_week
 
 struct PACKING time_element
 {
-    uint8_t second;
-    uint8_t minute;
-    uint8_t hour;
+    unsigned char second;
+    unsigned char minute;
+    unsigned char hour;
     time_day_week wday; // day of week, sunday is day 1
-    uint8_t day;
-    uint8_t month;
-    uint8_t year_offset; // offset from 1970;
+    unsigned char day;
+    unsigned char month;
+    unsigned char year_offset; // offset from 1970;
 };
 
 class time_manager
@@ -44,14 +44,14 @@ public:
     time_manager &operator=(const time_manager &) = delete;
     time_manager &operator=(time_manager &&) = delete;
 
-    void set_time(const uint8_t hr, const uint8_t min, const uint8_t sec, const uint8_t dy, const uint8_t mnth, const uint16_t yr);
-    const uint8_t get_second() const;
-    const uint8_t get_minute() const;
-    const uint8_t get_hour() const;
-    const uint8_t get_day() const;
+    void set_time(const unsigned char hr, const unsigned char min, const unsigned char sec, const unsigned char dy, const unsigned char mnth, const unsigned short yr);
+    const unsigned char get_second() const;
+    const unsigned char get_minute() const;
+    const unsigned char get_hour() const;
+    const unsigned char get_day() const;
     const time_day_week get_day_week_num() const;
-    const uint8_t get_month() const;
-    const uint16_t get_year() const;
+    const unsigned char get_month() const;
+    const unsigned short get_year() const;
     const unsigned long get_current_time() const;
 
     // const time_element *get_current_time() const;
@@ -64,7 +64,7 @@ private:
     void _update_time();
 
     time_element _current_tm;
-    uint32_t _current_time = 0;
+    unsigned int _current_time = 0;
     char _buffer[10];
 };
 #endif

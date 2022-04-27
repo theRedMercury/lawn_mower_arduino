@@ -41,14 +41,14 @@
 //  #define TIMER_INTERRUPT_DEBUG      0
 //#endif
 
-void TimerInterrupt::init(int8_t timer)
+void TimerInterrupt::init(char timer)
 {
   // Set timer specific stuff
   // All timers in CTC mode
   // 8 bit timers will require changing prescalar values,
   // whereas 16 bit timers are set to either ck/1 or ck/64 prescalar
 
-  //cli();//stop interrupts
+  // cli();//stop interrupts
   noInterrupts();
 
   switch (timer)
@@ -64,7 +64,7 @@ void TimerInterrupt::init(int8_t timer)
     // No scaling now
     bitWrite(TCCR1B, CS10, 1);
 
-    //TISR_LOGWARN(F("T1"));
+    // TISR_LOGWARN(F("T1"));
 
     break;
 #endif
@@ -80,7 +80,7 @@ void TimerInterrupt::init(int8_t timer)
     // No scaling now
     bitWrite(TCCR2B, CS20, 1);
 
-    //TISR_LOGWARN(F("T2"));
+    // TISR_LOGWARN(F("T2"));
 
     break;
 #endif
@@ -93,7 +93,7 @@ void TimerInterrupt::init(int8_t timer)
     bitWrite(TCCR3B, WGM32, 1);
     bitWrite(TCCR3B, CS30, 1);
 
-    //TISR_LOGWARN(F("T3"));
+    // TISR_LOGWARN(F("T3"));
 
     break;
 #endif
@@ -112,7 +112,7 @@ void TimerInterrupt::init(int8_t timer)
 #endif
     bitWrite(TCCR4B, CS40, 1);
 
-    //TISR_LOGWARN(F("T4"));
+    // TISR_LOGWARN(F("T4"));
 
     break;
 #endif
@@ -125,7 +125,7 @@ void TimerInterrupt::init(int8_t timer)
     bitWrite(TCCR5B, WGM52, 1);
     bitWrite(TCCR5B, CS50, 1);
 
-    //TISR_LOGWARN(F("T5"));
+    // TISR_LOGWARN(F("T5"));
 
     break;
 #endif
@@ -133,7 +133,7 @@ void TimerInterrupt::init(int8_t timer)
 
   _timer = timer;
 
-  //sei();//enable interrupts
+  // sei();//enable interrupts
   interrupts();
 }
 
@@ -143,7 +143,7 @@ void TimerInterrupt::set_OCR()
   // Set the OCR for the given timer,
   // set the toggle count,
   // then turn on the interrupts
-  uint32_t _OCRValueToUse;
+  unsigned long _OCRValueToUse;
 
   switch (_timer)
   {
@@ -218,13 +218,13 @@ void TimerInterrupt::set_OCR()
 
 // frequency (in hertz) and duration (in milliseconds).
 // Return true if frequency is OK with selected timer (OCRValue is in range)
-bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, uint32_t params, unsigned long duration)
+bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, unsigned int params, unsigned long duration)
 {
-  uint8_t andMask = 0b11111000;
+  unsigned char andMask = 0b11111000;
   unsigned long OCRValue;
   bool isSuccess = false;
 
-  //frequencyLimit must > 1
+  // frequencyLimit must > 1
   float frequencyLimit = frequency * 17179.840;
 
   // Limit frequency to larger than (0.00372529 / 64) Hz or interval 17179.840s / 17179840 ms to avoid uint32_t overflow
@@ -239,8 +239,8 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
     {
       _toggle_count = frequency * duration / 1000;
 
-      //TISR_LOGWARN1(F("setFrequency => _toggle_count ="), _toggle_count);
-      //TISR_LOGWARN3(F("Frequency ="), frequency, F(", duration ="), duration);
+      // TISR_LOGWARN1(F("setFrequency => _toggle_count ="), _toggle_count);
+      // TISR_LOGWARN3(F("Frequency ="), frequency, F(", duration ="), duration);
 
       if (_toggle_count < 1)
       {
@@ -252,12 +252,12 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
       _toggle_count = -1;
     }
 
-    //Timer0 and timer2 are 8 bit timers, meaning they can store a maximum counter value of 255.
-    //Timer2 does not have the option of 1024 prescaler, only 1, 8, 32, 64
-    //Timer1 is a 16 bit timer, meaning it can store a maximum counter value of 65535.
+    // Timer0 and timer2 are 8 bit timers, meaning they can store a maximum counter value of 255.
+    // Timer2 does not have the option of 1024 prescaler, only 1, 8, 32, 64
+    // Timer1 is a 16 bit timer, meaning it can store a maximum counter value of 65535.
     int prescalerIndexStart;
 
-    //Use smallest prescaler first, then increase until fits (<255)
+    // Use smallest prescaler first, then increase until fits (<255)
     if (_timer != 2)
     {
       if (frequencyLimit > 64)
@@ -267,13 +267,13 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
       else
         prescalerIndexStart = PRESCALER_64;
 
-      for (int prescalerIndex = prescalerIndexStart; prescalerIndex <= PRESCALER_1024; prescalerIndex++)
+      for (unsigned int prescalerIndex = prescalerIndexStart; prescalerIndex <= PRESCALER_1024; prescalerIndex++)
       {
         OCRValue = F_CPU / (frequency * prescalerDiv[prescalerIndex]) - 1;
 
-        //TISR_LOGWARN1(F("Freq * 1000 ="), frequency * 1000);
-        //TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDiv[prescalerIndex]);
-        //TISR_LOGWARN3(F("OCR ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
+        // TISR_LOGWARN1(F("Freq * 1000 ="), frequency * 1000);
+        // TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDiv[prescalerIndex]);
+        // TISR_LOGWARN3(F("OCR ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
 
         // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_16BIT, _OCRValueRemaining) from _OCRValueRemaining
         // So that we can create very long timer, even if the counter is only 16-bit.
@@ -290,8 +290,8 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
           _OCRValueRemaining = OCRValue;
           _prescalerIndex = prescalerIndex;
 
-          //TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
-          //TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
+          // TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
+          // TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
 
           isSuccess = true;
 
@@ -306,8 +306,8 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
         _OCRValueRemaining = OCRValue;
         _prescalerIndex = PRESCALER_1024;
 
-        //TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
-        //TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
+        // TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
+        // TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDiv[_prescalerIndex]);
       }
     }
     else
@@ -322,13 +322,13 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
         prescalerIndexStart = T2_PRESCALER_64;
 
       // Page 206-207. ATmegal328
-      //8-bit Timer2 has more options up to 1024 prescaler, from 1, 8, 32, 64, 128, 256 and 1024
+      // 8-bit Timer2 has more options up to 1024 prescaler, from 1, 8, 32, 64, 128, 256 and 1024
       for (int prescalerIndex = prescalerIndexStart; prescalerIndex <= T2_PRESCALER_1024; prescalerIndex++)
       {
         OCRValue = F_CPU / (frequency * prescalerDivT2[prescalerIndex]) - 1;
 
-        //TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDivT2[prescalerIndex]);
-        //TISR_LOGWARN3(F("OCR2 ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
+        // TISR_LOGWARN3(F("F_CPU ="), F_CPU, F(", preScalerDiv ="), prescalerDivT2[prescalerIndex]);
+        // TISR_LOGWARN3(F("OCR2 ="), OCRValue, F(", preScalerIndex ="), prescalerIndex);
 
         // We use very large _OCRValue now, and every time timer ISR activates, we deduct min(MAX_COUNT_8BIT, _OCRValue) from _OCRValue
         // to create very long timer, even if the counter is only 16-bit.
@@ -340,8 +340,8 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
           // same as prescalarbits
           _prescalerIndex = prescalerIndex;
 
-          //TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
-          //TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
+          // TISR_LOGWARN1(F("OK in loop => _OCR ="), _OCRValue);
+          // TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
 
           isSuccess = true;
 
@@ -357,12 +357,12 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
         // same as prescalarbits
         _prescalerIndex = T2_PRESCALER_1024;
 
-        //TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
-        //TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
+        // TISR_LOGWARN1(F("OK out loop => _OCR ="), _OCRValue);
+        // TISR_LOGWARN3(F("_preScalerIndex ="), _prescalerIndex, F(", preScalerDiv ="), prescalerDivT2[_prescalerIndex]);
       }
     }
 
-    //cli();//stop interrupts
+    // cli();//stop interrupts
     noInterrupts();
 
     _frequency = frequency;
@@ -375,9 +375,9 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
 #if defined(TCCR2B)
     if (_timer == 2)
     {
-      TCCR2B = (TCCR2B & andMask) | _prescalerIndex; //prescalarbits;
+      TCCR2B = (TCCR2B & andMask) | _prescalerIndex; // prescalarbits;
 
-      //TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
+      // TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
     }
 #endif
 
@@ -389,25 +389,25 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
     else if (_timer == 1)
 #endif
     {
-      TCCR1B = (TCCR1B & andMask) | _prescalerIndex; //prescalarbits;
+      TCCR1B = (TCCR1B & andMask) | _prescalerIndex; // prescalarbits;
 
-      //TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
+      // TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
     }
 #endif
 
 #if defined(TCCR3B)
     else if (_timer == 3)
-      TCCR3B = (TCCR3B & andMask) | _prescalerIndex; //prescalarbits;
+      TCCR3B = (TCCR3B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 
 #if defined(TCCR4B)
     else if (_timer == 4)
-      TCCR4B = (TCCR4B & andMask) | _prescalerIndex; //prescalarbits;
+      TCCR4B = (TCCR4B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 
 #if defined(TCCR5B)
     else if (_timer == 5)
-      TCCR5B = (TCCR5B & andMask) | _prescalerIndex; //prescalarbits;
+      TCCR5B = (TCCR5B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 
     // Set the OCR for the given timer,
@@ -415,7 +415,7 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
     // then turn on the interrupts
     set_OCR();
 
-    //sei();//allow interrupts
+    // sei();//allow interrupts
     interrupts();
 
     return true;
@@ -424,7 +424,7 @@ bool TimerInterrupt::setFrequency(float frequency, timer_callback_p callback, ui
 
 void TimerInterrupt::detachInterrupt(void)
 {
-  //cli();//stop interrupts
+  // cli();//stop interrupts
   noInterrupts();
 
   switch (_timer)
@@ -433,7 +433,7 @@ void TimerInterrupt::detachInterrupt(void)
   case 1:
     bitWrite(TIMSK1, OCIE1A, 0);
 
-    //TISR_LOGWARN(F("Disable T1"));
+    // TISR_LOGWARN(F("Disable T1"));
 
     break;
 #endif
@@ -443,7 +443,7 @@ void TimerInterrupt::detachInterrupt(void)
     bitWrite(TIMSK2, OCIE2A, 0); // disable interrupt
 #endif
 
-    //TISR_LOGWARN(F("Disable T2"));
+    // TISR_LOGWARN(F("Disable T2"));
 
     break;
 
@@ -451,7 +451,7 @@ void TimerInterrupt::detachInterrupt(void)
   case 3:
     bitWrite(TIMSK3, OCIE3A, 0);
 
-    //TISR_LOGWARN(F("Disable T3"));
+    // TISR_LOGWARN(F("Disable T3"));
 
     break;
 #endif
@@ -460,7 +460,7 @@ void TimerInterrupt::detachInterrupt(void)
   case 4:
     bitWrite(TIMSK4, OCIE4A, 0);
 
-    //TISR_LOGWARN(F("Disable T4"));
+    // TISR_LOGWARN(F("Disable T4"));
 
     break;
 #endif
@@ -469,20 +469,20 @@ void TimerInterrupt::detachInterrupt(void)
   case 5:
     bitWrite(TIMSK5, OCIE5A, 0);
 
-    //TISR_LOGWARN(F("Disable T5"));
+    // TISR_LOGWARN(F("Disable T5"));
 
     break;
 #endif
   }
 
-  //sei();//allow interrupts
+  // sei();//allow interrupts
   interrupts();
 }
 
 // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
 void TimerInterrupt::reattachInterrupt(unsigned long duration)
 {
-  //cli();//stop interrupts
+  // cli();//stop interrupts
   noInterrupts();
 
   // Calculate the toggle count
@@ -501,7 +501,7 @@ void TimerInterrupt::reattachInterrupt(unsigned long duration)
   case 1:
     bitWrite(TIMSK1, OCIE1A, 1);
 
-    //TISR_LOGWARN(F("Enable T1"));
+    // TISR_LOGWARN(F("Enable T1"));
 
     break;
 #endif
@@ -511,7 +511,7 @@ void TimerInterrupt::reattachInterrupt(unsigned long duration)
     bitWrite(TIMSK2, OCIE2A, 1); // enable interrupt
 #endif
 
-    //TISR_LOGWARN(F("Enable T2"));
+    // TISR_LOGWARN(F("Enable T2"));
 
     break;
 
@@ -519,7 +519,7 @@ void TimerInterrupt::reattachInterrupt(unsigned long duration)
   case 3:
     bitWrite(TIMSK3, OCIE3A, 1);
 
-    //TISR_LOGWARN(F("Enable T3"));
+    // TISR_LOGWARN(F("Enable T3"));
 
     break;
 #endif
@@ -528,7 +528,7 @@ void TimerInterrupt::reattachInterrupt(unsigned long duration)
   case 4:
     bitWrite(TIMSK4, OCIE4A, 1);
 
-    //TISR_LOGWARN(F("Enable T4"));
+    // TISR_LOGWARN(F("Enable T4"));
 
     break;
 #endif
@@ -537,22 +537,22 @@ void TimerInterrupt::reattachInterrupt(unsigned long duration)
   case 5:
     bitWrite(TIMSK5, OCIE5A, 1);
 
-    //TISR_LOGWARN(F("Enable T5"));
+    // TISR_LOGWARN(F("Enable T5"));
 
     break;
 #endif
   }
 
-  //sei();//allow interrupts
+  // sei();//allow interrupts
   interrupts();
 }
 
 // Just stop clock source, still keep the count
 void TimerInterrupt::pauseTimer(void)
 {
-  uint8_t andMask = 0b11111000;
+  unsigned char andMask = 0b11111000;
 
-//Just clear the CSx2-CSx0. Still keep the count in TCNT and Timer Interrupt mask TIMKSx.
+// Just clear the CSx2-CSx0. Still keep the count in TCNT and Timer Interrupt mask TIMKSx.
 
 // 8 bit timers from here
 #if defined(TCCR2B)
@@ -560,7 +560,7 @@ void TimerInterrupt::pauseTimer(void)
   {
     TCCR2B = (TCCR2B & andMask);
 
-    //TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
+    // TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
   }
 #endif
 
@@ -574,7 +574,7 @@ void TimerInterrupt::pauseTimer(void)
   {
     TCCR1B = (TCCR1B & andMask);
 
-    //TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
+    // TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
   }
 #endif
 
@@ -597,16 +597,16 @@ void TimerInterrupt::pauseTimer(void)
 // Just reconnect clock source, continue from the current count
 void TimerInterrupt::resumeTimer(void)
 {
-  uint8_t andMask = 0b11111000;
+  unsigned char andMask = 0b11111000;
 
-//Just restore the CSx2-CSx0 stored in _prescalerIndex. Still keep the count in TCNT and Timer Interrupt mask TIMKSx.
-// 8 bit timers from here
+// Just restore the CSx2-CSx0 stored in _prescalerIndex. Still keep the count in TCNT and Timer Interrupt mask TIMKSx.
+//  8 bit timers from here
 #if defined(TCCR2B)
   if (_timer == 2)
   {
-    TCCR2B = (TCCR2B & andMask) | _prescalerIndex; //prescalarbits;
+    TCCR2B = (TCCR2B & andMask) | _prescalerIndex; // prescalarbits;
 
-    //TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
+    // TISR_LOGWARN1(F("TCCR2B ="), TCCR2B);
   }
 #endif
 
@@ -618,24 +618,24 @@ void TimerInterrupt::resumeTimer(void)
   else if (_timer == 1)
 #endif
   {
-    TCCR1B = (TCCR1B & andMask) | _prescalerIndex; //prescalarbits;
+    TCCR1B = (TCCR1B & andMask) | _prescalerIndex; // prescalarbits;
 
-    //TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
+    // TISR_LOGWARN1(F("TCCR1B ="), TCCR1B);
   }
 #endif
 
 #if defined(TCCR3B)
   else if (_timer == 3)
-    TCCR3B = (TCCR3B & andMask) | _prescalerIndex; //prescalarbits;
+    TCCR3B = (TCCR3B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 
 #if defined(TCCR4B)
   else if (_timer == 4)
-    TCCR4B = (TCCR4B & andMask) | _prescalerIndex; //prescalarbits;
+    TCCR4B = (TCCR4B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 
 #if defined(TCCR5B)
   else if (_timer == 5)
-    TCCR5B = (TCCR5B & andMask) | _prescalerIndex; //prescalarbits;
+    TCCR5B = (TCCR5B & andMask) | _prescalerIndex; // prescalarbits;
 #endif
 }

@@ -30,7 +30,7 @@ void wifi_control::setup()
 
     _is_ready = true;
     // Init wifi settings
-    uint8_t bit_result = 0;
+    unsigned char bit_result = 0;
     send_msg("ssid", ssid);
     bit_result |= 1UL << 0;
     delay(100);
@@ -87,7 +87,7 @@ void wifi_control::update()
         String message = _split(msg, 1);
         topic.trim();
 
-        for (uint16_t i = 0; i <= message.length(); i++)
+        for (unsigned short i = 0; i <= message.length(); i++)
         {
             if (message.charAt(i) < 0x20 || message.charAt(i) > 0x7f) // ASCII
             {
@@ -200,7 +200,7 @@ void wifi_control::_process_scheduler(String message)
         return;
     }
 
-    uint8_t day_week_num, h_start, m_start, h_end, m_end;
+    unsigned char day_week_num, h_start, m_start, h_end, m_end;
     day_week_num = constrain(day_num.toInt(), 1, 7);
     h_start = constrain(hs.toInt(), 6, 22);
     m_start = constrain(ms.toInt(), 0, 59);
@@ -223,7 +223,7 @@ void wifi_control::_process_scheduler(String message)
 String wifi_control::_clear_string(String data)
 {
     String ret = "";
-    for (uint32_t i = 0; i <= data.length(); i++)
+    for (unsigned int i = 0; i <= data.length(); i++)
     {
         if (isalpha(data.charAt(i)) && data.charAt(i) != ' ')
         {
@@ -235,7 +235,7 @@ String wifi_control::_clear_string(String data)
 
 bool wifi_control::_is_integer(String msg, int min, int max)
 {
-    for (uint32_t i = 0; i >= msg.length(); i++)
+    for (unsigned int i = 0; i >= msg.length(); i++)
     {
         if (!isDigit(msg.charAt(i)))
         {
@@ -245,9 +245,9 @@ bool wifi_control::_is_integer(String msg, int min, int max)
     return msg.toInt() >= min && msg.toInt() <= max;
 }
 
-String wifi_control::_split(const String data, const uint32_t index, const char separator)
+String wifi_control::_split(const String data, const unsigned int index, const char separator)
 {
-    uint32_t found = 0;
+    unsigned int found = 0;
     int str_index[] = {0, -1};
     int max_index = data.length() - 1;
     for (int i = 0; i <= max_index && found <= index; i++)

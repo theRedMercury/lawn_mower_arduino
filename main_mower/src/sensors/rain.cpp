@@ -22,7 +22,7 @@ void rain_sensor::update()
     DEBUG_PRINTLN("RAIN >\t" + String(_current_rain_value));
 }
 
-const uint16_t rain_sensor::get_value() const
+const unsigned short rain_sensor::get_value() const
 {
     return _current_rain_value;
 }

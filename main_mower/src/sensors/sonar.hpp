@@ -24,13 +24,13 @@
 class _sensor
 {
 public:
-    _sensor(const byte pin_trig, const byte pin_echo);
+    _sensor(const unsigned char pin_trig, const unsigned char pin_echo);
     void update();
     const float get_value() const;
 
 private:
     float _value = 0.f;
-    byte _pin_trig, _pin_echo;
+    unsigned char _pin_trig, _pin_echo;
 
     _sensor() = delete;
     _sensor(const _sensor &) = delete;
@@ -50,7 +50,7 @@ public:
     const float get_center() const;
     const float get_right() const;
 
-    const void get_collisions(uint8_t *collision, const float threshold = 50.f) const;
+    const void get_collisions(unsigned char *collision, const float threshold = 50.f) const;
 
 private:
     _sensor sonar_left{PIN_USOUND_TRIG_03, PIN_USOUND_ECHO_03};

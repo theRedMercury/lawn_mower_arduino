@@ -93,6 +93,8 @@ const char *mower_manager::get_current_status_str() const
         return "ERR INIT";
     case mower_status::ERROR_LOST_WIRE:
         return "ERLOST W";
+    case mower_status::ERROR_POWER:
+        return "ERR POWE";
     case mower_status::ERROR:
         return "ERROR   ";
     default:
@@ -111,6 +113,7 @@ void mower_manager::set_current_status(const mower_status new_status)
     {
         return;
     }
+
     // Start mowing
     if (new_status == mower_status::RUNNING && _current_status != mower_status::RUNNING)
     {

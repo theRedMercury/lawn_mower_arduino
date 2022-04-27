@@ -2,7 +2,7 @@
  *  @brief  lawn mower home
  *  @author Nicolas Masson <https://github.com/theRedMercury>
  *  @date   2021 - 2022
- *  
+ *
  *  @target Arduino mega
  */
 
@@ -29,7 +29,7 @@ unsigned long frame_counter;
 ///////////////////////////////////////////////////////
 #include "src/libs/timer_interrupt/TimerInterrupt.h"
 #define TIMER_INTERVAL_MS 100000UL
-volatile uint8_t _timer_reboot_wathdog = 0;
+volatile unsigned char _timer_reboot_wathdog = 0;
 // Restart Arduino
 void (*restart_arduino_func)(void) = 0;
 
@@ -39,6 +39,7 @@ void timer_watch_dog_handler()
   if (_timer_reboot_wathdog > 10)
   {
     mower.set_error();
+    mower.lcd.show_message("> FATAL ERROR  <", "................");
     DEBUG_PRINTLN(">>>> TimerWatchdogHandler <<<<");
     delay(1000);
     restart_arduino_func();
@@ -71,6 +72,7 @@ void setup()
     // Fail attach interrup : normally, never happen
     mower.set_error();
     mower.lcd.show_message("> FATAL ERROR   ", "Watchdog Timer !");
+    delay(1000);
     DEBUG_PRINTLN("ERROR Watchdog timer...");
   }
   ////////////////////////////////////////////////////////////////////////////////

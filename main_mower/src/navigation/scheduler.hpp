@@ -15,10 +15,10 @@
 
 struct PACKING schedul_day
 {
-    uint8_t h_start = 0;
-    uint8_t m_start = 0;
-    uint8_t h_end = 0;
-    uint8_t m_end = 0;
+    unsigned char h_start = 0;
+    unsigned char m_start = 0;
+    unsigned char h_end = 0;
+    unsigned char m_end = 0;
 };
 
 struct PACKING schedul_week
@@ -42,12 +42,12 @@ public:
     const bool is_time_to_mown() const;
     const bool is_time_to_return_station() const;
 
-    const String get_string_schedul_day(const uint8_t day_week_num) const;
+    const String get_string_schedul_day(const unsigned char day_week_num) const;
     const schedul_week *get_schedul() const;
-    void set_scheduler(const uint8_t day_week_num, const uint8_t h_start, const uint8_t m_start, const uint8_t h_end, const uint8_t m_end);
+    void set_scheduler(const unsigned char day_week_num, const unsigned char h_start, const unsigned char m_start, const unsigned char h_end, const unsigned char m_end);
 
 private:
-    const bool _comp_hours(const uint8_t h_01, const uint8_t m_01, const uint8_t h_02, const uint8_t m_02) const;
+    const bool _comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const;
     const String _get_string_schedul_day(const schedul_day day) const;
 
     schedul_week _shedul;

@@ -13,10 +13,6 @@
 #include "../libs/BMP280/BMP280.h"
 #include "../libs/MPU9250/MPU9250.h"
 
-#define COUNTER_MAX_TEMP_REFRESH 25
-#define COUNTER_MOVING_REFRESH 40
-#define COUNTER_IS_SAFE 10
-
 class gyro_sensor : public abs_mower_class
 {
 public:
@@ -61,9 +57,9 @@ private:
     bool _gy91Ok = false;
     bool _have_shock = false;
 
-    uint8_t _counter_moving = 0;
-    uint8_t _counter_temp = 0;
-    uint16_t _cumulation_is_safe = 0;
+    unsigned char _counter_moving = 0;
+    unsigned char _counter_temp = 0;
+    unsigned short _cumulation_is_safe = 0;
 
     float _aSqrt = 0.f;
     double _current_temp, _current_pression = 0; // degC, mBar

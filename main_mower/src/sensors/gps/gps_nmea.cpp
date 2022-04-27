@@ -6,9 +6,9 @@
 
 #include "gps_nmea.h"
 
-const uint32_t gps_nmea::gps_parse_unsigned_int(const char *s, uint8_t len, uint32_t default_int, uint32_t min_int, uint32_t max_int)
+const unsigned int gps_nmea::gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int default_int, unsigned int min_int, unsigned int max_int)
 {
-  uint32_t r = 0;
+  unsigned int r = 0;
   while (len--)
   {
     r = 10 * r + *s++ - '0';
@@ -23,7 +23,7 @@ const uint32_t gps_nmea::gps_parse_unsigned_int(const char *s, uint8_t len, uint
 const bool gps_nmea::gps_reset(HardwareSerial &ser)
 {
   char temp;
-  uint32_t counter_loop = 0;
+  unsigned int counter_loop = 0;
   do
   {
     counter_loop++;
@@ -41,7 +41,7 @@ const bool gps_nmea::gps_reset(HardwareSerial &ser)
 const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
 {
   char rmc[NMEA_SIZE_PACKET] = {'\0'};
-  uint32_t size_packet = 0;
+  unsigned int size_packet = 0;
   result.gps_success = false;
   result.checksum_valid = false;
 
@@ -53,9 +53,9 @@ const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
   }
 
   // CLEAN & get last $ if multiple in one line
-  uint32_t counterDollar = 0;
-  uint32_t lastIndex = 0;
-  for (uint32_t i = 0; i < gps_data.length(); i++)
+  unsigned int counterDollar = 0;
+  unsigned int lastIndex = 0;
+  for (unsigned int i = 0; i < gps_data.length(); i++)
   {
     if (gps_data[i] == '$')
     {
@@ -93,11 +93,11 @@ const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
   _parse_rmc_date(rmc, result.gps_date, size_packet);
 }
 
-void gps_nmea::_generic_parse_nmea(char gps_nmea[], char *gps_out, uint32_t pos_coma, const uint32_t size)
+void gps_nmea::_generic_parse_nmea(char gps_nmea[], char *gps_out, unsigned int pos_coma, const unsigned int size)
 {
-  uint32_t c = 0;
-  uint32_t i = 0;
-  uint32_t limit = 0;
+  unsigned int c = 0;
+  unsigned int i = 0;
+  unsigned int limit = 0;
   for (i = 0; i < pos_coma; i++)
   {
     while (gps_nmea[c] != ',' && limit < size)
@@ -119,10 +119,10 @@ void gps_nmea::_generic_parse_nmea(char gps_nmea[], char *gps_out, uint32_t pos_
   memcpy(gps_out, &gps_nmea[posStart], i);
 }
 
-void gps_nmea::_parse_rmc_time(char *gps_str, char *gps_time, const uint32_t size)
+void gps_nmea::_parse_rmc_time(char *gps_str, char *gps_time, const unsigned int size)
 {
-  uint32_t c = 0;
-  uint32_t i = 0;
+  unsigned int c = 0;
+  unsigned int i = 0;
   for (; c < size; c++)
   {
     if (gps_str[c] == ',')
@@ -137,43 +137,43 @@ void gps_nmea::_parse_rmc_time(char *gps_str, char *gps_time, const uint32_t siz
   }
 }
 
-void gps_nmea::_parse_rmc_valid(char *gps_str, char *gpsValid, const uint32_t size)
+void gps_nmea::_parse_rmc_valid(char *gps_str, char *gpsValid, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsValid, 2, size);
 }
 
-void gps_nmea::_parse_rmc_lat(char *gps_str, char *gpsLat, const uint32_t size)
+void gps_nmea::_parse_rmc_lat(char *gps_str, char *gpsLat, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsLat, 3, size);
 }
 
-void gps_nmea::_parse_rmc_NS(char *gps_str, char *gpsNS, const uint32_t size)
+void gps_nmea::_parse_rmc_NS(char *gps_str, char *gpsNS, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsNS, 4, size);
 }
 
-void gps_nmea::_parse_rmc_lon(char *gps_str, char *gpsLon, const uint32_t size)
+void gps_nmea::_parse_rmc_lon(char *gps_str, char *gpsLon, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsLon, 5, size);
 }
 
-void gps_nmea::_parse_rmc_ew(char *gps_str, char *gpsEW, const uint32_t size)
+void gps_nmea::_parse_rmc_ew(char *gps_str, char *gpsEW, const unsigned int size)
 {
 
   _generic_parse_nmea(gps_str, gpsEW, 6, size);
 }
 
-void gps_nmea::_parse_rmc_spd(char *gps_str, char *gpsSpeed, const uint32_t size)
+void gps_nmea::_parse_rmc_spd(char *gps_str, char *gpsSpeed, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsSpeed, 7, size);
 }
 
-void gps_nmea::_parse_rmc_cse(char *gps_str, char *gpsCSE, const uint32_t size)
+void gps_nmea::_parse_rmc_cse(char *gps_str, char *gpsCSE, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsCSE, 8, size);
 }
 
-void gps_nmea::_parse_rmc_date(char *gps_str, char *gpsDate, const uint32_t size)
+void gps_nmea::_parse_rmc_date(char *gps_str, char *gpsDate, const unsigned int size)
 {
   _generic_parse_nmea(gps_str, gpsDate, 9, size);
 }
@@ -182,7 +182,7 @@ bool gps_nmea::_nmea0183_checksum_valid(char *gps_data, int checksum)
 {
   int crc = -1;
   // ignore the first $ sign,  no checksum in sentence
-  for (uint32_t i = 1; i < strlen(gps_data); i++)
+  for (unsigned int i = 1; i < strlen(gps_data); i++)
   { // removed the - 3 because no cksum is present
     crc ^= gps_data[i];
   }

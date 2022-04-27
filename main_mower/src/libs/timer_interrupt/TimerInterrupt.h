@@ -167,17 +167,17 @@ enum
   T2_NUM_ITEMS
 };
 
-const uint32_t prescalerDiv[NUM_ITEMS] = {1, 1, 8, 64, 256, 1024};
-const uint32_t prescalerDivT2[T2_NUM_ITEMS] = {1, 1, 8, 32, 64, 128, 256, 1024};
+const unsigned int prescalerDiv[NUM_ITEMS] = {1, 1, 8, 64, 256, 1024};
+const unsigned int prescalerDivT2[T2_NUM_ITEMS] = {1, 1, 8, 32, 64, 128, 256, 1024};
 
 class TimerInterrupt
 {
 private:
   bool _timerDone;
-  int8_t _timer;
-  uint32_t _prescalerIndex;
-  uint32_t _OCRValue;
-  uint32_t _OCRValueRemaining;
+  char _timer;
+  unsigned int _prescalerIndex;
+  unsigned long _OCRValue;
+  unsigned long _OCRValueRemaining;
   volatile long _toggle_count;
   double _frequency;
 
@@ -200,7 +200,7 @@ public:
     _toggle_count = -1;
   };
 
-  explicit TimerInterrupt(uint8_t timerNo)
+  explicit TimerInterrupt(char timerNo)
   {
     _timer = timerNo;
     _frequency = 0;
@@ -224,7 +224,7 @@ public:
     }
   }
 
-  void init(int8_t timer);
+  void init(char timer);
 
   void init()
   {
@@ -232,7 +232,7 @@ public:
   };
 
   // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
-  bool setFrequency(float frequency, timer_callback_p callback, /* void* */ uint32_t params, unsigned long duration = 0);
+  bool setFrequency(float frequency, timer_callback_p callback, /* void* */ unsigned int params, unsigned long duration = 0);
 
   // frequency (in hertz) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
   bool setFrequency(float frequency, timer_callback callback, unsigned long duration = 0)
@@ -244,8 +244,8 @@ public:
   template <typename TArg>
   bool setInterval(unsigned long interval, void (*callback)(TArg), TArg params, unsigned long duration = 0)
   {
-    static_assert(sizeof(TArg) <= sizeof(uint32_t), "setInterval() callback argument size must be <= 4 bytes");
-    return setFrequency((float)(1000.0f / interval), reinterpret_cast<timer_callback_p>(callback), (uint32_t)params, duration);
+    static_assert(sizeof(TArg) <= sizeof(unsigned int), "setInterval() callback argument size must be <= 4 bytes");
+    return setFrequency((float)(1000.0f / interval), reinterpret_cast<timer_callback_p>(callback), (unsigned int)params, duration);
   }
 
   // interval (in ms) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
@@ -257,8 +257,8 @@ public:
   template <typename TArg>
   bool attachInterrupt(float frequency, void (*callback)(TArg), TArg params, unsigned long duration = 0)
   {
-    static_assert(sizeof(TArg) <= sizeof(uint32_t), "attachInterrupt() callback argument size must be <= 4 bytes");
-    return setFrequency(frequency, reinterpret_cast<timer_callback_p>(callback), (uint32_t)params, duration);
+    static_assert(sizeof(TArg) <= sizeof(unsigned int), "attachInterrupt() callback argument size must be <= 4 bytes");
+    return setFrequency(frequency, reinterpret_cast<timer_callback_p>(callback), (unsigned int)params, duration);
   }
 
   bool attachInterrupt(float frequency, timer_callback callback, unsigned long duration = 0)
@@ -270,8 +270,8 @@ public:
   template <typename TArg>
   bool attachInterruptInterval(unsigned long interval, void (*callback)(TArg), TArg params, unsigned long duration = 0)
   {
-    static_assert(sizeof(TArg) <= sizeof(uint32_t), "attachInterruptInterval() callback argument size must be <= 4 bytes");
-    return setFrequency((float)(1000.0f / interval), reinterpret_cast<timer_callback_p>(callback), (uint32_t)params, duration);
+    static_assert(sizeof(TArg) <= sizeof(unsigned int), "attachInterruptInterval() callback argument size must be <= 4 bytes");
+    return setFrequency((float)(1000.0f / interval), reinterpret_cast<timer_callback_p>(callback), (unsigned int)params, duration);
   }
 
   // Interval (in ms) and duration (in milliseconds). Duration = 0 or not specified => run indefinitely
@@ -314,7 +314,7 @@ public:
     reattachInterrupt(duration);
   }
 
-  int8_t getTimer() __attribute__((always_inline))
+  char getTimer() __attribute__((always_inline))
   {
     return _timer;
   };

@@ -27,7 +27,7 @@ private:
     void _process_scheduler(String message);
     String _clear_string(String data);
     bool _is_integer(String msg, int min, int max);
-    String _split(const String data, const uint32_t index = 0, const char separator = '>');
+    String _split(const String data, const unsigned int index = 0, const char separator = '>');
 
     bool _is_ready = false;
     unsigned long _counter_ping = 0;

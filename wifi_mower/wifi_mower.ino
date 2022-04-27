@@ -2,7 +2,7 @@
  *  @brief  lawn mower home
  *  @author Nicolas Masson <https://github.com/theRedMercury>
  *  @date   2021 - 2022
- *  
+ *
  *  @target ESP8266 Generic module
  */
 
@@ -48,7 +48,7 @@ ESP8266Timer timer_write_serial;
 WiFiClient esp_client;
 PubSubClient mqtt_client(esp_client);
 
-uint32_t _counter_ping;
+unsigned int _counter_ping;
 Queue<String> _buffer_queue_write = Queue<String>(50);
 volatile bool _queue_write_lock = false;
 
@@ -65,7 +65,7 @@ void inline print_topic(const char *topic, const char *msg)
     _queue_write_lock = false;
 }
 
-void topic_callback(char *topic, byte *payload, uint32_t length)
+void topic_callback(char *topic, unsigned char *payload, unsigned int length)
 {
     char buf[length];
     memset(buf, 0, length);
@@ -108,9 +108,9 @@ void init_mqtt()
     }
 }
 
-String inline _split(const String data, const uint32_t index = 0, const char separator = '>')
+String inline _split(const String data, const unsigned int index = 0, const char separator = '>')
 {
-    uint32_t found = 0;
+    unsigned int found = 0;
     int str_index[] = {0, -1};
     int max_index = data.length() - 1;
     String ret = "";
@@ -155,7 +155,7 @@ void setup()
         delay(10);
     }
 
-    uint8_t bit_result = 0;
+    unsigned char bit_result = 0;
 
     while (bit_result != 63) // = 0011 1111
     {

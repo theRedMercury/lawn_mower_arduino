@@ -7,7 +7,7 @@
 #include "sonar.hpp"
 #include "../mower/mower.hpp"
 
-_sensor::_sensor(const byte pin_trig, const byte pin_echo)
+_sensor::_sensor(const unsigned char pin_trig, const unsigned char pin_echo)
 {
     _pin_trig = pin_trig;
     _pin_echo = pin_echo;
@@ -66,11 +66,11 @@ const float sonar_sensor::get_right() const
     return sonar_right.get_value();
 }
 
-const void sonar_sensor::get_collisions(uint8_t *collision, const float threshold) const
+const void sonar_sensor::get_collisions(unsigned char *collision, const float threshold) const
 {
-    collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(collision[0] + 1, 0, 255) : 0;
-    collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(collision[1] + 1, 0, 255) : 0;
-    collision[2] = (get_right() < threshold && get_right() != 0) ? constrain(collision[2] + 1, 0, 255) : 0;
+    collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(collision[0] + 1, 0, 10) : 0;
+    collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(collision[1] + 1, 0, 10) : 0;
+    collision[2] = (get_right() < threshold && get_right() != 0) ? constrain(collision[2] + 1, 0, 10) : 0;
 
     DEBUG_PRINT("COLLISION >");
     DEBUG_PRINT("\tLeft : " + String(collision[0]));

@@ -37,12 +37,12 @@ private:
     {
         float computed_speed = 0.f;
         short target_speed = 0;
-        byte real_speed = 0;
+        unsigned char real_speed = 0;
         unsigned long last_set_speed_time = 0;
         bool is_stop = false;
-        byte PIN_FORWARD;
-        byte PIN_BACKWARD;
-        byte PIN_SPEED;
+        unsigned char PIN_FORWARD;
+        unsigned char PIN_BACKWARD;
+        unsigned char PIN_SPEED;
     };
 
     void _stop_motor(motor_stuct *motor);
@@ -51,6 +51,6 @@ private:
 
     motor_stuct _motor_left;
     motor_stuct _motor_right;
-    uint32_t _security_count = 0;
+    unsigned int _security_count = 0;
 };
 #endif

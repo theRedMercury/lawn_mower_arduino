@@ -47,13 +47,13 @@ static constexpr char _day_str_7[] PROGMEM = "Satur ";
 static constexpr const PROGMEM char *const PROGMEM _day_names[] = {
     _day_str_0, _day_str_1, _day_str_2, _day_str_3, _day_str_4, _day_str_5, _day_str_6, _day_str_7};
 
-static constexpr const uint8_t _month_days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+static constexpr const unsigned char _month_days[] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 time_manager::time_manager()
 {
     set_time(1, 1, 1, 1, 1, 1970);
 }
-void time_manager::set_time(const uint8_t hr, const uint8_t minute, const uint8_t sec, const uint8_t dy, const uint8_t mnth, const uint16_t yr)
+void time_manager::set_time(const unsigned char hr, const unsigned char minute, const unsigned char sec, const unsigned char dy, const unsigned char mnth, const unsigned short yr)
 {
     // year can be given as full four digit year or two digts (2010 or 10 for 2010);
     // it is converted to years since 1970
@@ -66,22 +66,22 @@ void time_manager::set_time(const uint8_t hr, const uint8_t minute, const uint8_
     _make_time();
 }
 
-const uint8_t time_manager::get_second() const
+const unsigned char time_manager::get_second() const
 {
     return _current_tm.second;
 }
 
-const uint8_t time_manager::get_minute() const
+const unsigned char time_manager::get_minute() const
 {
     return _current_tm.minute;
 }
 
-const uint8_t time_manager::get_hour() const
+const unsigned char time_manager::get_hour() const
 {
     return _current_tm.hour;
 }
 
-const uint8_t time_manager::get_day() const
+const unsigned char time_manager::get_day() const
 {
     return _current_tm.day;
 }
@@ -91,12 +91,12 @@ const time_day_week time_manager::get_day_week_num() const
     return _current_tm.wday;
 }
 
-const uint8_t time_manager::get_month() const
+const unsigned char time_manager::get_month() const
 {
     return _current_tm.month;
 }
 
-const uint16_t time_manager::get_year() const
+const unsigned short time_manager::get_year() const
 {
     return _current_tm.year_offset + 1970;
 }
@@ -130,9 +130,9 @@ void time_manager::_update_time()
     // this is a more compact version of the C library localtime function
     // note that year is offset from 1970 !!!
 
-    uint8_t year;
-    uint8_t month, month_length;
-    uint32_t new_time;
+    unsigned char year;
+    unsigned char month, month_length;
+    unsigned int new_time;
     unsigned long days;
 
     new_time = _current_time;

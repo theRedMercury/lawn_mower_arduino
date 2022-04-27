@@ -23,7 +23,7 @@
    variable can not spontaneously change. Because your function may change variables while your program is using them,
    the compiler needs this hint. But volatile alone is often not enough.
    When accessing shared variables, usually interrupts must be disabled. Even with volatile,
-   if the interrupt changes a multi-byte variable between a sequence of instructions, it can be read incorrectly.
+   if the interrupt changes a multi-unsigned char variable between a sequence of instructions, it can be read incorrectly.
    If your data is multiple variables, such as an array and a count, usually interrupts need to be disabled
    or the entire sequence of your code which accesses the data.
 
@@ -46,41 +46,41 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         2
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define TIMER_INTERRUPT_DEBUG 2
+#define _TIMERINTERRUPT_LOGLEVEL_ 0
 
 // Select a Timer Clock
-#define USING_TIM_DIV1                false           // for shortest and most accurate timer
-#define USING_TIM_DIV16               false           // for medium time and medium accurate timer
-#define USING_TIM_DIV256              true            // for longest timer but least accurate. Default
+#define USING_TIM_DIV1 false  // for shortest and most accurate timer
+#define USING_TIM_DIV16 false // for medium time and medium accurate timer
+#define USING_TIM_DIV256 true // for longest timer but least accurate. Default
 
 #include "ESP8266TimerInterrupt.h"
 #include "ESP8266_ISR_Timer.h"
 
-#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
+#include <SimpleTimer.h> // https://github.com/jfturcot/SimpleTimer
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       2
+#define LED_BUILTIN 2
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          25
+#define LED_BLUE 25
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           27
+#define LED_RED 27
 #endif
 
-#define HW_TIMER_INTERVAL_MS      1L
+#define HW_TIMER_INTERVAL_MS 1L
 
-volatile uint32_t startMillis = 0;
+volatile unsigned int startMillis = 0;
 
 // Init ESP8266 timer 1
 ESP8266Timer ITimer;
@@ -88,18 +88,18 @@ ESP8266Timer ITimer;
 // Init BlynkTimer
 ESP8266_ISR_Timer ISR_Timer;
 
-#define LED_TOGGLE_INTERVAL_MS        2000L
+#define LED_TOGGLE_INTERVAL_MS 2000L
 
 void IRAM_ATTR TimerHandler()
 {
-  static bool toggle  = false;
+  static bool toggle = false;
   static bool started = false;
-  static int timeRun  = 0;
+  static int timeRun = 0;
 
   ISR_Timer.run();
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 2000ms = 2s
-  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
+  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS))
   {
     timeRun = 0;
 
@@ -109,28 +109,30 @@ void IRAM_ATTR TimerHandler()
       pinMode(LED_BUILTIN, OUTPUT);
     }
 
-    //timer interrupt toggles pin LED_BUILTIN
+    // timer interrupt toggles pin LED_BUILTIN
     digitalWrite(LED_BUILTIN, toggle);
     toggle = !toggle;
   }
 }
 
-#define NUMBER_ISR_TIMERS         16
+#define NUMBER_ISR_TIMERS 16
 
 // You can assign any interval for any timer here, in milliseconds
-uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
-{
-  1000L,  2000L,  3000L,  4000L,  5000L,  6000L,  7000L,  8000L,
-  9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
-};
+unsigned int TimerInterval[NUMBER_ISR_TIMERS] =
+    {
+        1000L, 2000L, 3000L, 4000L, 5000L, 6000L, 7000L, 8000L,
+        9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L};
 
-typedef void (*irqCallback)  ();
+typedef void (*irqCallback)();
 
 #if (TIMER_INTERRUPT_DEBUG > 0)
-void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
+void printStatus(unsigned short index, unsigned long deltaMillis, unsigned long currentMillis)
 {
-  Serial.print(TimerInterval[index] / 1000); Serial.print("s: Delta ms = "); Serial.print(deltaMillis);
-  Serial.print(", ms = "); Serial.println(currentMillis);
+  Serial.print(TimerInterval[index] / 1000);
+  Serial.print("s: Delta ms = ");
+  Serial.print(deltaMillis);
+  Serial.print(", ms = ");
+  Serial.println(currentMillis);
 }
 #endif
 
@@ -143,7 +145,7 @@ void doingSomething0()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(0, deltaMillis, currentMillis);
 
@@ -157,7 +159,7 @@ void doingSomething1()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(1, deltaMillis, currentMillis);
 
@@ -171,7 +173,7 @@ void doingSomething2()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(2, deltaMillis, currentMillis);
 
@@ -185,7 +187,7 @@ void doingSomething3()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(3, deltaMillis, currentMillis);
 
@@ -199,7 +201,7 @@ void doingSomething4()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(4, deltaMillis, currentMillis);
 
@@ -213,7 +215,7 @@ void doingSomething5()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(5, deltaMillis, currentMillis);
 
@@ -227,7 +229,7 @@ void doingSomething6()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(6, deltaMillis, currentMillis);
 
@@ -241,7 +243,7 @@ void doingSomething7()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(7, deltaMillis, currentMillis);
 
@@ -255,7 +257,7 @@ void doingSomething8()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(8, deltaMillis, currentMillis);
 
@@ -269,7 +271,7 @@ void doingSomething9()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(9, deltaMillis, currentMillis);
 
@@ -283,7 +285,7 @@ void doingSomething10()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(10, deltaMillis, currentMillis);
 
@@ -297,7 +299,7 @@ void doingSomething11()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(11, deltaMillis, currentMillis);
 
@@ -311,7 +313,7 @@ void doingSomething12()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(12, deltaMillis, currentMillis);
 
@@ -325,7 +327,7 @@ void doingSomething13()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(13, deltaMillis, currentMillis);
 
@@ -339,7 +341,7 @@ void doingSomething14()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(14, deltaMillis, currentMillis);
 
@@ -353,7 +355,7 @@ void doingSomething15()
   static unsigned long previousMillis = startMillis;
 
   unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
+  unsigned long deltaMillis = currentMillis - previousMillis;
 
   printStatus(15, deltaMillis, currentMillis);
 
@@ -362,17 +364,15 @@ void doingSomething15()
 }
 
 irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
-{
-  doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3,
-  doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7,
-  doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
-  doingSomething12, doingSomething13, doingSomething14, doingSomething15
-};
+    {
+        doingSomething0, doingSomething1, doingSomething2, doingSomething3,
+        doingSomething4, doingSomething5, doingSomething6, doingSomething7,
+        doingSomething8, doingSomething9, doingSomething10, doingSomething11,
+        doingSomething12, doingSomething13, doingSomething14, doingSomething15};
 
 ////////////////////////////////////////////////
 
-
-#define SIMPLE_TIMER_MS        2000L
+#define SIMPLE_TIMER_MS 2000L
 
 // Init SimpleTimer
 SimpleTimer simpleTimer;
@@ -385,8 +385,10 @@ void simpleTimerDoingSomething2s()
 {
   static unsigned long previousMillis = startMillis;
 
-  Serial.print(F("simpleTimerDoingSomething2s: Delta programmed ms = ")); Serial.print(SIMPLE_TIMER_MS);
-  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  Serial.print(F("simpleTimerDoingSomething2s: Delta programmed ms = "));
+  Serial.print(SIMPLE_TIMER_MS);
+  Serial.print(F(", actual = "));
+  Serial.println(millis() - previousMillis);
 
   previousMillis = millis();
 }
@@ -394,26 +396,31 @@ void simpleTimerDoingSomething2s()
 void setup()
 {
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial)
+    ;
 
   delay(300);
 
-  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(ARDUINO_BOARD);
+  Serial.print(F("\nStarting ISR_16_Timers_Array on "));
+  Serial.println(ARDUINO_BOARD);
   Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  Serial.print(F("CPU Frequency = "));
+  Serial.print(F_CPU / 1000000);
+  Serial.println(F(" MHz"));
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
     startMillis = millis();
-    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
+    Serial.print(F("Starting ITimer OK, millis() = "));
+    Serial.println(startMillis);
   }
   else
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each SAMD_ISR_Timer
-  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
+  for (unsigned short i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
   }
@@ -422,7 +429,7 @@ void setup()
   simpleTimer.setInterval(SIMPLE_TIMER_MS, simpleTimerDoingSomething2s);
 }
 
-#define BLOCKING_TIME_MS      10000L
+#define BLOCKING_TIME_MS 10000L
 
 void loop()
 {

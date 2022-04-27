@@ -81,17 +81,17 @@ const short motor_control::get_speed_left() const
 {
     if (_motor_left.target_speed < 0)
     {
-        return -_motor_left.real_speed;
+        return -static_cast<short>(_motor_left.real_speed);
     }
-    return _motor_left.real_speed;
+    return static_cast<short>(_motor_left.real_speed);
 }
 const short motor_control::get_speed_right() const
 {
     if (_motor_right.target_speed < 0)
     {
-        return -_motor_right.real_speed;
+        return -static_cast<short>(_motor_right.real_speed);
     }
-    return _motor_right.real_speed;
+    return static_cast<short>(_motor_right.real_speed);
 }
 
 void motor_control::_stop_motor(motor_stuct *motor)
@@ -142,11 +142,14 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     }
 
     motor->computed_speed += TaC * (motor->target_speed - motor->computed_speed) / 2000.0f; // 2000 is Accel (not change < 2000)
-    byte real_m = constrain(abs(round(motor->computed_speed)), 0, 255);
+    unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, 255);
     switch (real_m)
     {
-    case 0 ... 19:
+    case 0 ... 20:
         motor->real_speed = 0;
+        break;
+    case 21 ... 60:
+        motor->real_speed = 60;
         break;
     case 244 ... 255:
         motor->real_speed = 255;

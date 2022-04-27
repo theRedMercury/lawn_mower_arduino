@@ -11,7 +11,8 @@
 
 #define PIN_A_VOLT PIN_A1 // A1
 #define PIN_A_AMP PIN_A0  // A0
-#define AMP_CHARGING 0.6f
+#define AMP_CHARGING 1.5f
+#define BATERRY_CRI 9.6f
 #define BATERRY_MIN 10.2f
 #define BATERRY_MAX 13.0f
 #define BARERRY_TIME_OUT 255 // 8 sec+-
@@ -29,6 +30,7 @@ public:
 
     const bool is_battery_charged() const;
     const bool is_battery_low() const;
+    const bool is_battery_critical() const;
 
     const bool is_charging() const;
     const float get_curent_volt() const;
@@ -39,9 +41,9 @@ public:
 private:
     float _current_volt = -1;
     float _current_amp = -1.f;
-    uint16_t _cumulation_volt_min_time = 0;
-    uint16_t _cumulation_volt_max_time = 0;
-    uint16_t _cumulation_charge_max_time = 0;
+    unsigned short _cumulation_volt_min_time = 0;
+    unsigned short _cumulation_volt_max_time = 0;
+    unsigned short _cumulation_charge_max_time = 0;
 
     /*unsigned long _previous_millis = 0;      // Track time in milliseconds since last reading
     const unsigned long _read_period = 1000; // in milliseconds

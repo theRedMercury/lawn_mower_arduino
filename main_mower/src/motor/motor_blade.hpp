@@ -28,6 +28,6 @@ public:
 
 private:
     bool _blade_on = false;
-    byte _speed = 0;
+    unsigned char _speed = 0;
 };
 #endif

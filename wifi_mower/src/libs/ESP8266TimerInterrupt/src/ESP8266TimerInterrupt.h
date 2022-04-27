@@ -47,39 +47,38 @@
 #define ESP8266TIMERINTERRUPT_H
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 #ifndef ESP8266_TIMER_INTERRUPT_VERSION
-  #define ESP8266_TIMER_INTERRUPT_VERSION         "ESP8266TimerInterrupt v1.6.0"
+#define ESP8266_TIMER_INTERRUPT_VERSION "ESP8266TimerInterrupt v1.6.0"
 
+#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR 1
+#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR 6
+#define ESP8266_TIMER_INTERRUPT_VERSION_PATCH 0
 
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR     1
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR     6
-	#define ESP8266_TIMER_INTERRUPT_VERSION_PATCH     0
-
-	#define ESP8266_TIMER_INTERRUPT_VERSION_INT      1006000
+#define ESP8266_TIMER_INTERRUPT_VERSION_INT 1006000
 
 #endif
 
 #ifndef TIMER_INTERRUPT_DEBUG
-  #define TIMER_INTERRUPT_DEBUG      0
+#define TIMER_INTERRUPT_DEBUG 0
 #endif
 
 #if defined(ARDUINO)
-  #if ARDUINO >= 100
-    #include <Arduino.h>
-  #else
-    #include <WProgram.h>
-  #endif
+#if ARDUINO >= 100
+#include <Arduino.h>
+#else
+#include <WProgram.h>
+#endif
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
 
 /* From /arduino-1.8.10/hardware/esp8266com/esp8266/cores/esp8266/esp8266_peri.h
 
-  #define ESP8266_REG(addr) *((volatile uint32_t *)(0x60000000+(addr)))
-  #define ESP8266_DREG(addr) *((volatile uint32_t *)(0x3FF00000+(addr)))
+  #define ESP8266_REG(addr) *((volatile unsigned int *)(0x60000000+(addr)))
+  #define ESP8266_DREG(addr) *((volatile unsigned int *)(0x3FF00000+(addr)))
   #define ESP8266_CLOCK 80000000UL
 
   //CPU Register
@@ -109,141 +108,140 @@ class ESP8266TimerInterrupt;
 
 typedef ESP8266TimerInterrupt ESP8266Timer;
 
-#define MAX_ESP8266_NUM_TIMERS      1
-#define MAX_ESP8266_COUNT           8388607
+#define MAX_ESP8266_NUM_TIMERS 1
+#define MAX_ESP8266_COUNT 8388607
 
-typedef void (*timer_callback)  ();
+typedef void (*timer_callback)();
 
-#define TIM_DIV1_CLOCK          (80000000UL)          // 80000000 / 1   = 80.0  MHz
-#define TIM_DIV16_CLOCK         (5000000UL)           // 80000000 / 16  = 5.0   MHz
-#define TIM_DIV256_CLOCK        (312500UL)            // 80000000 / 256 = 312.5 KHz
+#define TIM_DIV1_CLOCK (80000000UL) // 80000000 / 1   = 80.0  MHz
+#define TIM_DIV16_CLOCK (5000000UL) // 80000000 / 16  = 5.0   MHz
+#define TIM_DIV256_CLOCK (312500UL) // 80000000 / 256 = 312.5 KHz
 
-#if ( defined(USING_TIM_DIV1) && USING_TIM_DIV1 )
-  #warning Using TIM_DIV1_CLOCK for shortest and most accurate timer
-  #define TIM_CLOCK_FREQ        TIM_DIV1_CLOCK
-  #define TIM_DIV               TIM_DIV1
-#elif ( defined(USING_TIM_DIV16) && USING_TIM_DIV16 )
-  #warning Using TIM_DIV16_CLOCK for medium time and medium accurate timer
-  #define TIM_CLOCK_FREQ        TIM_DIV16_CLOCK
-  #define TIM_DIV               TIM_DIV16
-#elif ( defined(USING_TIM_DIV256) && USING_TIM_DIV256 )
-  #warning Using TIM_DIV256_CLOCK for longest timer but least accurate
-  #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
-  #define TIM_DIV               TIM_DIV256  
+#if (defined(USING_TIM_DIV1) && USING_TIM_DIV1)
+#warning Using TIM_DIV1_CLOCK for shortest and most accurate timer
+#define TIM_CLOCK_FREQ TIM_DIV1_CLOCK
+#define TIM_DIV TIM_DIV1
+#elif (defined(USING_TIM_DIV16) && USING_TIM_DIV16)
+#warning Using TIM_DIV16_CLOCK for medium time and medium accurate timer
+#define TIM_CLOCK_FREQ TIM_DIV16_CLOCK
+#define TIM_DIV TIM_DIV16
+#elif (defined(USING_TIM_DIV256) && USING_TIM_DIV256)
+#warning Using TIM_DIV256_CLOCK for longest timer but least accurate
+#define TIM_CLOCK_FREQ TIM_DIV256_CLOCK
+#define TIM_DIV TIM_DIV256
 #else
-  #warning Default to using TIM_DIV256_CLOCK for longest timer but least accurate
-  #define TIM_CLOCK_FREQ        TIM_DIV256_CLOCK
-  #define TIM_DIV               TIM_DIV256
-#endif  
+#warning Default to using TIM_DIV256_CLOCK for longest timer but least accurate
+#define TIM_CLOCK_FREQ TIM_DIV256_CLOCK
+#define TIM_DIV TIM_DIV256
+#endif
 
 class ESP8266TimerInterrupt
 {
-  private:
-    timer_callback  _callback;        // pointer to the callback function
-    float           _frequency;       // Timer frequency
-    uint32_t        _timerCount;      // count to activate timer
+private:
+  timer_callback _callback; // pointer to the callback function
+  float _frequency;         // Timer frequency
+  unsigned int _timerCount; // count to activate timer
 
-  public:
+public:
+  ESP8266TimerInterrupt()
+  {
+    _frequency = 0;
+    _timerCount = 0;
+    _callback = NULL;
+  };
 
-    ESP8266TimerInterrupt()
+  // frequency (in hertz)
+  bool setFrequency(const float &frequency, const timer_callback &callback)
+  {
+    bool isOKFlag = true;
+    float minFreq = (float)TIM_CLOCK_FREQ / MAX_ESP8266_COUNT;
+
+    // ESP8266 only has one usable timer1, max count is only 8,388,607. So to get longer time, we use max available 256 divider
+    // Will use later if very low frequency is needed.
+
+    if (frequency < minFreq)
     {
-      _frequency  = 0;
-      _timerCount = 0;
-      _callback   = NULL;
-    };
+      TISR_LOGERROR3(F("ESP8266TimerInterrupt: Too long Timer, smallest frequency ="), minFreq, F(" for TIM_CLOCK_FREQ ="), TIM_CLOCK_FREQ);
 
-    // frequency (in hertz)
-    bool setFrequency(const float& frequency, const timer_callback& callback)
-    {
-      bool isOKFlag = true;
-      float minFreq = (float) TIM_CLOCK_FREQ / MAX_ESP8266_COUNT;
-
-      // ESP8266 only has one usable timer1, max count is only 8,388,607. So to get longer time, we use max available 256 divider
-      // Will use later if very low frequency is needed.
-      
-      if (frequency < minFreq)
-      {
-        TISR_LOGERROR3(F("ESP8266TimerInterrupt: Too long Timer, smallest frequency ="), minFreq, F(" for TIM_CLOCK_FREQ ="), TIM_CLOCK_FREQ);
-        
-        return false;
-      }    
-      
-      _frequency  = frequency;     
-      _timerCount = (uint32_t) (TIM_CLOCK_FREQ / frequency);
-      _callback   = callback;
-
-      if ( _timerCount > MAX_ESP8266_COUNT)
-      {
-        _timerCount = MAX_ESP8266_COUNT;
-        // Flag error
-        isOKFlag = false;
-      }
-
-      // count up
-      TISR_LOGWARN3(F("ESP8266TimerInterrupt: Timer _fre ="), _frequency, F(", _count ="), _timerCount);
-
-      // Clock to timer (prescaler) is always 80MHz, even F_CPU is 160 MHz
-
-      timer1_attachInterrupt(callback);
-
-      timer1_write(_timerCount);
-
-      // Interrupt on EGDE, autoloop
-      //timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
-      timer1_enable(TIM_DIV, TIM_EDGE, TIM_LOOP);
-
-      return isOKFlag;
+      return false;
     }
 
-    // interval (in microseconds)
-    bool setInterval(const unsigned long& interval, const timer_callback& callback)
+    _frequency = frequency;
+    _timerCount = (unsigned int)(TIM_CLOCK_FREQ / frequency);
+    _callback = callback;
+
+    if (_timerCount > MAX_ESP8266_COUNT)
     {
-      return setFrequency((float) (1000000.0f / interval), callback);
+      _timerCount = MAX_ESP8266_COUNT;
+      // Flag error
+      isOKFlag = false;
     }
 
-    bool attachInterrupt(const float& frequency, const timer_callback& callback)
-    {
-      return setFrequency(frequency, callback);
-    }
+    // count up
+    TISR_LOGWARN3(F("ESP8266TimerInterrupt: Timer _fre ="), _frequency, F(", _count ="), _timerCount);
 
-    // interval (in microseconds)
-    bool attachInterruptInterval(const unsigned long& interval, const timer_callback& callback)
-    {
-      return setFrequency( (float) ( 1000000.0f / interval), callback);
-    }
+    // Clock to timer (prescaler) is always 80MHz, even F_CPU is 160 MHz
 
-    void detachInterrupt()
-    {
-      timer1_disable();
-    }
+    timer1_attachInterrupt(callback);
 
-    void disableTimer()
-    {
-      timer1_disable();
-    }
+    timer1_write(_timerCount);
 
-    void reattachInterrupt()
-    {
-      if ( (_frequency > 0) && (_timerCount > 0) && (_callback != NULL) )
-        setFrequency(_frequency, _callback);
-    }
+    // Interrupt on EGDE, autoloop
+    // timer1_enable(TIM_DIV256, TIM_EDGE, TIM_LOOP);
+    timer1_enable(TIM_DIV, TIM_EDGE, TIM_LOOP);
 
-    void enableTimer()
-    {
-      reattachInterrupt();
-    }
+    return isOKFlag;
+  }
 
-    // Just stop clock source, clear the count
-    void stopTimer()
-    {
-      timer1_disable();
-    }
+  // interval (in microseconds)
+  bool setInterval(const unsigned long &interval, const timer_callback &callback)
+  {
+    return setFrequency((float)(1000000.0f / interval), callback);
+  }
 
-    // Just reconnect clock source, start current count from 0
-    void restartTimer()
-    {
-      enableTimer();
-    }
+  bool attachInterrupt(const float &frequency, const timer_callback &callback)
+  {
+    return setFrequency(frequency, callback);
+  }
+
+  // interval (in microseconds)
+  bool attachInterruptInterval(const unsigned long &interval, const timer_callback &callback)
+  {
+    return setFrequency((float)(1000000.0f / interval), callback);
+  }
+
+  void detachInterrupt()
+  {
+    timer1_disable();
+  }
+
+  void disableTimer()
+  {
+    timer1_disable();
+  }
+
+  void reattachInterrupt()
+  {
+    if ((_frequency > 0) && (_timerCount > 0) && (_callback != NULL))
+      setFrequency(_frequency, _callback);
+  }
+
+  void enableTimer()
+  {
+    reattachInterrupt();
+  }
+
+  // Just stop clock source, clear the count
+  void stopTimer()
+  {
+    timer1_disable();
+  }
+
+  // Just reconnect clock source, start current count from 0
+  void restartTimer()
+  {
+    enableTimer();
+  }
 }; // class ESP8266TimerInterrupt
 
-#endif    // ESP8266TIMERINTERRUPT_H
+#endif // ESP8266TIMERINTERRUPT_H

@@ -24,44 +24,45 @@
    variable can not spontaneously change. Because your function may change variables while your program is using them,
    the compiler needs this hint. But volatile alone is often not enough.
    When accessing shared variables, usually interrupts must be disabled. Even with volatile,
-   if the interrupt changes a multi-byte variable between a sequence of instructions, it can be read incorrectly.
+   if the interrupt changes a multi-unsigned char variable between a sequence of instructions, it can be read incorrectly.
    If your data is multiple variables, such as an array and a count, usually interrupts need to be disabled
    or the entire sequence of your code which accesses the data.
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         0
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define TIMER_INTERRUPT_DEBUG 0
+#define _TIMERINTERRUPT_LOGLEVEL_ 0
 
 // Select a Timer Clock
-#define USING_TIM_DIV1                false           // for shortest and most accurate timer
-#define USING_TIM_DIV16               false           // for medium time and medium accurate timer
-#define USING_TIM_DIV256              true            // for longest timer but least accurate. Default
+#define USING_TIM_DIV1 false  // for shortest and most accurate timer
+#define USING_TIM_DIV16 false // for medium time and medium accurate timer
+#define USING_TIM_DIV256 true // for longest timer but least accurate. Default
 
 #include "ESP8266TimerInterrupt.h"
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN           D4        // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
+#define LED_BUILTIN D4 // Pin D4 mapped to pin GPIO2/TXD1 of ESP8266, NodeMCU and WeMoS, control on-board LED
 #endif
 
+#define TIMER_INTERVAL_MS 500 // 1000
 
-#define TIMER_INTERVAL_MS        500   //1000
-
-volatile uint32_t TimerCount = 0;
+volatile unsigned int TimerCount = 0;
 
 // Init ESP8266 timer 1
 ESP8266Timer ITimer;
 
-void printResult(uint32_t currTime)
+void printResult(unsigned int currTime)
 {
-  Serial.print(F("Time = ")); Serial.print(currTime); 
-  Serial.print(F(", TimerCount = ")); Serial.println(TimerCount);
+  Serial.print(F("Time = "));
+  Serial.print(currTime);
+  Serial.print(F(", TimerCount = "));
+  Serial.println(TimerCount);
 }
 
 void TimerHandler()
@@ -71,7 +72,7 @@ void TimerHandler()
   // Flag for checking to be sure ISR is working as Serial.print is not OK here in ISR
   TimerCount++;
 
-  //timer interrupt toggles pin LED_BUILTIN
+  // timer interrupt toggles pin LED_BUILTIN
   digitalWrite(LED_BUILTIN, toggle);
   toggle = !toggle;
 }
@@ -79,34 +80,39 @@ void TimerHandler()
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
-  
+
   Serial.begin(115200);
-  while (!Serial);
+  while (!Serial)
+    ;
 
   delay(300);
 
-  Serial.print(F("\nStarting Change_Interval on ")); Serial.println(ARDUINO_BOARD);
+  Serial.print(F("\nStarting Change_Interval on "));
+  Serial.println(ARDUINO_BOARD);
   Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
- 
+  Serial.print(F("CPU Frequency = "));
+  Serial.print(F_CPU / 1000000);
+  Serial.println(F(" MHz"));
+
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
+    Serial.print(F("Starting  ITimer OK, millis() = "));
+    Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
 }
 
-#define CHECK_INTERVAL_MS     10000L
-#define CHANGE_INTERVAL_MS    20000L
+#define CHECK_INTERVAL_MS 10000L
+#define CHANGE_INTERVAL_MS 20000L
 
 void loop()
 {
-  static uint32_t lastTime = 0;
-  static uint32_t lastChangeTime = 0;
-  static uint32_t currTime;
-  static uint32_t multFactor = 0;
+  static unsigned int lastTime = 0;
+  static unsigned int lastChangeTime = 0;
+  static unsigned int currTime;
+  static unsigned int multFactor = 0;
 
   currTime = millis();
 
@@ -117,13 +123,14 @@ void loop()
 
     if (currTime - lastChangeTime > CHANGE_INTERVAL_MS)
     {
-      //setInterval(unsigned long interval, timerCallback callback)
+      // setInterval(unsigned long interval, timerCallback callback)
       multFactor = (multFactor + 1) % 2;
-      
+
       ITimer.setInterval(TIMER_INTERVAL_MS * 1000 * (multFactor + 1), TimerHandler);
 
-      Serial.print(F("Changing Interval, Timer = ")); Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
-      
+      Serial.print(F("Changing Interval, Timer = "));
+      Serial.println(TIMER_INTERVAL_MS * (multFactor + 1));
+
       lastChangeTime = currTime;
     }
   }

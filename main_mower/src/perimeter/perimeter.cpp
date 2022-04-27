@@ -19,11 +19,11 @@ void perimeter::update()
 {
     // https://github.com/kwrtz/PerimeterSensorUNO
     // http://grauonline.de/alexwww/ardumower/filter/filter.html
-    uint16_t *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE);
+    unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE);
 
     // Low pass filter
     float weight = 0.1;
-    for (uint8_t i = 1; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
+    for (unsigned char i = 1; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
         signal_read[i - 1] = (1.0 - weight) * signal_read[i - 1] + weight * signal_read[i]; // low-pass values
     }
@@ -33,16 +33,16 @@ void perimeter::update()
       Serial.println(signal_read[i]);
     }*/
 
-    int16_t sum_max = 0; // max correlation sum
-    int16_t sum_min = 0; // min correlation sum
-    int16_t sum = 0;
+    short sum_max = 0; // max correlation sum
+    short sum_min = 0; // min correlation sum
+    short sum = 0;
 
-    for (uint8_t i = 0; i < CORELLATION_ARRAY_SIZE; i++)
+    for (unsigned char i = 0; i < CORELLATION_ARRAY_SIZE; i++)
     {
         sum = 0;
-        for (uint8_t j = 0; j < SENDER_ARRAY_SIZE; j++)
+        for (unsigned char j = 0; j < SENDER_ARRAY_SIZE; j++)
         {
-            sum += static_cast<int16_t>(_signal_code[j]) * static_cast<int16_t>(signal_read[i + j]);
+            sum += static_cast<short>(_signal_code[j]) * static_cast<short>(signal_read[i + j]);
         } // end inner loop
         _correlation_signal[i] = sum;
         if (sum > sum_max)
@@ -107,12 +107,12 @@ void perimeter::update()
     }
 }
 
-const int16_t perimeter::get_magnitude() const
+const short perimeter::get_magnitude() const
 {
     return _magnitude;
 }
 
-const int16_t perimeter::get_smooth_magnitude() const
+const short perimeter::get_smooth_magnitude() const
 {
     return _smooth_magnitude;
 }

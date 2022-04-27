@@ -17,7 +17,7 @@ void gps_sensor::setup()
   Serial2.flush();
   delay(100);
   // 1000 ms = 03E8
-  byte packet[] = {
+  unsigned char packet[] = {
       0xB5, // sync char 1
       0x62, // sync char 2
       0x06, // class
@@ -36,7 +36,7 @@ void gps_sensor::setup()
   };*/
 
     // CHANGE BAUDERATE 115200
-    byte packet[] = {
+    unsigned char packet[] = {
         0xB5, // sync char 1
         0x62, // sync char 2
         0x06, // class
@@ -66,7 +66,7 @@ void gps_sensor::setup()
         0xC0, // CK_A
         0x7E, // CK_B
     };
-    for (byte i = 0; i < sizeof(packet); i++)
+    for (unsigned char i = 0; i < sizeof(packet); i++)
     {
         Serial2.write(packet[i]);
     }
@@ -158,12 +158,12 @@ void gps_sensor::update_gps()
         //_hundredths = gps_parse_unsigned_int(_gpsResult.gps_time + 7, 2);
         if (strncmp("$GNRMC", _gpsResult.gps_rmc, 6) == 0)
         {
-            uint8_t Hour = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time, 2, mower->time.get_hour() - 2, 0, 24) + 2; // + 2 = (GMT +1) + (Summer +1)
-            uint8_t Minute = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time + 2, 2, mower->time.get_minute());
-            uint8_t Second = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time + 4, 2, mower->time.get_second());
-            uint8_t Day = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date, 2, mower->time.get_day(), 1, 31);
-            uint8_t Month = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 2, 2, mower->time.get_month(), 1, 12);
-            uint16_t Year = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 4, 2, mower->time.get_year() - 2000, 0, 99) + 2000;
+            unsigned char Hour = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time, 2, mower->time.get_hour() - 2, 0, 24) + 2; // + 2 = (GMT +1) + (Summer +1)
+            unsigned char Minute = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time + 2, 2, mower->time.get_minute());
+            unsigned char Second = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time + 4, 2, mower->time.get_second());
+            unsigned char Day = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date, 2, mower->time.get_day(), 1, 31);
+            unsigned char Month = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 2, 2, mower->time.get_month(), 1, 12);
+            unsigned short Year = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 4, 2, mower->time.get_year() - 2000, 0, 99) + 2000;
             mower->time.set_time(Hour, Minute, Second, Day, Month, Year);
             if (Year > 2000)
             {
@@ -251,7 +251,7 @@ void gps_sensor::update_mag()
         }
 
         // Convert radians to degrees for readability.
-        _heading_deg = static_cast<uint16_t>(abs(round(360.f - (heading * 180.f / PI))));
+        _heading_deg = static_cast<unsigned short>(abs(round(360.f - (heading * 180.f / PI))));
         _is_ready = true;
     }
 
@@ -268,7 +268,7 @@ const gps_data *gps_sensor::get_gps_data() const
     return &_gps_data;
 }
 
-const uint16_t gps_sensor::get_heading_deg() const
+const unsigned short gps_sensor::get_heading_deg() const
 {
     return _heading_deg;
 }

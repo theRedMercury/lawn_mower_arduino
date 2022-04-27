@@ -19,7 +19,7 @@ enum lcd_menu_motor
 lcd_menu_motor _currentMotorMenu;
 
 bool _motor_test_on = false;
-uint16_t _time_motor_test = 0;
+unsigned short _time_motor_test = 0;
 
 void _test_motor_basic(mower_manager *mower);
 void _test_motor_blade(mower_manager *mower);

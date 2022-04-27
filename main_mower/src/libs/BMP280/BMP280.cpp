@@ -81,7 +81,7 @@ char BMP280::readInt(char address, int &value)
 **	@param : value 	 = external variable to store data (function modifies value)
 */
 
-char BMP280::readUInt(char address, uint32_t &value)
+char BMP280::readUInt(char address, unsigned int &value)
 {
 	unsigned char data[2]; // 4bit
 	data[0] = address;

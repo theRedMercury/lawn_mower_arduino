@@ -75,10 +75,10 @@ private:
 	// value: external signed int for returned value (16 bits)
 	// returns 1 for success, 0 for fail, with result in value
 
-	char readUInt(char address, uint32_t &value);
-	// read an uint32_t (16 bits) from a BMP280 register
+	char readUInt(char address, unsigned int &value);
+	// read an unsigned int (16 bits) from a BMP280 register
 	// address: BMP280 register address
-	// value: external uint32_t for returned value (16 bits)
+	// value: external unsigned int for returned value (16 bits)
 	// returns 1 for success, 0 for fail, with result in value
 
 	char readBytes(unsigned char *values, char length);
@@ -97,7 +97,7 @@ private:
 	// get uncalibrated UP and UT value.
 
 	int dig_T2, dig_T3, dig_T4, dig_P2, dig_P3, dig_P4, dig_P5, dig_P6, dig_P7, dig_P8, dig_P9;
-	uint32_t dig_P1, dig_T1;
+	unsigned int dig_P1, dig_T1;
 	short oversampling, oversampling_t;
 	long signed int t_fine;
 	char error;

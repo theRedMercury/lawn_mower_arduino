@@ -7,6 +7,10 @@
 #include "gyro.hpp"
 #include "../mower/mower.hpp"
 
+#define COUNTER_MAX_TEMP_REFRESH 25
+#define COUNTER_MOVING_REFRESH 20
+#define COUNTER_IS_SAFE 10
+
 void gyro_sensor::setup()
 {
     DEBUG_PRINT("SETUP : ");
@@ -20,7 +24,7 @@ void gyro_sensor::setup()
     _mpu9250.beginGyro();
     _gy91Ok |= _bmp280.getError();
     _counter_temp = COUNTER_MAX_TEMP_REFRESH;
-    _counter_moving = COUNTER_MOVING_REFRESH;
+    _counter_moving = 0;
     _cumulation_is_safe = COUNTER_IS_SAFE;
     DEBUG_PRINTLN(" : DONE");
 }
@@ -59,17 +63,17 @@ void gyro_sensor::update()
     _Accel.z = atan((sqrt(_accel.x * _accel.x + _accel.y * _accel.y)) / _accel.z) * 180.f / M_PI;
 
     // is_moving
-    if (!_is_moving())
+    if (_is_moving())
     {
-        _counter_moving++;
-        if (_counter_moving > COUNTER_MOVING_REFRESH)
-        {
-            _counter_moving--;
-        }
+        _counter_moving = COUNTER_MOVING_REFRESH;
     }
     else
     {
-        _counter_moving = 0;
+        if (_counter_moving == 0)
+        {
+            _counter_moving++;
+        }
+        _counter_moving--;
     }
 
     // is_safe
@@ -143,7 +147,7 @@ const bool gyro_sensor::in_safe_status() const
 
 const bool gyro_sensor::is_moving() const
 {
-    return _counter_moving < COUNTER_MOVING_REFRESH - 2;
+    return _counter_moving > 0;
 }
 
 // a XYZ
@@ -205,16 +209,12 @@ const String gyro_sensor::get_json() const
 
 const bool gyro_sensor::_is_moving() const
 {
-    const float threshold_a = 1.f;
-    return ((-threshold_a < get_ax() || get_ax() > threshold_a) &&
-            (-threshold_a < get_ay() || get_ay() > threshold_a) &&
-            (-threshold_a < get_az() || get_az() > threshold_a));
+    const float threshold_g = 10.f;
+    return abs(_gyro.x) > threshold_g || abs(_gyro.y) > threshold_g || abs(_gyro.z) > threshold_g;
 }
 
 const bool gyro_sensor::_is_safe() const
 {
     const float threshold_a = 15.0f;
-    return ((-threshold_a < get_AX() && get_AX() < threshold_a) &&
-            (-threshold_a < get_AY() && get_AY() < threshold_a) &&
-            (-threshold_a < get_AZ() && get_AZ() < threshold_a));
+    return abs(_Accel.x) < threshold_a && abs(_Accel.y) < threshold_a && abs(_Accel.z) < threshold_a;
 }

@@ -20,9 +20,9 @@ public:
     using abs_mower_class::abs_mower_class;
     void setup();
     void update();
-    const int16_t get_magnitude() const;
+    const short get_magnitude() const;
 
-    const int16_t get_smooth_magnitude() const;
+    const short get_smooth_magnitude() const;
 
     const float get_filter_quality() const;
     const bool is_inside() const;
@@ -32,12 +32,12 @@ public:
 
 private:
     bool _is_inside = false;
-    int32_t _signal_counter, _magnitude, _smooth_magnitude = 0;
+    int _signal_counter, _magnitude, _smooth_magnitude = 0;
     unsigned long _last_inside_time = 0;
     float _filter_quality = 0.f;
 
-    int16_t _correlation_signal[CORELLATION_ARRAY_SIZE];
-    const int8_t _signal_code[SENDER_ARRAY_SIZE] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
+    short _correlation_signal[CORELLATION_ARRAY_SIZE];
+    const char _signal_code[SENDER_ARRAY_SIZE] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
 };
 
 #endif

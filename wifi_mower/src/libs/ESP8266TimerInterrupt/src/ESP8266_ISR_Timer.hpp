@@ -47,18 +47,17 @@
 #define ISR_TIMER_GENERIC_HPP
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 #ifndef ESP8266_TIMER_INTERRUPT_VERSION
-  #define ESP8266_TIMER_INTERRUPT_VERSION         "ESP8266TimerInterrupt v1.6.0"
+#define ESP8266_TIMER_INTERRUPT_VERSION "ESP8266TimerInterrupt v1.6.0"
 
+#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR 1
+#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR 6
+#define ESP8266_TIMER_INTERRUPT_VERSION_PATCH 0
 
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MAJOR     1
-	#define ESP8266_TIMER_INTERRUPT_VERSION_MINOR     6
-	#define ESP8266_TIMER_INTERRUPT_VERSION_PATCH     0
-
-	#define ESP8266_TIMER_INTERRUPT_VERSION_INT      1006000
+#define ESP8266_TIMER_INTERRUPT_VERSION_INT 1006000
 
 #endif
 
@@ -67,22 +66,22 @@
 #include <stddef.h>
 
 #ifdef ESP8266
-  extern "C"
-  {
-    #include "ets_sys.h"
-    #include "os_type.h"
-    #include "mem.h"
-  }
+extern "C"
+{
+#include "ets_sys.h"
+#include "os_type.h"
+#include "mem.h"
+}
 #else
-  #include <inttypes.h>
+#include <inttypes.h>
 #endif
 
 #if defined(ARDUINO)
-  #if ARDUINO >= 100
-    #include <Arduino.h>
-  #else
-    #include <WProgram.h>
-  #endif
+#if ARDUINO >= 100
+#include <Arduino.h>
+#else
+#include <WProgram.h>
+#endif
 #endif
 
 #define ESP8266_ISR_Timer ISRTimer
@@ -90,127 +89,125 @@
 typedef void (*timer_callback)();
 typedef void (*timer_callback_p)(void *);
 
-class ESP8266_ISR_Timer 
+class ESP8266_ISR_Timer
 {
 
-  public:
+public:
+// maximum number of timers
+#define MAX_NUMBER_TIMERS 16
 
-    // maximum number of timers
-    #define MAX_NUMBER_TIMERS         16
+// setTimer() constants
+#define TIMER_RUN_FOREVER 0
+#define TIMER_RUN_ONCE 1
 
-    // setTimer() constants
-    #define TIMER_RUN_FOREVER         0
-    #define TIMER_RUN_ONCE            1
+  // constructor
+  ESP8266_ISR_Timer();
 
-    // constructor
-    ESP8266_ISR_Timer();
+  void IRAM_ATTR init();
 
-    void IRAM_ATTR init();
+  // this function must be called inside loop()
+  void IRAM_ATTR run();
 
-    // this function must be called inside loop()
-    void IRAM_ATTR run();
+  // Timer will call function 'f' every 'd' milliseconds forever
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setInterval(const unsigned long &d, const timer_callback &f);
 
-    // Timer will call function 'f' every 'd' milliseconds forever
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setInterval(const unsigned long& d, const timer_callback& f);
+  // Timer will call function 'f' with parameter 'p' every 'd' milliseconds forever
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setInterval(const unsigned long &d, const timer_callback_p &f, void *p);
 
-    // Timer will call function 'f' with parameter 'p' every 'd' milliseconds forever
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setInterval(const unsigned long& d, const timer_callback_p& f, void* p);
+  // Timer will call function 'f' after 'd' milliseconds one time
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setTimeout(const unsigned long &d, const timer_callback &f);
 
-    // Timer will call function 'f' after 'd' milliseconds one time
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setTimeout(const unsigned long& d, const timer_callback& f);
+  // Timer will call function 'f' with parameter 'p' after 'd' milliseconds one time
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setTimeout(const unsigned long &d, const timer_callback_p &f, void *p);
 
-    // Timer will call function 'f' with parameter 'p' after 'd' milliseconds one time
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setTimeout(const unsigned long& d, const timer_callback_p& f, void* p);
+  // Timer will call function 'f' every 'd' milliseconds 'n' times
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setTimer(const unsigned long &d, const timer_callback &f, const unsigned &n);
 
-    // Timer will call function 'f' every 'd' milliseconds 'n' times
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setTimer(const unsigned long& d, const timer_callback& f, const unsigned& n);
+  // Timer will call function 'f' with parameter 'p' every 'd' milliseconds 'n' times
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  int IRAM_ATTR setTimer(const unsigned long &d, const timer_callback_p &f, void *p, const unsigned &n);
 
-    // Timer will call function 'f' with parameter 'p' every 'd' milliseconds 'n' times
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int IRAM_ATTR setTimer(const unsigned long& d, const timer_callback_p& f, void* p, const unsigned& n);
+  // updates interval of the specified timer
+  bool IRAM_ATTR changeInterval(const unsigned &numTimer, const unsigned long &d);
 
-    // updates interval of the specified timer
-    bool IRAM_ATTR changeInterval(const unsigned& numTimer, const unsigned long& d);
+  // destroy the specified timer
+  void IRAM_ATTR deleteTimer(const unsigned &timerId);
 
-    // destroy the specified timer
-    void IRAM_ATTR deleteTimer(const unsigned& timerId);
+  // restart the specified timer
+  void IRAM_ATTR restartTimer(const unsigned &numTimer);
 
-    // restart the specified timer
-    void IRAM_ATTR restartTimer(const unsigned& numTimer);
+  // returns true if the specified timer is enabled
+  bool IRAM_ATTR isEnabled(const unsigned &numTimer);
 
-    // returns true if the specified timer is enabled
-    bool IRAM_ATTR isEnabled(const unsigned& numTimer);
+  // enables the specified timer
+  void IRAM_ATTR enable(const unsigned &numTimer);
 
-    // enables the specified timer
-    void IRAM_ATTR enable(const unsigned& numTimer);
+  // disables the specified timer
+  void IRAM_ATTR disable(const unsigned &numTimer);
 
-    // disables the specified timer
-    void IRAM_ATTR disable(const unsigned& numTimer);
+  // enables all timers
+  void IRAM_ATTR enableAll();
 
-    // enables all timers
-    void IRAM_ATTR enableAll();
+  // disables all timers
+  void IRAM_ATTR disableAll();
 
-    // disables all timers
-    void IRAM_ATTR disableAll();
+  // enables the specified timer if it's currently disabled,
+  // and vice-versa
+  void IRAM_ATTR toggle(const unsigned &numTimer);
 
-    // enables the specified timer if it's currently disabled,
-    // and vice-versa
-    void IRAM_ATTR toggle(const unsigned& numTimer);
+  // returns the number of used timers
+  char IRAM_ATTR getNumTimers();
 
-    // returns the number of used timers
-    int8_t IRAM_ATTR getNumTimers();
+  // returns the number of available timers
+  char IRAM_ATTR getNumAvailableTimers()
+  {
+    if (numTimers <= 0)
+      return MAX_NUMBER_TIMERS;
+    else
+      return MAX_NUMBER_TIMERS - numTimers;
+  };
 
-    // returns the number of available timers
-    int8_t IRAM_ATTR getNumAvailableTimers() 
-    {
-    	if (numTimers <= 0)
-        return MAX_NUMBER_TIMERS;
-      else 
-        return MAX_NUMBER_TIMERS - numTimers;
-    };
+private:
+  // deferred call constants
+#define TIMER_DEFCALL_DONTRUN 0   // don't call the callback function
+#define TIMER_DEFCALL_RUNONLY 1   // call the callback function but don't delete the timer
+#define TIMER_DEFCALL_RUNANDDEL 2 // call the callback function and delete the timer
+  // low level function to initialize and enable a new timer
+  // returns the timer number (numTimer) on success or
+  // -1 on failure (f == NULL) or no free timers
+  char IRAM_ATTR setupTimer(const unsigned long &d, void *f, void *p, bool h, const unsigned &n);
 
-  private:
-    // deferred call constants
-#define TIMER_DEFCALL_DONTRUN   0       // don't call the callback function
-#define TIMER_DEFCALL_RUNONLY   1       // call the callback function but don't delete the timer
-#define TIMER_DEFCALL_RUNANDDEL 2       // call the callback function and delete the timer
-    // low level function to initialize and enable a new timer
-    // returns the timer number (numTimer) on success or
-    // -1 on failure (f == NULL) or no free timers
-    int8_t IRAM_ATTR setupTimer(const unsigned long& d, void* f, void* p, bool h, const unsigned& n);
+  // find the first available slot
+  char IRAM_ATTR findFirstFreeSlot();
 
-    // find the first available slot
-    int8_t IRAM_ATTR findFirstFreeSlot();
+  typedef struct
+  {
+    unsigned long prev_millis; // value returned by the millis() function in the previous run() call
+    void *callback;            // pointer to the callback function
+    void *param;               // function parameter
+    bool hasParam;             // true if callback takes a parameter
+    unsigned long delay;       // delay value
+    unsigned maxNumRuns;       // number of runs to be executed
+    unsigned numRuns;          // number of executed runs
+    bool enabled;              // true if enabled
+    unsigned toBeCalled;       // deferred function call (sort of) - N.B.: only used in run()
+  } timer_t;
 
-    typedef struct 
-    {
-      unsigned long prev_millis;        // value returned by the millis() function in the previous run() call
-      void* callback;                   // pointer to the callback function
-      void* param;                      // function parameter
-      bool hasParam;                 // true if callback takes a parameter
-      unsigned long delay;              // delay value
-      unsigned maxNumRuns;              // number of runs to be executed
-      unsigned numRuns;                 // number of executed runs
-      bool enabled;                  // true if enabled
-      unsigned toBeCalled;              // deferred function call (sort of) - N.B.: only used in run()
-    } timer_t;
+  volatile timer_t timer[MAX_NUMBER_TIMERS];
 
-    volatile timer_t timer[MAX_NUMBER_TIMERS];
-
-    // actual number of timers in use (-1 means uninitialized)
-    volatile int8_t numTimers;
+  // actual number of timers in use (-1 means uninitialized)
+  volatile char numTimers;
 };
 
-#endif    // ISR_TIMER_GENERIC_HPP
-
+#endif // ISR_TIMER_GENERIC_HPP

@@ -21,8 +21,8 @@
 
 volatile int index = 0;
 volatile boolean enableWire = true;
-volatile const int8_t signalCode[] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
-boolean mower_detected  = false;
+volatile const char signalCode[] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
+boolean mower_detected = false;
 
 unsigned long time_wire_still_on = 0;
 unsigned long time_relay_still_on = 0;
@@ -34,7 +34,7 @@ void setup()
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(PIN_PERIM_01, OUTPUT);
   pinMode(PIN_PERIM_02, OUTPUT);
-   pinMode(PIN_FAN, OUTPUT);
+  pinMode(PIN_FAN, OUTPUT);
 
   pinMode(PIN_RELAY, OUTPUT);
   digitalWrite(PIN_RELAY, HIGH);
@@ -54,7 +54,6 @@ void loop()
   int bumper_1 = digitalRead(BUMPER_1);
   int bumper_2 = digitalRead(BUMPER_2);
 
-
   mower_detected = (bumper_1 == LOW || bumper_2 == LOW);
 
   // mower incomming
@@ -63,10 +62,12 @@ void loop()
     time_relay_still_on = 0;
     digitalWrite(PIN_RELAY, LOW);
   }
-  if (mower_detected && enableWire) {
+  if (mower_detected && enableWire)
+  {
     time_wire_still_on++;
   }
-  if (mower_detected && time_wire_still_on > MAX_WIRE_STILL_ON) {
+  if (mower_detected && time_wire_still_on > MAX_WIRE_STILL_ON)
+  {
     time_wire_still_on = 0;
     enableWire = false;
   }
@@ -77,14 +78,15 @@ void loop()
     time_wire_still_on = 0;
     enableWire = true;
   }
-  if (!mower_detected && enableWire) {
+  if (!mower_detected && enableWire)
+  {
     time_relay_still_on++;
   }
-  if (!mower_detected && time_relay_still_on > MAX_RELAY_STILL_ON) {
+  if (!mower_detected && time_relay_still_on > MAX_RELAY_STILL_ON)
+  {
     time_relay_still_on = 0;
     digitalWrite(PIN_RELAY, HIGH);
   }
-
 
   if (enableWire)
   {
@@ -93,11 +95,13 @@ void loop()
     delay(100);
     digitalWrite(LED_BUILTIN, LOW);
     delay(100);
-  }else{
+  }
+  else
+  {
     digitalWrite(PIN_FAN, LOW);
   }
-  
-  //digitalWrite(PIN_RELAY, LOW);
+
+  // digitalWrite(PIN_RELAY, LOW);
   delay(100);
 }
 
@@ -107,21 +111,21 @@ void timerCallback()
   {
     switch (signalCode[index])
     {
-      case 1:
-        digitalWrite(PIN_PERIM_01, LOW);
-        digitalWrite(PIN_PERIM_02, HIGH);
-        break;
-      case -1:
-        digitalWrite(PIN_PERIM_01, HIGH);
-        digitalWrite(PIN_PERIM_02, LOW);
-        break;
-      case 0:
-        digitalWrite(PIN_PERIM_01, LOW);
-        digitalWrite(PIN_PERIM_02, LOW);
-        break;
-      default:
-        abort();
-        break;
+    case 1:
+      digitalWrite(PIN_PERIM_01, LOW);
+      digitalWrite(PIN_PERIM_02, HIGH);
+      break;
+    case -1:
+      digitalWrite(PIN_PERIM_01, HIGH);
+      digitalWrite(PIN_PERIM_02, LOW);
+      break;
+    case 0:
+      digitalWrite(PIN_PERIM_01, LOW);
+      digitalWrite(PIN_PERIM_02, LOW);
+      break;
+    default:
+      abort();
+      break;
     }
     index++;
     if (index == SENDER_ARRAY_SIZE)

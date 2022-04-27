@@ -29,7 +29,7 @@ void lcd_control::setup()
     _lcd_I2C.init();
     _lcd_I2C.clear();
     on_backlight();
-    show_message("> INIT ROBOT", NULL);
+    show_message(">  INIT MOWER  <", NULL);
 
     pinMode(PIN_BUTTON_OK, INPUT);
     digitalWrite(PIN_BUTTON_OK, HIGH);
@@ -65,7 +65,7 @@ void lcd_control::update()
         {
         case current_flag_input::INPUT_RIGHT:
             clear();
-            if (static_cast<int>(_current_main_menu) < 8)
+            if (static_cast<int>(_current_main_menu) < 9)
             {
                 _current_main_menu = static_cast<lcd_menu>(static_cast<int>(_current_main_menu) + 1);
             }
@@ -174,8 +174,9 @@ void lcd_control::update()
         }
         break;
 
-    case lcd_menu::TEST:
+    case lcd_menu::TEST: // USELESS NOW
         show_message("> TEST", LCD_CLEAR_FIELD);
+        _in_sub_menu = false;
         break;
 
     case lcd_menu::SCHEDUL:
@@ -188,6 +189,22 @@ void lcd_control::update()
         {
             show_message("> SCHEDUL         ", LCD_CLEAR_FIELD);
         }
+        break;
+
+    case lcd_menu::DEBUG:
+        _lcd_I2C.setCursor(0, 0);
+        _lcd_I2C.print(mower->gps.get_heading_deg());
+        _lcd_I2C.setCursor(5, 0);
+        _lcd_I2C.print(mower->nav.get_target());
+        _lcd_I2C.setCursor(10, 0);
+        _lcd_I2C.print(mower->nav.correction);
+        //_lcd_I2C.print(mower->sonar.);
+        _lcd_I2C.setCursor(0, 1);
+        _lcd_I2C.print(mower->motor.get_speed_left());
+        _lcd_I2C.setCursor(5, 1);
+        _lcd_I2C.print(mower->motor.get_speed_right());
+        _lcd_I2C.setCursor(10, 1);
+
         break;
 
     default:
@@ -214,10 +231,10 @@ void lcd_control::clear()
     _lcd_I2C.clear();
 }
 
-void lcd_control::clear_line(const uint8_t line)
+void lcd_control::clear_line(const unsigned char line)
 {
     _lcd_I2C.setCursor(0, line);
-    for (uint8_t x = 0; x < 16; x++)
+    for (unsigned char x = 0; x < 16; x++)
     {
         _lcd_I2C.print(' ');
     }
@@ -265,10 +282,6 @@ void lcd_control::show_main_info()
     }
     _lcd_I2C.print(String(mower->time.get_minute()));
 
-    // Collision
-    _lcd_I2C.setCursor(7, 1);
-    _lcd_I2C.print(mower->nav.get_target());
-
     // Volt robot
     _lcd_I2C.setCursor(11, 1);
     _lcd_I2C.print(String(mower->elec.get_curent_volt(), 1));
@@ -299,7 +312,7 @@ const current_flag_input lcd_control::get_current_input() const
 }
 
 template <typename T>
-const current_flag_input lcd_control::process_sub_menu_input(T &current_menu, uint8_t max)
+const current_flag_input lcd_control::process_sub_menu_input(T &current_menu, unsigned char max)
 {
     on_backlight();
     switch (get_current_input())

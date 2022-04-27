@@ -39,7 +39,7 @@ public:
     void on_backlight();
     void off_backlight();
     void clear();
-    void clear_line(const uint8_t line = 0);
+    void clear_line(const unsigned char line = 0);
 
     void show_message(const char *line1, const char *line2);
     void show_message(int posX, int posY, const char *line);
@@ -51,7 +51,7 @@ public:
     LiquidCrystal_I2C get_screen() const;
     const current_flag_input get_current_input() const;
     template <typename T>
-    const current_flag_input process_sub_menu_input(T &current_menu, uint8_t max);
+    const current_flag_input process_sub_menu_input(T &current_menu, unsigned char max);
 
 private:
     void _process_input();
@@ -66,7 +66,8 @@ private:
         MOTOR = 5,
         WIFI = 6,
         TEST = 7,
-        SCHEDUL = 8
+        SCHEDUL = 8,
+        DEBUG = 9
     };
 
     current_flag_input _current_input = current_flag_input::INPUT_NONE;
@@ -75,7 +76,7 @@ private:
     lcd_menu _current_main_menu = lcd_menu::STATUS;
     bool _screen_is_off = false;
     bool _in_sub_menu = false;
-    uint16_t _counter_loop_idle = 0;
+    unsigned short _counter_loop_idle = 0;
 };
 
 #endif

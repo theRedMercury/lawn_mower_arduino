@@ -23,7 +23,7 @@
    variable can not spontaneously change. Because your function may change variables while your program is using them,
    the compiler needs this hint. But volatile alone is often not enough.
    When accessing shared variables, usually interrupts must be disabled. Even with volatile,
-   if the interrupt changes a multi-byte variable between a sequence of instructions, it can be read incorrectly.
+   if the interrupt changes a multi-unsigned char variable between a sequence of instructions, it can be read incorrectly.
    If your data is multiple variables, such as an array and a count, usually interrupts need to be disabled
    or the entire sequence of your code which accesses the data.
 
@@ -39,37 +39,37 @@
 */
 
 #if !defined(ESP8266)
-  #error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
+#error This code is designed to run on ESP8266 and ESP8266-based boards! Please check your Tools->Board setting.
 #endif
 
 // These define's must be placed at the beginning before #include "ESP8266TimerInterrupt.h"
 // _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
-#define TIMER_INTERRUPT_DEBUG         2
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define TIMER_INTERRUPT_DEBUG 2
+#define _TIMERINTERRUPT_LOGLEVEL_ 0
 
 // Select a Timer Clock
-#define USING_TIM_DIV1                false           // for shortest and most accurate timer
-#define USING_TIM_DIV16               false           // for medium time and medium accurate timer
-#define USING_TIM_DIV256              true            // for longest timer but least accurate. Default
+#define USING_TIM_DIV1 false  // for shortest and most accurate timer
+#define USING_TIM_DIV16 false // for medium time and medium accurate timer
+#define USING_TIM_DIV256 true // for longest timer but least accurate. Default
 
 #include "ESP8266TimerInterrupt.h"
 
-#define PIN_D1            5         // Pin D1 mapped to pin GPIO5 of ESP8266
+#define PIN_D1 5 // Pin D1 mapped to pin GPIO5 of ESP8266
 
 unsigned int interruptPin = PIN_D1;
 
-#define TIMER_INTERVAL_MS         1
-#define DEBOUNCING_INTERVAL_MS    80
+#define TIMER_INTERVAL_MS 1
+#define DEBOUNCING_INTERVAL_MS 80
 
-#define LOCAL_DEBUG      1
+#define LOCAL_DEBUG 1
 
 // Init ESP8266 timer 1
 ESP8266Timer ITimer;
 
 volatile unsigned long rotationTime = 0;
-float RPM       = 0.00;
-float avgRPM    = 0.00;
+float RPM = 0.00;
+float avgRPM = 0.00;
 
 volatile int debounceCounter;
 
@@ -82,22 +82,24 @@ void IRAM_ATTR detectRotation()
 
 void IRAM_ATTR TimerHandler()
 {
-  if ( activeState )
+  if (activeState)
   {
     // Reset to prepare for next round of interrupt
     activeState = false;
 
-    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS )
+    if (debounceCounter >= DEBOUNCING_INTERVAL_MS / TIMER_INTERVAL_MS)
     {
 
-      //min time between pulses has passed
-      RPM = (float) ( 60000.0f / ( rotationTime * TIMER_INTERVAL_MS ) );
+      // min time between pulses has passed
+      RPM = (float)(60000.0f / (rotationTime * TIMER_INTERVAL_MS));
 
-      avgRPM = ( 2 * avgRPM + RPM) / 3,
+      avgRPM = (2 * avgRPM + RPM) / 3,
 
 #if (TIMER_INTERRUPT_DEBUG > 1)
-      Serial.print("RPM = "); Serial.print(avgRPM);
-      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER_INTERVAL_MS);
+      Serial.print("RPM = ");
+      Serial.print(avgRPM);
+      Serial.print(", rotationTime ms = ");
+      Serial.println(rotationTime * TIMER_INTERVAL_MS);
 #endif
 
       rotationTime = 0;
@@ -115,11 +117,14 @@ void IRAM_ATTR TimerHandler()
   {
     // If idle, set RPM to 0, don't increase rotationTime
     RPM = 0;
-    
-#if (TIMER_INTERRUPT_DEBUG > 1)   
-    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+
+#if (TIMER_INTERRUPT_DEBUG > 1)
+    Serial.print("RPM = ");
+    Serial.print(RPM);
+    Serial.print(", rotationTime = ");
+    Serial.println(rotationTime);
 #endif
-    
+
     rotationTime = 0;
   }
   else
@@ -131,20 +136,25 @@ void IRAM_ATTR TimerHandler()
 void setup()
 {
   pinMode(interruptPin, INPUT_PULLUP);
-  
+
   Serial.begin(115200);
-  while (!Serial);
-  
+  while (!Serial)
+    ;
+
   delay(300);
 
-  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(ARDUINO_BOARD);
+  Serial.print(F("\nStarting ISR_RPM_Measure on "));
+  Serial.println(ARDUINO_BOARD);
   Serial.println(ESP8266_TIMER_INTERRUPT_VERSION);
-  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
- 
+  Serial.print(F("CPU Frequency = "));
+  Serial.print(F_CPU / 1000000);
+  Serial.println(F(" MHz"));
+
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(TIMER_INTERVAL_MS * 1000, TimerHandler))
   {
-    Serial.print(F("Starting  ITimer OK, millis() = ")); Serial.println(millis());
+    Serial.print(F("Starting  ITimer OK, millis() = "));
+    Serial.println(millis());
   }
   else
     Serial.println(F("Can't set ITimer. Select another freq. or timer"));
@@ -155,5 +165,4 @@ void setup()
 
 void loop()
 {
-
 }
