@@ -50,6 +50,7 @@ void wifi_control::setup()
     bit_result |= 1UL << 5;
     delay(500);
     _is_ready = false;
+    _delay_update.reset_delay();
     DEBUG_PRINTLN(" : DONE > " + String(bit_result));
 }
 
@@ -57,7 +58,7 @@ void wifi_control::update()
 {
     // PING
 
-    if (millis() - _counter_ping >= COUNTER_MAX_MQTT_REFRESH)
+    if (_delay_update.is_time_out())
     {
         send_msg("ping", "ping");
 
@@ -70,7 +71,7 @@ void wifi_control::update()
         send_msg("sensor", mower->gyro.get_json().c_str());
 
         send_msg("status", mower->get_current_status_str());
-        _counter_ping = millis();
+        _delay_update.reset_delay();
     }
 
     // Update GPS
@@ -134,7 +135,7 @@ void wifi_control::send_msg(const char *topic, const char *msg)
         payload += String('\n');
         DEBUG_PRINTLN("MQTT PUB > " + payload);
         SERIAL_WIFI.print(payload);
-        delay(10);
+        delay(5);
     }
 }
 

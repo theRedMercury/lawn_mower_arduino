@@ -117,7 +117,14 @@ void mower_manager::set_current_status(const mower_status new_status)
     // Start mowing
     if (new_status == mower_status::RUNNING && _current_status != mower_status::RUNNING)
     {
-        nav.start_mowing();
+        if (_current_status == mower_status::CHARGING)
+        {
+            _current_status = mower_status::LEAVING_STATION;
+        }
+        else
+        {
+            nav.start_mowing();
+        }
     }
 
     _current_status = new_status;

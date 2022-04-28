@@ -15,12 +15,13 @@
 
 class navigation : public abs_mower_class
 {
-private:
+public:
     enum class navigation_pattern
     {
         BYPASS,
         STOP,
         KEEP_TARGET,
+        TURN_TO_TARGET,
         FIND_EXIT,
         EXIT_WIRE_DETECT,
         FULL_REVERSE,
@@ -43,11 +44,11 @@ public:
     void setup();
     void update();
 
-    void start_mowing();
+    void start_mowing(const bool wait_target = false, const unsigned short target = 1000);
 
     void update_target_angle();
     const char *get_current_pattern_str(const navigation_pattern n) const;
-
+    navigation_pattern get_nav_pattern();
     const unsigned short get_target() const;
 
     short correction;
@@ -61,7 +62,7 @@ private:
 
     unsigned long _circle_milli = 0;
 
-        void _update();
+    void _update();
     void _process_pattern();
 
     void _set_target_angle(const unsigned short target_angle);
@@ -72,6 +73,7 @@ private:
     void _pattern_full_reverse();
     void _pattern_return_in_perim();
     void _pattern_keep_target(bool high_keeping = false, unsigned char max_speed = 255);
+    void _pattern_turn_target();
     void _pattern_follow_wire();
     void _pattern_leaving_station();
     void _pattern_entering_station();

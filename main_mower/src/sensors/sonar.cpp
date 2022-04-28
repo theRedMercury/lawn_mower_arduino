@@ -7,7 +7,7 @@
 #include "sonar.hpp"
 #include "../mower/mower.hpp"
 
-_sensor::_sensor(const unsigned char pin_trig, const unsigned char pin_echo)
+_sonar::_sonar(const unsigned char pin_trig, const unsigned char pin_echo)
 {
     _pin_trig = pin_trig;
     _pin_echo = pin_echo;
@@ -16,7 +16,7 @@ _sensor::_sensor(const unsigned char pin_trig, const unsigned char pin_echo)
     pinMode(_pin_echo, INPUT);
 }
 
-void _sensor::update()
+void _sonar::update()
 {
     digitalWrite(_pin_trig, HIGH);
     delayMicroseconds(10);
@@ -26,7 +26,7 @@ void _sensor::update()
     interrupts();
 }
 
-const float _sensor::get_value() const
+const float _sonar::get_value() const
 {
     return _value;
 }

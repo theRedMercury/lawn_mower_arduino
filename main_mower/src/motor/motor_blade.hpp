@@ -27,7 +27,7 @@ public:
     const bool is_on() const;
 
 private:
-    bool _blade_on = false;
+    bool _blade_on = true; // force to stop at setup
     unsigned char _speed = 0;
 };
 #endif

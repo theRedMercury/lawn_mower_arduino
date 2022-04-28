@@ -29,8 +29,8 @@ private:
     bool _is_integer(String msg, int min, int max);
     String _split(const String data, const unsigned int index = 0, const char separator = '>');
 
+    delay_time_out _delay_update{COUNTER_MAX_MQTT_REFRESH};
     bool _is_ready = false;
-    unsigned long _counter_ping = 0;
     String _last_msg = "";
 };
 #endif

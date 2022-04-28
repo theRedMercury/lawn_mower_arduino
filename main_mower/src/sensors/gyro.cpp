@@ -8,7 +8,7 @@
 #include "../mower/mower.hpp"
 
 #define COUNTER_MAX_TEMP_REFRESH 25
-#define COUNTER_MOVING_REFRESH 20
+#define COUNTER_MOVING_REFRESH 40
 #define COUNTER_IS_SAFE 10
 
 void gyro_sensor::setup()
@@ -142,7 +142,7 @@ const bool gyro_sensor::have_shock() const
 
 const bool gyro_sensor::in_safe_status() const
 {
-    return _cumulation_is_safe > COUNTER_IS_SAFE - 2;
+    return _cumulation_is_safe > COUNTER_IS_SAFE - 5;
 }
 
 const bool gyro_sensor::is_moving() const

@@ -68,14 +68,22 @@ void elec_sensor::update()
     if (is_charging() && mower->get_current_status() != mower_status::CHARGING)
     {
         mower->set_current_status(mower_status::CHARGING);
+        return;
     }
-    if (!is_charging() && mower->get_current_status() == mower_status::CHARGING && !is_battery_charged())
+    if (!is_charging() && mower->get_current_status() == mower_status::CHARGING)
     {
         mower->set_current_status(mower_status::READY);
+        return;
     }
-    if (is_battery_critical())
+    if (is_battery_critical() && mower->get_current_status() != mower_status::ERROR_POWER)
     {
         mower->set_error(mower_status::ERROR_POWER);
+        return;
+    }
+    if (!is_battery_critical() && mower->get_current_status() == mower_status::ERROR_POWER)
+    {
+        mower->set_current_status(mower_status::READY);
+        return;
     }
 }
 
@@ -89,35 +97,29 @@ void elec_sensor::update_volt()
     // 460 = 12
     // 505 = 13
 
-    unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
+    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
+    _current_volt = constrain(static_cast<float>(val) / 38.3f, 0, 24); //(R2 / (R1 + R2));
+    adc_manager::clean_channel(PIN_A_VOLT);
+
     DEBUG_PRINT("Volt brut >\t");
     DEBUG_PRINT(val);
     DEBUG_PRINT("  >\t");
-    _current_volt = (static_cast<float>(val) / 38.3f); //(R2 / (R1 + R2));
-
     DEBUG_PRINT("Volt  >\t");
     DEBUG_PRINTLN(_current_volt);
 }
 
 void elec_sensor::update_amp()
 {
-    // 509 = 0.00  - 0
+    // 510 = 0.00  - 0
     // 516 = 0.32  - 7
-    // 523 = 0.76  - 14
-    unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP, 32);
+    // 524 = 0.76  - 14
+    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP, 16);
+    _current_amp = constrain((static_cast<float>(val) - 510), 0, 512) * 0.05f;
+    adc_manager::clean_channel(PIN_A_AMP);
+
     DEBUG_PRINT("Amp brut  >\t");
     DEBUG_PRINT(val);
     DEBUG_PRINT("  >\t");
-    _current_amp = static_cast<float>(val - 509) * 0.05f;
-
-    /*_input_stats.input(float(val)); // log to Stats function
-
-    if ((unsigned long)(millis() - _previous_millis) >= _read_period)
-    {                                // every second we do the calculation
-        _previous_millis = millis(); // update time
-        DEBUG_PRINTLN(_input_stats.sigma());
-        _current_amp = _intercept + 0.00689f * _input_stats.sigma();
-    }*/
     DEBUG_PRINT("Amps >\t");
     DEBUG_PRINTLN(_current_amp);
 }
@@ -139,7 +141,7 @@ const bool elec_sensor::is_battery_critical() const
 
 const bool elec_sensor::is_charging() const
 {
-    return (_cumulation_charge_max_time >= BARERRY_TIME_OUT);
+    return (_cumulation_charge_max_time >= BARERRY_TIME_OUT - 120);
 }
 
 const float elec_sensor::get_curent_volt() const

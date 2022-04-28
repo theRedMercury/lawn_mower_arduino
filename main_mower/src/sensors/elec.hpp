@@ -25,7 +25,6 @@ public:
     void update();
 
     void update_volt();
-
     void update_amp();
 
     const bool is_battery_charged() const;

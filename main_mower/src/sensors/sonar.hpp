@@ -21,10 +21,10 @@
 #define MEASURE_TIME_OUT 10000UL // 10ms = ~3.4m à 340m/s
 #define SOUND_SPEED 0.34029f     // Speed sound in mm/us
 
-class _sensor
+class _sonar
 {
 public:
-    _sensor(const unsigned char pin_trig, const unsigned char pin_echo);
+    _sonar(const unsigned char pin_trig, const unsigned char pin_echo);
     void update();
     const float get_value() const;
 
@@ -32,11 +32,11 @@ private:
     float _value = 0.f;
     unsigned char _pin_trig, _pin_echo;
 
-    _sensor() = delete;
-    _sensor(const _sensor &) = delete;
-    _sensor(_sensor &&) = delete;
-    _sensor &operator=(const _sensor &) = delete;
-    _sensor &operator=(_sensor &&) = delete;
+    _sonar() = delete;
+    _sonar(const _sonar &) = delete;
+    _sonar(_sonar &&) = delete;
+    _sonar &operator=(const _sonar &) = delete;
+    _sonar &operator=(_sonar &&) = delete;
 };
 
 class sonar_sensor : public abs_mower_class
@@ -53,9 +53,9 @@ public:
     const void get_collisions(unsigned char *collision, const float threshold = 50.f) const;
 
 private:
-    _sensor sonar_left{PIN_USOUND_TRIG_03, PIN_USOUND_ECHO_03};
-    _sensor sonar_center{PIN_USOUND_TRIG_02, PIN_USOUND_ECHO_02};
-    _sensor sonar_right{PIN_USOUND_TRIG_01, PIN_USOUND_ECHO_01};
+    _sonar sonar_left{PIN_USOUND_TRIG_03, PIN_USOUND_ECHO_03};
+    _sonar sonar_center{PIN_USOUND_TRIG_02, PIN_USOUND_ECHO_02};
+    _sonar sonar_right{PIN_USOUND_TRIG_01, PIN_USOUND_ECHO_01};
 };
 
 #endif

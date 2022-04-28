@@ -20,8 +20,8 @@
 static mower_manager mower;
 
 #ifdef DEBUG_SPEED_MODE
-unsigned long main_loop_millis;
-unsigned long frame_counter;
+unsigned long main_loop_millis = 0;
+unsigned long frame_counter = 0;
 #endif
 
 ///////////////////////////////////////////////////////
@@ -46,6 +46,22 @@ void timer_watch_dog_handler()
   }
 }
 
+///////////////////////////////////////////////////////
+// Debug
+///////////////////////////////////////////////////////
+void print_debug_stat()
+{
+#ifdef DEBUG_SPEED_MODE
+  DEBUG_PRINTER.print(">>>>>   LOOP TIME : ");
+  DEBUG_PRINTER.print((millis() - main_loop_millis));
+  DEBUG_PRINTER.print(" (ms) - FRAME : ");
+  DEBUG_PRINTER.print(frame_counter);
+  DEBUG_PRINTER.println(" <<<<<\n\n");
+  main_loop_millis = millis();
+  frame_counter++;
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // SETUP
 //////////////////////////////////////////////////////////////////////////////////
@@ -53,29 +69,24 @@ void setup()
 {
 #ifdef DEBUG_PRINTER
   DEBUG_PRINTER.begin(115200);
-#endif
-#ifdef DEBUG_SPEED_MODE
-  main_loop_millis = 0;
-  frame_counter = 0;
-#endif
-
   DEBUG_PRINTLN("##########");
   DEBUG_PRINTLN("#  INIT  #");
   DEBUG_PRINTLN("##########");
+#endif
 
-  pinMode(LED_BUILTIN, OUTPUT);
+  // Mower setup ==================================
   mower.setup();
+  //================================================
 
   // Watchdog Safety //////////////////////////////////////////////////////////////
   if (!ITimer5.attachInterruptInterval(TIMER_INTERVAL_MS, timer_watch_dog_handler))
   {
     // Fail attach interrup : normally, never happen
     mower.set_error();
-    mower.lcd.show_message("> FATAL ERROR   ", "Watchdog Timer !");
-    delay(1000);
+    mower.lcd.show_message("> FATAL ERROR  <", "Watchdog Timer !");
     DEBUG_PRINTLN("ERROR Watchdog timer...");
+    delay(1000);
   }
-  ////////////////////////////////////////////////////////////////////////////////
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -87,19 +98,9 @@ void loop()
   mower.update();
   //================================================
 
-  // DEBUG PRINT STAT LOOP =========================
-#ifdef DEBUG_SPEED_MODE
-  DEBUG_PRINTER.print(">>>>>   LOOP TIME : ");
-  DEBUG_PRINTER.print((millis() - main_loop_millis));
-  DEBUG_PRINTER.print(" (ms) - FRAME : ");
-  DEBUG_PRINTER.print(frame_counter);
-  DEBUG_PRINTER.println(" <<<<<\n\n");
-  main_loop_millis = millis();
-  frame_counter++;
-#endif
-  //================================================
-
   // Watchdog counter
   _timer_reboot_wathdog = 0;
+
+  print_debug_stat();
 }
 //////////////////////////////////////////////////////////////////////////////////

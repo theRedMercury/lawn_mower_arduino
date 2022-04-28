@@ -24,6 +24,6 @@ public:
     const bool is_rainning() const;
 
 private:
-    unsigned short _current_rain_value;
+    unsigned short _current_rain_value = 0;
 };
 #endif

@@ -22,11 +22,11 @@ void perimeter::update()
     unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE);
 
     // Low pass filter
-    float weight = 0.1;
+    /*float weight = 0.1;
     for (unsigned char i = 1; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
         signal_read[i - 1] = (1.0 - weight) * signal_read[i - 1] + weight * signal_read[i]; // low-pass values
-    }
+    }*/
 
     /*for (int i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
@@ -105,6 +105,7 @@ void perimeter::update()
         // Low signal, use filtered value for increased reliability
         _is_inside = (_signal_counter < 0);
     }
+    adc_manager::clean_channel(PIN_A_WIRE);
 }
 
 const short perimeter::get_magnitude() const

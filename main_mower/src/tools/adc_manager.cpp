@@ -21,9 +21,9 @@ struct adc_channel
     volatile unsigned char value_size = 0;
 };
 
+volatile bool _is_capturing;
 volatile unsigned char _current_cha_index;
 volatile unsigned char _current_position;
-volatile bool _is_capturing;
 volatile adc_channel _analogChannels[CHANNELS];
 
 void adc_manager::define_channel_to_capture(const unsigned char channel, unsigned char sampleCount)
@@ -31,7 +31,7 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
     _is_capturing = false;
     _current_cha_index = (channel - PIN_A0);
     _current_position = 0;
-    sampleCount = constrain(sampleCount, 1, 1024);
+    sampleCount = constrain(sampleCount, 1, 255);
 
     if (sampleCount > _analogChannels[_current_cha_index].value_size)
     {
@@ -39,6 +39,7 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
         _analogChannels[_current_cha_index].values = new unsigned short[sampleCount];
     }
     _analogChannels[_current_cha_index].value_size = sampleCount;
+    clean_channel(channel);
 
     ADMUX = 0x00;
     ADMUX |= (1 << REFS0);
@@ -65,16 +66,6 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
     _is_capturing = true;
 }
 
-unsigned short adc_manager::analogue_read_channel(const unsigned char channel, const unsigned char sample)
-{
-    adc_manager::define_channel_to_capture(channel, sample);
-    while (!adc_manager::is_read_data_channel_done(channel))
-    {
-        delayMicroseconds(10);
-    }
-    return adc_manager::get_avg_channel_value(channel);
-}
-
 unsigned short *adc_manager::analogue_reads_channel(const unsigned char channel, const unsigned char sample)
 {
     adc_manager::define_channel_to_capture(channel, sample);
@@ -83,6 +74,15 @@ unsigned short *adc_manager::analogue_reads_channel(const unsigned char channel,
         delayMicroseconds(10);
     }
     return adc_manager::read_data_channel(channel);
+}
+
+unsigned short *adc_manager::read_data_channel(const unsigned char channel)
+{
+    if (_is_capturing)
+    {
+        return NULL;
+    }
+    return _analogChannels[channel - PIN_A0].values;
 }
 
 const bool adc_manager::is_read_data_channel_done(const unsigned char channel)
@@ -95,24 +95,33 @@ const bool adc_manager::is_read_data_channel_done(const unsigned char channel)
     return true;
 }
 
-unsigned short *adc_manager::read_data_channel(const unsigned char channel)
+const unsigned short adc_manager::analogue_read_channel(const unsigned char channel, const unsigned char sample)
 {
-    if (_is_capturing)
+    adc_manager::define_channel_to_capture(channel, sample);
+    while (!adc_manager::is_read_data_channel_done(channel))
     {
-        return NULL;
+        delayMicroseconds(10);
     }
-    return _analogChannels[channel - PIN_A0].values;
+    return adc_manager::get_avg_channel_value(channel);
 }
 
-unsigned short adc_manager::get_avg_channel_value(const unsigned char channel)
+const unsigned short adc_manager::get_avg_channel_value(const unsigned char channel)
 {
     unsigned int _value = 0;
-    unsigned char _channel = channel - PIN_A0;
+    const unsigned char _channel = channel - PIN_A0;
     for (unsigned char i = 0; i < _analogChannels[_channel].value_size; i++)
     {
         _value += _analogChannels[_channel].values[i];
     }
     return round(static_cast<float>(_value) / static_cast<float>(_analogChannels[_channel].value_size));
+}
+
+void adc_manager::clean_channel(const unsigned char channel)
+{
+    const unsigned char _channel = channel - PIN_A0;
+    //_analogChannels[_channel].values;
+    //_analogChannels[_channel].value_size
+    memset(_analogChannels[_channel].values, 0, _analogChannels[_channel].value_size);
 }
 
 // free running ADC fills capture buffer

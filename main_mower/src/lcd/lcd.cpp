@@ -203,7 +203,9 @@ void lcd_control::update()
         _lcd_I2C.print(mower->motor.get_speed_left());
         _lcd_I2C.setCursor(5, 1);
         _lcd_I2C.print(mower->motor.get_speed_right());
-        _lcd_I2C.setCursor(10, 1);
+        _lcd_I2C.setCursor(9, 1);
+
+        _lcd_I2C.print(String(mower->nav.get_current_pattern_str(mower->nav.get_nav_pattern())));
 
         break;
 
