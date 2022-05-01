@@ -39,6 +39,8 @@ public:
     void setup();
     void update();
 
+    void force_mowing();
+    void reset_force_mowing();
     const bool is_time_to_mown() const;
     const bool is_time_to_return_station() const;
 
@@ -51,6 +53,6 @@ private:
     const String _get_string_schedul_day(const schedul_day day) const;
 
     schedul_week _shedul;
-    bool _force_to_mown = false;
+    bool _force_to_mown = false; // until return station
 };
 #endif

@@ -26,7 +26,7 @@ void wifi_control::setup()
     DEBUG_PRINT("SETUP : ");
     DEBUG_PRINT(class_name);
 
-    SERIAL_WIFI.begin(115200);
+    SERIAL_WIFI.begin(SERIAL_BAUDRATE);
 
     _is_ready = true;
     // Init wifi settings
@@ -57,7 +57,6 @@ void wifi_control::setup()
 void wifi_control::update()
 {
     // PING
-
     if (_delay_update.is_time_out())
     {
         send_msg("ping", "ping");
@@ -88,6 +87,11 @@ void wifi_control::update()
         String message = _split(msg, 1);
         topic.trim();
 
+        DEBUG_PRINT("MQTT : ");
+        DEBUG_PRINT(topic);
+        DEBUG_PRINT(" > ");
+        DEBUG_PRINTLN(message);
+
         for (unsigned short i = 0; i <= message.length(); i++)
         {
             if (message.charAt(i) < 0x20 || message.charAt(i) > 0x7f) // ASCII
@@ -112,7 +116,6 @@ void wifi_control::update()
                 _is_ready = true;
                 send_msg("status", mower->get_current_status_str());
             }
-
             if (topic == "mower/out/scheduler") // msg : 1/8:00_12:00
             {
                 _process_scheduler(message);
@@ -157,14 +160,18 @@ void wifi_control::_process_mode(String message)
     if (message == "stop")
     {
         mower->set_current_status(mower_status::WAITING);
+        return;
     }
     if (message == "run")
     {
+        mower->schedul.force_mowing();
         mower->set_current_status(mower_status::RUNNING);
+        return;
     }
     if (message == "station")
     {
         mower->set_current_status(mower_status::RETURN_STATION);
+        return;
     }
 }
 

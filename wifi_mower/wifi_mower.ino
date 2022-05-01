@@ -6,12 +6,12 @@
  *  @target ESP8266 Generic module
  */
 
+#define SERIAL_BUFFER_SIZE 128
+
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 
-#include "src/libs/ESP8266TimerInterrupt/src/ESP8266TimerInterrupt.h"
 #include "src/libs/PubSubClient/src/PubSubClient.h"
-#include "queue.h"
 
 /////////////////////////////////////////////////////////////
 /// ESP8266 3.0.2 : Generic Module
@@ -26,6 +26,7 @@
 /////////////////////////////////////////////////////////////
 
 #define SERIAL_WIFI Serial
+#define SERIAL_BAUDRATE 9600
 
 // WiFi
 String ssid, password;
@@ -37,32 +38,19 @@ const char *topic_ping = "mower/in/esp";
 const char *topic_ping_msg = "ping";
 const char *topic_msg = "mower/msg";
 
-// Init ESP8266 timer 1
-// Select a Timer Clock
-#define USING_TIM_DIV1 false  // for shortest and most accurate timer
-#define USING_TIM_DIV16 false // for medium time and medium accurate timer
-#define USING_TIM_DIV256 true // for longest timer but least accurate. Default
-
-ESP8266Timer timer_write_serial;
-
 WiFiClient esp_client;
 PubSubClient mqtt_client(esp_client);
-
 unsigned int _counter_ping;
-Queue<String> _buffer_queue_write = Queue<String>(50);
-volatile bool _queue_write_lock = false;
 
 void inline print_topic(const char *topic, const char *msg)
 {
     String payload = String(topic) + String('>') + String(msg);
     payload.trim();
     payload += String('\n');
-    while (_queue_write_lock)
+    while (SERIAL_WIFI.availableForWrite() < payload.length())
     {
     }
-    _queue_write_lock = true;
-    _buffer_queue_write.push(payload);
-    _queue_write_lock = false;
+    SERIAL_WIFI.print(payload);
 }
 
 void topic_callback(char *topic, unsigned char *payload, unsigned int length)
@@ -131,24 +119,10 @@ String inline _split(const String data, const unsigned int index = 0, const char
     return ret;
 }
 
-void IRAM_ATTR _timer_write_serial_callback()
-{
-    while (_queue_write_lock)
-    {
-    }
-    _queue_write_lock = true;
-    if (_buffer_queue_write.count() > 0)
-    {
-        SERIAL_WIFI.print(_buffer_queue_write.pop().c_str());
-    }
-    _queue_write_lock = false;
-}
-
 void setup()
 {
     _counter_ping = 0;
-    // Set software serial baud to 115200;
-    SERIAL_WIFI.begin(115200);
+    SERIAL_WIFI.begin(SERIAL_BAUDRATE);
 
     while (!SERIAL_WIFI.available())
     {
@@ -213,8 +187,6 @@ void setup()
     mqtt_client.setServer(mqtt_ip.c_str(), mqtt_port.toInt());
     mqtt_client.setCallback(topic_callback);
 
-    timer_write_serial.attachInterruptInterval(150 * 1000, _timer_write_serial_callback);
-
     init_wifi();
     init_mqtt();
 }
@@ -224,10 +196,8 @@ void loop()
     _counter_ping++;
     if (mqtt_client.loop())
     {
-
         if (SERIAL_WIFI.available() >= 6)
         {
-
             String msg_in = SERIAL_WIFI.readStringUntil('\n');
             msg_in.trim();
             if (msg_in.length() > 0)

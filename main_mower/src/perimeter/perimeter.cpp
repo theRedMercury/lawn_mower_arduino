@@ -13,6 +13,7 @@ void perimeter::setup()
     DEBUG_PRINT("SETUP : ");
     DEBUG_PRINT(class_name);
     DEBUG_PRINTLN(" : DONE");
+    // Serial.begin(115200);
 }
 
 void perimeter::update()
@@ -21,6 +22,14 @@ void perimeter::update()
     // http://grauonline.de/alexwww/ardumower/filter/filter.html
     unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE);
 
+    // Normalize
+    /*int16_t Hsum = 0;
+    for (unsigned char i = 0; i < SENDER_ARRAY_SIZE; i++)
+    {
+        Hsum += abs(_signal_code[i]);
+    }
+    Hsum *= RAW_SIGNAL_SAMPLE_SIZE;*/
+
     // Low pass filter
     /*float weight = 0.1;
     for (unsigned char i = 1; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
@@ -28,14 +37,15 @@ void perimeter::update()
         signal_read[i - 1] = (1.0 - weight) * signal_read[i - 1] + weight * signal_read[i]; // low-pass values
     }*/
 
+    // Debug
     /*for (int i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
-      Serial.println(signal_read[i]);
+        Serial.println(signal_read[i]);
     }*/
 
-    short sum_max = 0; // max correlation sum
-    short sum_min = 0; // min correlation sum
-    short sum = 0;
+    int sum_max = 0; // max correlation sum
+    int sum_min = 0; // min correlation sum
+    int sum = 0;
 
     for (unsigned char i = 0; i < CORELLATION_ARRAY_SIZE; i++)
     {
@@ -64,21 +74,21 @@ void perimeter::update()
 
     // normalize to 4095
     // Divide by the length of the operator = senderAnzEinsen
-    // sum_min = ((float)sum_min) / ((float)(Hsum * 127)) * 4095.0;
-    // sum_max = ((float)sum_max) / ((float)(Hsum * 127)) * 4095.0;
+    // sum_min = static_cast<float>(sum_min) / static_cast<float>(Hsum * 127) * 4095.0;
+    // sum_max = static_cast<float>(sum_max) / static_cast<float>(Hsum * 127) * 4095.0;
 
     if (sum_max > -sum_min)
     {
-        _filter_quality = ((float)sum_max) / ((float)-sum_min);
+        _filter_quality = static_cast<float>(sum_max) / static_cast<float>(-sum_min);
         _magnitude = sum_max;
     }
     else
     {
-        _filter_quality = ((float)-sum_min) / ((float)sum_max);
+        _filter_quality = static_cast<float>(-sum_min) / static_cast<float>(sum_max);
         _magnitude = sum_min;
     }
 
-    _smooth_magnitude = 0.99 * _smooth_magnitude + 0.01 * float(abs(_magnitude));
+    _smooth_magnitude = 0.99 * _smooth_magnitude + 0.01 * static_cast<float>(abs(_magnitude));
 
     // perimeter inside/outside detection
     if (abs(_magnitude) < 2000 || isinf(_filter_quality) || _filter_quality > 20.f)
@@ -131,7 +141,7 @@ const bool perimeter::is_inside() const
     return _is_inside;
 }
 
-const bool perimeter::signal_timed_out() const
+const bool perimeter::is_signal_timed_out() const
 {
 #ifdef DEBUG_SIMULATE_WIRE
     return false;
@@ -140,7 +150,7 @@ const bool perimeter::signal_timed_out() const
     {
         return true;
     }
-    return (millis() - _last_inside_time > 8 * 1000);
+    return (millis() - _last_inside_time > SIGNAL_TIME_OUT_MS);
 }
 
 const String perimeter::get_json() const

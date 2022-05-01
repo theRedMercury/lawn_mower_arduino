@@ -19,7 +19,7 @@
 //#define DEBUG_MODE 0         // Comment if RELEASE
 //#define DEBUG_SPEED_MODE 0   // Comment if RELEASE
 //#define DEBUG_SIMULATE_WIRE 0   // Comment if RELEASE
-#define DEBUG_IS_TIME_TO_MOWN 0 // Comment if RELEASE
+//#define DEBUG_IS_TIME_TO_MOWN 0 // Comment if RELEASE
 
 #ifdef DEBUG_MODE
 #define DEBUG_PRINT(...)                  \
@@ -39,7 +39,7 @@
     }
 #endif
 
-#define BOOL_STR(b) ((b) ? "yes" : "no")
+///////////////////////////////////////////////////////
 
 enum class mower_status
 {

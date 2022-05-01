@@ -25,7 +25,7 @@ void Lcd_navigation_menu_wifi(mower_manager *mower)
     {
     case WIFI_STATUS:
         mower->lcd.get_screen().print("> STATUS ");
-        mower->lcd.get_screen().print(mower->wifi.is_ready());
+        mower->lcd.get_screen().print(mower->wifi.is_ready() ? "OK" : "ko");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().print(mower->wifi.is_ready() ? "Connected" : "Not ready");
         break;

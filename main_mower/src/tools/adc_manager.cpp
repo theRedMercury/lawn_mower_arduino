@@ -51,8 +51,15 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
     ADCSRB = (ADCSRB & ~(1 << MUX5)) | (((_current_cha_index >> 3) & 0x01) << MUX5);   // PIN >7 for MEGA
     ADCSRA = _BV(ADSC) | _BV(ADEN) | _BV(ADATE) | _BV(ADIE) | _BV(ADPS2) | _BV(ADPS1); // prescaler 19231 Hz
 
-    DIDR0 |= (1 << channel);
-    DIDR2 |= (1 << (_current_cha_index - 8));
+    if (_current_cha_index < 8)
+    {
+        DIDR0 |= (1 << _current_cha_index);
+    }
+    else
+    {
+        DIDR2 |= (1 << (_current_cha_index - 8));
+    }
+
     //  https://github.com/kwrtz/PerimeterSensorUNO/tree/5fc35fbd4e88e39873c805ead79a658d8e2fd3ea
 
     // PS_16 = (1 << ADPS2);
@@ -60,7 +67,6 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
     // PS_64 = (1 << ADPS2) | (1 << ADPS1);                 prescaler 64 : 19231 Hz
     // PS_128 = (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0); prescaler 128 : 9615 Hz
 
-    // http://www.atmel.com/images/doc2549.pdf
     /*  REFS0 : VCC use as a ref, IR_AUDIO : channel selection, ADEN : ADC Enable, ADSC : ADC Start, ADATE : ADC Auto Trigger Enable, ADIE : ADC Interrupt Enable,  ADPS : ADC Prescaler  */
     // free running ADC mode, f = ( 16MHz / prescaler ) / 13 cycles per conversion
     _is_capturing = true;
@@ -91,7 +97,6 @@ const bool adc_manager::is_read_data_channel_done(const unsigned char channel)
     {
         return false;
     }
-    cbi(ADCSRA, ADEN); // ADCSRA &= ~_BV(ADEN);
     return true;
 }
 
@@ -119,8 +124,6 @@ const unsigned short adc_manager::get_avg_channel_value(const unsigned char chan
 void adc_manager::clean_channel(const unsigned char channel)
 {
     const unsigned char _channel = channel - PIN_A0;
-    //_analogChannels[_channel].values;
-    //_analogChannels[_channel].value_size
     memset(_analogChannels[_channel].values, 0, _analogChannels[_channel].value_size);
 }
 
@@ -143,6 +146,7 @@ ISR(ADC_vect)
         ADMUX = 0x00;
         return;
     }
+
     _analogChannels[_current_cha_index].values[_current_position] = (_adch << 8) | _adcl;
     _current_position++;
 }

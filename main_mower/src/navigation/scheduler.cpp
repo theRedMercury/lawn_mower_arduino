@@ -22,11 +22,26 @@ void scheduler::update()
     // useless
 }
 
+void scheduler::force_mowing()
+{
+    _force_to_mown = true;
+}
+
+void scheduler::reset_force_mowing()
+{
+    _force_to_mown = false;
+}
+
 const bool scheduler::is_time_to_mown() const
 {
 #ifdef DEBUG_IS_TIME_TO_MOWN
     return true;
 #endif
+
+    if (_force_to_mown)
+    {
+        return true;
+    }
     if (!mower->gps.is_time_valid())
     {
         return false;
@@ -80,9 +95,15 @@ const bool scheduler::is_time_to_mown() const
 
 const bool scheduler::is_time_to_return_station() const
 {
+
 #ifdef DEBUG_IS_TIME_TO_MOWN
     return false;
 #endif
+
+    if (_force_to_mown)
+    {
+        return false;
+    }
 
     if (!mower->gps.is_time_valid())
     {

@@ -46,6 +46,15 @@ void navigation::update()
     case mower_status::RETURN_STATION:
         mower->motor_blade.stop();
         _nav_patter = navigation_pattern::FOLLOW_WIRE;
+
+        // Safety lost mower
+        if (mower->perim.is_signal_timed_out())
+        {
+            mower->schedul.reset_force_mowing();
+            mower->set_error(mower_status::ERROR_LOST_WIRE);
+            return;
+        }
+
         _update();
         break;
 
@@ -54,13 +63,15 @@ void navigation::update()
         if (mower->schedul.is_time_to_return_station() || mower->elec.is_battery_low())
         {
             mower->motor_blade.stop();
+            mower->schedul.reset_force_mowing();
             mower->set_current_status(mower_status::RETURN_STATION);
             return;
         }
 
         // Safety lost mower
-        if (mower->perim.signal_timed_out())
+        if (mower->perim.is_signal_timed_out())
         {
+            mower->schedul.reset_force_mowing();
             mower->set_error(mower_status::ERROR_LOST_WIRE);
             return;
         }
@@ -117,7 +128,13 @@ navigation::navigation_pattern navigation::get_nav_pattern()
 
 void navigation::start_mowing(const bool wait_target, const unsigned short target)
 {
-    if (target != 1000)
+    if (!mower->schedul.is_time_to_mown())
+    {
+        mower->set_current_status(mower_status::RETURN_STATION);
+        return;
+    }
+
+    if (target != 1000) // default value
     {
         _set_target_angle(target);
     }
@@ -389,7 +406,7 @@ void navigation::_pattern_return_in_perim()
     }*/
 }
 
-void navigation::_pattern_keep_target(bool high_keeping = false, unsigned char max_speed)
+void navigation::_pattern_keep_target(bool high_keeping, unsigned char max_speed)
 {
     const unsigned short current_angle = mower->gps.get_heading_deg();
     short diff_angle = current_angle - _target_angle;

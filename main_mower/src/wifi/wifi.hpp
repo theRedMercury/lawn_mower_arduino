@@ -9,6 +9,7 @@
 #include "../mower/abs_mower.hpp"
 
 #define SERIAL_WIFI Serial3
+#define SERIAL_BAUDRATE 9600
 #define COUNTER_MAX_MQTT_REFRESH 20000UL // every ~20 sec
 
 class wifi_control : public abs_mower_class

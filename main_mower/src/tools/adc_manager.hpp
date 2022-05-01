@@ -17,7 +17,6 @@ public:
     static const bool is_read_data_channel_done(const unsigned char channel);
     static const unsigned short analogue_read_channel(const unsigned char channel, const unsigned char sample = 8);
     static const unsigned short get_avg_channel_value(const unsigned char channel);
-
     static void clean_channel(const unsigned char channel);
 
 private:

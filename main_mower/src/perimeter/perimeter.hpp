@@ -9,9 +9,10 @@
 
 #include "../mower/abs_mower.hpp"
 
-#define PIN_A_WIRE PIN_A5 // A5
+#define PIN_A_WIRE PIN_A5       // A5
+#define SIGNAL_TIME_OUT_MS 8000 // 8 sec
 #define RAW_SIGNAL_SAMPLE_SIZE 96
-#define SENDER_ARRAY_SIZE 24 // 96
+#define SENDER_ARRAY_SIZE 24
 #define CORELLATION_ARRAY_SIZE (RAW_SIGNAL_SAMPLE_SIZE - SENDER_ARRAY_SIZE + 1)
 
 class perimeter : public abs_mower_class
@@ -20,14 +21,14 @@ public:
     using abs_mower_class::abs_mower_class;
     void setup();
     void update();
+
     const short get_magnitude() const;
-
     const short get_smooth_magnitude() const;
-
     const float get_filter_quality() const;
-    const bool is_inside() const;
 
-    const bool signal_timed_out() const;
+    const bool is_inside() const;
+    const bool is_signal_timed_out() const;
+
     const String get_json() const;
 
 private:
