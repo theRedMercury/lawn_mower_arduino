@@ -110,7 +110,7 @@ void lcd_control::update()
         }
         else
         {
-            show_message("> MODE         ", LCD_CLEAR_FIELD);
+            show_message("> MODE          ", LCD_CLEAR_FIELD);
         }
         break;
 
@@ -170,7 +170,7 @@ void lcd_control::update()
         }
         else
         {
-            show_message("> WIFI         ", LCD_CLEAR_FIELD);
+            show_message("> WIFI          ", LCD_CLEAR_FIELD);
         }
         break;
 
@@ -187,7 +187,7 @@ void lcd_control::update()
         }
         else
         {
-            show_message("> SCHEDUL         ", LCD_CLEAR_FIELD);
+            show_message("> SCHEDUL       ", LCD_CLEAR_FIELD);
         }
         break;
 
