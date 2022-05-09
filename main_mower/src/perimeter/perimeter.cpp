@@ -118,6 +118,16 @@ void perimeter::update()
     adc_manager::clean_channel(PIN_A_WIRE);
 }
 
+void perimeter::set_simulate_is_inside(const bool simulate)
+{
+    _simulate_is_inside = simulate;
+}
+
+const bool perimeter::get_simulate_is_inside() const
+{
+    return _simulate_is_inside;
+}
+
 const short perimeter::get_magnitude() const
 {
     return _magnitude;
@@ -138,6 +148,10 @@ const bool perimeter::is_inside() const
 #ifdef DEBUG_SIMULATE_WIRE
     return true;
 #endif
+    if (_simulate_is_inside)
+    {
+        return true;
+    }
     return _is_inside;
 }
 
@@ -146,6 +160,10 @@ const bool perimeter::is_signal_timed_out() const
 #ifdef DEBUG_SIMULATE_WIRE
     return false;
 #endif
+    if (_simulate_is_inside)
+    {
+        return false;
+    }
     if (_smooth_magnitude < 300)
     {
         return true;

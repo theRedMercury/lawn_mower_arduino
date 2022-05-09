@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_sensor
+enum lcd_menu_sensor : char
 {
     SENSOR_SONAR_LEFT = 0,
     SENSOR_SONAR_CENTER = 1,

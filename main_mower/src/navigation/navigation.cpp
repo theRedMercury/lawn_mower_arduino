@@ -55,7 +55,7 @@ void navigation::update()
             return;
         }
 
-        _update();
+        _update_navigation();
         break;
 
     case mower_status::RUNNING:
@@ -76,16 +76,16 @@ void navigation::update()
             return;
         }
         mower->motor_blade.on();
-        _update();
+        _update_navigation();
         break;
 
     case mower_status::TESTING_NAV:
-        _update();
+        _update_navigation();
         break;
 
     case mower_status::TESTING_NAV_02:
         _nav_patter = navigation_pattern::CIRCLE;
-        _update();
+        _update_navigation();
         break;
 
     default:
@@ -143,6 +143,7 @@ void navigation::start_mowing(const bool wait_target, const unsigned short targe
         update_target_angle();
     }
 
+    _wire_find = false;
     _nav_patter = wait_target ? navigation_pattern::TURN_TO_TARGET : navigation_pattern::KEEP_TARGET;
     _nav_exit = navigation_exit::BYPASS;
     _delay_next_pattern.reset_delay(MAX_DELAY_PATTERN_MS);
@@ -169,7 +170,7 @@ void navigation::_set_target_angle(const unsigned short target_angle)
     _target_angle = target_angle % 360;
 }
 
-void navigation::_update()
+void navigation::_update_navigation()
 {
     const navigation_pattern pattern_senor = _get_pattern_sensor();
     DEBUG_PRINTLN("NAVI SENSOR > " + String(get_current_pattern_str(pattern_senor)));
@@ -281,11 +282,11 @@ void navigation::_process_pattern()
         break;
 
     case navigation_pattern::KEEP_TARGET:
-        _pattern_keep_target(); //_pattern_keep_target();
+        _pattern_keep_target();
         break;
 
     case navigation_pattern::TURN_TO_TARGET:
-        _pattern_turn_target(); //_pattern_keep_target();
+        _pattern_turn_target();
         break;
 
     case navigation_pattern::FOLLOW_WIRE:
@@ -392,18 +393,6 @@ void navigation::_pattern_return_in_perim()
     }
     _nav_exit = navigation_exit::FULL_REVERSE;
     mower->motor.set(-SPEED_REVERSE, -SPEED_REVERSE);
-    /*if (_delay_next_pattern < 10)
-    {
-        mower->motor.set(-SPEED_REVERSE, -SPEED_REVERSE);
-    }
-    if (_delay_next_pattern > 10)
-    {
-        mower->motor.set(SPEED_REVERSE, -SPEED_REVERSE);
-    }
-    if (_delay_next_pattern > 20)
-    {
-        mower->motor.set(0, 0);
-    }*/
 }
 
 void navigation::_pattern_keep_target(bool high_keeping, unsigned char max_speed)
@@ -515,7 +504,7 @@ void navigation::_pattern_follow_wire()
         if (!mower->perim.is_inside() && _delay_next_pattern.is_time_out())
         {
             _pattern_keep_target(true, 120);
-            _set_target_angle(_target_angle -= 10);
+            _set_target_angle(_target_angle += 10);
             _delay_next_pattern.reset_delay(250);
         }
     }

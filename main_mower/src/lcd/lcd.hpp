@@ -21,7 +21,7 @@
 #define LCD_X 16
 #define LCD_Y 2
 
-enum class current_flag_input
+enum class current_flag_input : char
 {
     INPUT_NONE,
     INPUT_OK,
@@ -56,7 +56,7 @@ public:
 private:
     void _process_input();
 
-    enum class lcd_menu
+    enum class lcd_menu : char
     {
         STATUS = 0,
         MODE = 1,

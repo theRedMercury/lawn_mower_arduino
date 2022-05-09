@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_gps
+enum lcd_menu_gps : char
 {
     GPS_COORD = 0,
     GPS_SPEED = 1,

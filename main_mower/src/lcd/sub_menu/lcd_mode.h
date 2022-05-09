@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_mode
+enum lcd_menu_mode : char
 {
     MODE_STATUS = 0,
     MODE_RUN = 1,

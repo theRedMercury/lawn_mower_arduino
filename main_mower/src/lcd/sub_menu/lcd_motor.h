@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_motor
+enum lcd_menu_motor : char
 {
     MOTOR_TEST = 0,
     MOTOR_LEFT = 1,

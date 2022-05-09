@@ -12,7 +12,7 @@
 
 #include "tools.hpp"
 
-enum class time_day_week
+enum class time_day_week : char
 {
     Err,
     Sunday,

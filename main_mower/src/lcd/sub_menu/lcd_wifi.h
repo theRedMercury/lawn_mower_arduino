@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_wifi
+enum lcd_menu_wifi : char
 {
     WIFI_STATUS = 0,
     WIFI_LAST_MSG = 1

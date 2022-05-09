@@ -16,7 +16,7 @@
 class navigation : public abs_mower_class
 {
 public:
-    enum class navigation_pattern
+    enum class navigation_pattern : char
     {
         BYPASS,
         STOP,
@@ -31,7 +31,7 @@ public:
         ENTRING_STATION
     };
 
-    enum class navigation_exit
+    enum class navigation_exit : char
     {
         BYPASS,
         FULL_REVERSE,
@@ -62,7 +62,7 @@ private:
 
     unsigned long _circle_milli = 0;
 
-    void _update();
+    void _update_navigation();
     void _process_pattern();
 
     void _set_target_angle(const unsigned short target_angle);

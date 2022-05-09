@@ -41,7 +41,7 @@
 
 ///////////////////////////////////////////////////////
 
-enum class mower_status
+enum class mower_status : char
 {
     READY,
     WAITING,

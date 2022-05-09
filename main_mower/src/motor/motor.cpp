@@ -142,7 +142,7 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     }
 
     motor->computed_speed += TaC * (motor->target_speed - motor->computed_speed) / 2000.0f; // 2000 is Accel (not change < 2000)
-    unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, 255);
+    const unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, 255);
     switch (real_m)
     {
     case 0 ... 20:

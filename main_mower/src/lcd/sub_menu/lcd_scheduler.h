@@ -8,7 +8,7 @@
 
 #include "../../mower/mower.hpp"
 
-enum lcd_menu_scheduler
+enum lcd_menu_scheduler : char
 {
     SCHEDULER_START_M = 0,
     SCHEDULER_MON = 1,

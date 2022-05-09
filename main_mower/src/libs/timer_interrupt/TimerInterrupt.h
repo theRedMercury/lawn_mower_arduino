@@ -132,7 +132,7 @@
 typedef void (*timer_callback)(void);
 typedef void (*timer_callback_p)(void *);
 
-enum
+enum : char
 {
   HW_TIMER_0 = 0,
   HW_TIMER_1,
@@ -143,7 +143,7 @@ enum
   NUM_HW_TIMERS
 };
 
-enum
+enum : char
 {
   NO_CLOCK_SOURCE = 0,
   NO_PRESCALER,
@@ -154,7 +154,7 @@ enum
   NUM_ITEMS
 };
 
-enum
+enum : char
 {
   T2_NO_CLOCK_SOURCE = 0,
   T2_NO_PRESCALER,
