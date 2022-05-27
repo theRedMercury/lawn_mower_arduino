@@ -66,6 +66,7 @@ void Lcd_navigation_menu_mode(mower_manager *mower)
             else
             {
                 mower->schedul.force_mowing();
+                mower->nav.start_mowing();
                 mower->set_current_status(mower_status::RUNNING);
                 mower->lcd.return_main_info();
             }

@@ -8,8 +8,9 @@
 #define NAVIGATION_H
 #include "../mower/abs_mower.hpp"
 
-#define MAX_DELAY_PATTERN_MS 250 // const unsigned short _max_delay_counter = 14;
+#define MAX_DELAY_PATTERN_MS 250
 #define MAX_DELAY_PATTERN_EXIT_MS 500
+#define MAX_DELAY_NOT_MOUVING_MS 20 * 1000 // 20 sec
 #define MAX_CIRCLE_DELAY_COUNTER 5000
 #define MIN_COLLITION_DETECT 3
 
@@ -44,7 +45,7 @@ public:
     void setup();
     void update();
 
-    void start_mowing(const bool wait_target = false, const unsigned short target = 1000);
+    void start_mowing();
 
     void update_target_angle();
     const char *get_current_pattern_str(const navigation_pattern n) const;
@@ -61,6 +62,8 @@ private:
     navigation_exit _nav_exit = navigation_exit::BYPASS;
 
     unsigned long _circle_milli = 0;
+
+    void _start_mowing(const bool wait_target = false, const unsigned short target = 1000);
 
     void _update_navigation();
     void _process_pattern();
@@ -81,5 +84,6 @@ private:
 
     delay_time_out _delay_next_pattern{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_exit_pattern{MAX_DELAY_PATTERN_EXIT_MS};
+    delay_time_out _delay_not_moving{MAX_DELAY_NOT_MOUVING_MS};
 };
 #endif

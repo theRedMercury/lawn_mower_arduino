@@ -14,6 +14,7 @@ void motor_control_blade::setup()
     pinMode(PIN_L_EN, OUTPUT);
     pinMode(PIN_R_EN, OUTPUT);
     pinMode(PIN_RPWM, OUTPUT);
+    pinMode(PIN_RELAY, OUTPUT);
     digitalWrite(PIN_RELAY, HIGH); // OFF relay
     stop();
     DEBUG_PRINTLN(" : DONE");

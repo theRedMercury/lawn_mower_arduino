@@ -91,6 +91,8 @@ const char *mower_manager::get_current_status_str() const
         return "TESTING ";
     case mower_status::ERROR_INIT:
         return "ERR INIT";
+    case mower_status::ERROR_STUCK:
+        return "ERR STUC";
     case mower_status::ERROR_LOST_WIRE:
         return "ERLOST W";
     case mower_status::ERROR_POWER:

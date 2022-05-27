@@ -115,7 +115,6 @@ void perimeter::update()
         // Low signal, use filtered value for increased reliability
         _is_inside = (_signal_counter < 0);
     }
-    adc_manager::clean_channel(PIN_A_WIRE);
 }
 
 void perimeter::set_simulate_is_inside(const bool simulate)

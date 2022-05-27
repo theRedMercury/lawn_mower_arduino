@@ -14,7 +14,6 @@ void elec_sensor::setup()
     DEBUG_PRINT(class_name);
     pinMode(PIN_A_AMP, INPUT);
     pinMode(PIN_A_VOLT, INPUT);
-    pinMode(PIN_RELAY, OUTPUT);
     DEBUG_PRINTLN(" : DONE");
 }
 void elec_sensor::update()
@@ -99,7 +98,6 @@ void elec_sensor::update_volt()
 
     const unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
     _current_volt = constrain(static_cast<float>(val) / 38.3f, 0, 24); //(R2 / (R1 + R2));
-    adc_manager::clean_channel(PIN_A_VOLT);
 
     DEBUG_PRINT("Volt brut >\t");
     DEBUG_PRINT(val);
@@ -115,7 +113,6 @@ void elec_sensor::update_amp()
     // 524 = 0.76  - 14
     const unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP, 16);
     _current_amp = constrain((static_cast<float>(val) - 510), 0, 512) * 0.05f;
-    adc_manager::clean_channel(PIN_A_AMP);
 
     DEBUG_PRINT("Amp brut  >\t");
     DEBUG_PRINT(val);
