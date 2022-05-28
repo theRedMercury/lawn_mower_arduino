@@ -9,34 +9,33 @@
 
 void gps_sensor::setup()
 {
+
     DEBUG_PRINT("SETUP : ");
     DEBUG_PRINT(class_name);
-    Serial2.begin(9600);
-    delay(100);
-    /*delay(100);
-  Serial2.flush();
-  delay(100);
-  // 1000 ms = 03E8
-  unsigned char packet[] = {
-      0xB5, // sync char 1
-      0x62, // sync char 2
-      0x06, // class
-      0x08, // id
-      0x06, // length
-      0x00, // length
-      0xE8, // payload
-      0x03, // payload
-      0x01, // payload
-      0x00, // payload
-      0x01, // payload
-      0x00, // payload
-      0x01, // CK_A
-      0x39, // CK_B
-            //0xB5, 0x62, 0x06, 0x08, 0x00, 0x00, 0x0E, 0x30, 0x0D, 0x0A
-  };*/
+    SERIAL_GPS.begin(9600);
+
+    // https://ozzmaker.com/faq/how-do-i-change-the-baud-rate-on-the-gps-module/
+    //  1000 ms = 03E8
+    /*unsigned char packet[] = {
+        0xB5, // sync char 1
+        0x62, // sync char 2
+        0x06, // class
+        0x08, // id
+        0x06, // length
+        0x00, // length
+        0xE8, // payload
+        0x03, // payload
+        0x01, // payload
+        0x00, // payload
+        0x01, // payload
+        0x00, // payload
+        0x01, // CK_A
+        0x39, // CK_B
+              //0xB5, 0x62, 0x06, 0x08, 0x00, 0x00, 0x0E, 0x30, 0x0D, 0x0A
+    };*/
 
     // CHANGE BAUDERATE 115200
-    unsigned char packet[] = {
+    /*unsigned char packet[] = {
         0xB5, // sync char 1
         0x62, // sync char 2
         0x06, // class
@@ -65,14 +64,83 @@ void gps_sensor::setup()
         0x00, // payload
         0xC0, // CK_A
         0x7E, // CK_B
+    };*/
+    /////////////////////////////////
+    // CHANGE BAUDERATE 9600
+    unsigned char packet[] = {
+        0xB5, // sync char 1
+        0x62, // sync char 2
+        0x06, // class
+        0x00, // id
+        0x14, // length
+        0x00, // length
+        0x01, // payload
+
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+
+        0xD0, // payload
+        0x08, // payload
+        0x00, // payload
+        0x00, // payload
+
+        0x80, // payload
+        0x25, // payload
+        0x00, // payload
+        0x00, // payload
+        0x07, // payload
+        0x00, // payload
+        0x03, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0xA2, // CK_A
+        0xB7, // CK_B
     };
+    /////////////////////////////////
+    // CHANGE BAUDERATE 19200
+    /*unsigned char packet[] = {
+        0xB5, // sync char 1
+        0x62, // sync char 2
+        0x06, // class
+        0x00, // id
+        0x14, // length
+        0x00, // length
+        0x01, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0xD0, // payload
+        0x08, // payload
+
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x4B, // payload
+
+        0x00, // payload
+        0x00, // payload
+        0x07, // payload
+        0x00, // payload
+        0x03, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x00, // payload
+        0x48, // CK_A
+        0x57, // CK_B
+    };*/
+
     for (unsigned char i = 0; i < sizeof(packet); i++)
     {
-        Serial2.write(packet[i]);
+        SERIAL_GPS.write(packet[i]);
     }
-    Serial2.flush();
     delay(250);
-    Serial2.begin(115200);
+    // SERIAL_GPS.begin(9600);*/
 
     delay(100);
     Wire.begin();
@@ -82,17 +150,10 @@ void gps_sensor::setup()
     Wire.write(0x00);                   // continuous measurement mode
     Wire.endTransmission();
 
-    if (gps_nmea::gps_reset(Serial2))
-    {
-        DEBUG_PRINTLN(" : DONE");
-        _is_init_ok = true;
-    }
-    else
-    {
-        DEBUG_PRINTLN(" : FAIL");
-    }
+    _is_init_ok = gps_nmea::gps_reset(SERIAL_GPS);
+    DEBUG_PRINTLN(_is_init_ok ? " : DONE" : " : FAIL");
 
-    Serial2.setTimeout(5);
+    SERIAL_GPS.setTimeout(5);
 }
 
 void gps_sensor::update()
@@ -108,12 +169,12 @@ void gps_sensor::update_gps()
 {
     _is_updated = false;
     _counter_gps_update++;
-    if (Serial2.available() > 13)
+    if (SERIAL_GPS.available() > 13)
     {
         DEBUG_PRINTLN("READ");
         gps_result _gpsResult;
-        gps_nmea::gps_parse(Serial2, _gpsResult);
-        if (!_gpsResult.gps_success && !_gpsResult.checksum_valid)
+        gps_nmea::gps_parse(SERIAL_GPS, _gpsResult);
+        if (!_gpsResult.gps_success || !_gpsResult.checksum_valid)
         {
             return;
         }
@@ -130,13 +191,17 @@ void gps_sensor::update_gps()
         DEBUG_PRINTLN(_gpsResult.gps_spd);
         DEBUG_PRINTLN(_gpsResult.gps_cse);
         DEBUG_PRINTLN(_gpsResult.gps_date);
-        DEBUG_PRINTLN(_gpsResult.checksum)
+        DEBUG_PRINTLN(_gpsResult.checksum);
         */
 
         const float lat = _convert_nmea_to_lat_lon(_gpsResult.gps_lat, _gpsResult.gps_ns);
         const float lon = _convert_nmea_to_lat_lon(_gpsResult.gps_lon, _gpsResult.gps_ew);
         const float speed = atof(_gpsResult.gps_spd);
         const bool success = _gpsResult.gps_success;
+        const bool checksum_valid = _gpsResult.checksum_valid;
+
+        _gps_data.success = success;
+        _gps_data.checksum_ok = checksum_valid;
 
         if ((_gps_data.lat != lat || _gps_data.lon != lon || _gps_data.speed != speed || _gps_data.success != success) &&
             (_gps_data.lat == 0.f && _gps_data.lon == 0.f && lat != 0.f && lon != 0.f))
@@ -144,7 +209,7 @@ void gps_sensor::update_gps()
             _gps_data.lat = _convert_nmea_to_lat_lon(_gpsResult.gps_lat, _gpsResult.gps_ns);
             _gps_data.lon = _convert_nmea_to_lat_lon(_gpsResult.gps_lon, _gpsResult.gps_ew);
             _gps_data.speed = atof(_gpsResult.gps_spd);
-            _gps_data.success = _gpsResult.gps_success;
+
             _is_updated = true;
             _counter_gps_update = 0;
         }
@@ -163,12 +228,24 @@ void gps_sensor::update_gps()
             unsigned char Second = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_time + 4, 2, mower->time.get_second());
             unsigned char Day = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date, 2, mower->time.get_day(), 1, 31);
             unsigned char Month = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 2, 2, mower->time.get_month(), 1, 12);
-            unsigned short Year = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 4, 2, mower->time.get_year() - 2000, 0, 99) + 2000;
+            unsigned short Year = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 4, 2, mower->time.get_year(), 0, 99);
+
+            DEBUG_PRINT("HOUR >\t");
+            DEBUG_PRINT(Hour);
+            DEBUG_PRINT(":");
+            DEBUG_PRINT(Minute);
+            DEBUG_PRINT(":");
+            DEBUG_PRINT(Second);
+            DEBUG_PRINT("  --  ");
+            DEBUG_PRINT(Day);
+            DEBUG_PRINT("/");
+            DEBUG_PRINT(Month);
+            DEBUG_PRINT("/");
+            DEBUG_PRINT(Year);
+            DEBUG_PRINTLN("");
+
             mower->time.set_time(Hour, Minute, Second, Day, Month, Year);
-            if (Year > 2000)
-            {
-                _time_is_valid = true;
-            }
+            _time_is_valid = true;
         }
 
         DEBUG_PRINT("GPS >\t");
@@ -185,9 +262,6 @@ void gps_sensor::update_gps()
         DEBUG_PRINT("/");
         DEBUG_PRINTLN(mower->time.get_year());
         DEBUG_PRINTLN(_gpsResult.gps_date);
-        // time.adjust_time(2 * SECS_PER_HOUR);
-        //  adjust_time(2 * SECS_PER_HOUR);
-        //  weekday();
     }
 
     /*DEBUG_PRINT("GPS >\t");
@@ -213,6 +287,7 @@ void gps_sensor::update_gps()
     // DEBUG_PRINT(String(dayStr(weekday())));
     DEBUG_PRINTLN(" ");
 }
+
 void gps_sensor::update_mag()
 {
     // Tell the HMC5883 where to begin reading data
@@ -275,7 +350,7 @@ const unsigned short gps_sensor::get_heading_deg() const
 
 const bool gps_sensor::is_ready() const
 {
-    return _is_ready;
+    return _is_ready && _is_init_ok;
 }
 
 const bool gps_sensor::is_time_valid() const

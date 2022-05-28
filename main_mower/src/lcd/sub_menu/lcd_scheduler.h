@@ -23,7 +23,7 @@ lcd_menu_scheduler _currentSchedulMenu;
 
 void Lcd_navigation_menu_scheduler(mower_manager *mower)
 {
-    mower->lcd.process_sub_menu_input(_currentSchedulMenu, 6);
+    mower->lcd.process_sub_menu_input(_currentSchedulMenu, 7);
     mower->lcd.get_screen().setCursor(5, 0);
 
     // SHOW MENU

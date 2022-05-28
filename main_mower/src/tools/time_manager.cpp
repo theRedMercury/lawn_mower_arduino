@@ -36,13 +36,13 @@ static constexpr PROGMEM const char *const PROGMEM _month_names[] = {
     _month_str_7, _month_str_8, _month_str_9, _month_str_10, _month_str_11, _month_str_12};
 
 static constexpr char _day_str_0[] PROGMEM = "Err   ";
-static constexpr char _day_str_1[] PROGMEM = "Sun   ";
-static constexpr char _day_str_2[] PROGMEM = "Mon   ";
-static constexpr char _day_str_3[] PROGMEM = "Tues  ";
-static constexpr char _day_str_4[] PROGMEM = "Wednes";
-static constexpr char _day_str_5[] PROGMEM = "Thurs ";
-static constexpr char _day_str_6[] PROGMEM = "Fri   ";
-static constexpr char _day_str_7[] PROGMEM = "Satur ";
+static constexpr char _day_str_1[] PROGMEM = "Mon   ";
+static constexpr char _day_str_2[] PROGMEM = "Tues  ";
+static constexpr char _day_str_3[] PROGMEM = "Wednes";
+static constexpr char _day_str_4[] PROGMEM = "Thurs ";
+static constexpr char _day_str_5[] PROGMEM = "Fri   ";
+static constexpr char _day_str_6[] PROGMEM = "Satur ";
+static constexpr char _day_str_7[] PROGMEM = "Sun   ";
 
 static constexpr const PROGMEM char *const PROGMEM _day_names[] = {
     _day_str_0, _day_str_1, _day_str_2, _day_str_3, _day_str_4, _day_str_5, _day_str_6, _day_str_7};
@@ -53,16 +53,18 @@ time_manager::time_manager()
 {
     set_time(1, 1, 1, 1, 1, 1970);
 }
+
 void time_manager::set_time(const unsigned char hr, const unsigned char minute, const unsigned char sec, const unsigned char dy, const unsigned char mnth, const unsigned short yr)
 {
+    _current_tm.hour = constrain(hr, 0, 23);
+    _current_tm.minute = constrain(minute, 0, 59);
+    _current_tm.second = constrain(sec, 0, 59);
     // year can be given as full four digit year or two digts (2010 or 10 for 2010);
     // it is converted to years since 1970
-    _current_tm.year_offset = (yr > 99) ? (yr - 1970) : (yr + 30);
-    _current_tm.month = constrain(mnth, 1, 12);
     _current_tm.day = constrain(dy, 1, 31);
-    _current_tm.hour = constrain(hr, 0, 24);
-    _current_tm.minute = constrain(minute, 0, 60);
-    _current_tm.second = constrain(sec, 0, 60);
+    _current_tm.month = constrain(mnth, 1, 12);
+    _current_tm.year_offset = (yr > 99) ? (yr - 1970) : (yr + 30);
+
     _make_time();
 }
 
@@ -118,75 +120,81 @@ const char *time_manager::get_current_month()
     return _buffer;
 }
 
-void time_manager::adjust_time(const unsigned long adjustment)
+void time_manager::_compute_week_number()
 {
-    _current_time += adjustment;
-    _update_time();
-}
-
-void time_manager::_update_time()
-{
-    // break the given time_t into time components
-    // this is a more compact version of the C library localtime function
-    // note that year is offset from 1970 !!!
-
-    unsigned char year;
-    unsigned char month, month_length;
-    unsigned int new_time;
-    unsigned long days;
-
-    new_time = _current_time;
-    _current_tm.second = new_time % 60;
-    new_time /= 60; // now it is minutes
-    _current_tm.minute = new_time % 60;
-    new_time /= 60; // now it is hours
-    _current_tm.hour = new_time % 24;
-    new_time /= 24;                                                          // now it is days
-    _current_tm.wday = static_cast<time_day_week>(((new_time + 4) % 7) + 1); // Sunday is day 1
-
-    year = 0;
-    days = 0;
-    while ((unsigned)(days += (LEAP_YEAR(year) ? 366 : 365)) <= new_time)
+    int d = _current_tm.day;
+    int m = _current_tm.month;
+    int y = _current_tm.year_offset + 1970;
+    // take advantage of 28-year cycle
+    while (y >= 1929)
+        y -= 28;
+    // compute adjustment for dates within the year
+    //     If Jan. 1 falls on: Mo Tu We Th Fr Sa Su
+    // then the adjustment is:  6  7  8  9  3  4  5
+    int adj = (y - 1873) + ((y - 1873) >> 2);
+    while (adj > 9)
+        adj -= 7;
+    // compute day of the year (in range 1-366)
+    int doy = d;
+    for (int i = 1; i < m; i++)
+        doy += (30 + ((0x15AA >> i) & 1));
+    if (m > 2)
+        doy -= ((y & 3) ? 2 : 1);
+    // compute the adjusted day number
+    int dnum = adj + doy;
+    // compute week number
+    int wknum = dnum >> 3;
+    dnum -= ((wknum << 3) - wknum);
+    while (dnum >= 7)
     {
-        year++;
+        dnum -= 7;
+        wknum++;
     }
-    _current_tm.year_offset = year; // year is offset from 1970
-
-    days -= LEAP_YEAR(year) ? 366 : 365;
-    new_time -= days; // now it is days in this year, starting at 0
-
-    days = 0;
-    month = 0;
-    month_length = 0;
-    for (month = 0; month < 12; month++)
+    // check for boundary conditions
+    if (wknum < 1)
     {
-        if (month == 1)
-        { // february
-            if (LEAP_YEAR(year))
-            {
-                month_length = 29;
-            }
-            else
-            {
-                month_length = 28;
-            }
-        }
-        else
+        // last week of the previous year
+        // check to see whether that year had 52 or 53 weeks
+        // re-compute adjustment, this time for previous year
+        adj = (y - 1874) + ((y - 1874) >> 2);
+        while (adj > 9)
+            adj -= 7;
+        // all years beginning on Thursday have 53 weeks
+        if (adj == 9)
         {
-            month_length = _month_days[month];
+            _current_tm.week_num = 53;
+            return;
         }
-
-        if (new_time >= month_length)
+        // leap years beginning on Wednesday have 53 weeks
+        if ((adj == 8) && ((y & 3) == 1))
         {
-            new_time -= month_length;
+            _current_tm.week_num = 53;
+            return;
         }
-        else
-        {
-            break;
-        }
+        // other years have 52 weeks
+        _current_tm.week_num = 52;
+        return;
     }
-    _current_tm.month = month + 1;  // jan is month 1
-    _current_tm.day = new_time + 1; // day of month
+    if (wknum > 52)
+    {
+        // check to see whether week 53 exists in this year
+        // all years beginning on Thursday have 53 weeks
+        if (adj == 9)
+        {
+            _current_tm.week_num = 53;
+            return;
+        }
+        // leap years beginning on Wednesday have 53 weeks
+        if ((adj == 8) && ((y & 3) == 0))
+        {
+            _current_tm.week_num = 53;
+            return;
+        }
+        // other years have 52 weeks
+        _current_tm.week_num = 1;
+        return;
+    }
+    _current_tm.week_num = wknum;
 }
 
 void time_manager::_make_time()
@@ -195,10 +203,10 @@ void time_manager::_make_time()
     // note year argument is offset from 1970 (see macros in time.h to convert to other formats)
     // previous version used full four digit year (or digits since 2000),i.e. 2009 was 2009 or 9
 
-    int i;
+    _compute_week_number();
     // seconds from 1970 till 1 jan 00:00:00 of the given year
     _current_time = _current_tm.year_offset * (SECS_PER_DAY * 365);
-    for (i = 0; i < _current_tm.year_offset; i++)
+    for (int i = 0; i < _current_tm.year_offset; i++)
     {
         if (LEAP_YEAR(i))
         {
@@ -207,7 +215,7 @@ void time_manager::_make_time()
     }
 
     // add days for this year, months start from 1
-    for (i = 1; i < _current_tm.month; i++)
+    for (int i = 1; i < _current_tm.month; i++)
     {
         if ((i == 2) && LEAP_YEAR(_current_tm.year_offset))
         {
@@ -222,5 +230,5 @@ void time_manager::_make_time()
     _current_time += _current_tm.hour * SECS_PER_HOUR;
     _current_time += _current_tm.minute * SECS_PER_MIN;
     _current_time += _current_tm.second;
-    _update_time();
+    _current_tm.wday = static_cast<time_day_week>((((_current_time / 86400) + 4) % 7)); // Monday is 1
 }

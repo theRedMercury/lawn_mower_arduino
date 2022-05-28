@@ -15,9 +15,9 @@
 ///////////////////////////////////////////////////////
 // PRINT SERIAL MODE
 ///////////////////////////////////////////////////////
-//#define DEBUG_PRINTER Serial // Comment if RELEASE
-//#define DEBUG_MODE 0         // Comment if RELEASE
-//#define DEBUG_SPEED_MODE 0   // Comment if RELEASE
+#define DEBUG_PRINTER Serial // Comment if RELEASE
+#define DEBUG_MODE 0         // Comment if RELEASE
+#define DEBUG_SPEED_MODE 0   // Comment if RELEASE
 //#define DEBUG_SIMULATE_WIRE 0   // Comment if RELEASE
 //#define DEBUG_IS_TIME_TO_MOWN 0 // Comment if RELEASE
 

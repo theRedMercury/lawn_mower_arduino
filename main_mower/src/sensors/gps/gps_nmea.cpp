@@ -24,16 +24,24 @@ const bool gps_nmea::gps_reset(HardwareSerial &ser)
 {
   char temp;
   unsigned int counter_loop = 0;
-  do
+  while (true)
   {
     counter_loop++;
     if (ser.available() > 0)
+    {
       temp = ser.read();
-
-    if (counter_loop > 100000) // Timeout
+      if (temp == '$')
+      {
+        ser.flush();
+        return true;
+      }
+    }
+    // Timeout
+    if (counter_loop > 100000)
+    {
       return false;
-
-  } while (temp != '$');
+    }
+  }
 
   return true;
 }
@@ -46,26 +54,11 @@ const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
   result.checksum_valid = false;
 
   String gps_data = ser.readStringUntil('\n');
+  gps_data.trim();
+  // Process only GNRMC PACKET
   if (!gps_data.startsWith("$GNRMC,")) //$GN // Ingore $GNVTG & others
   {
-    ser.flush();
     return;
-  }
-
-  // CLEAN & get last $ if multiple in one line
-  unsigned int counterDollar = 0;
-  unsigned int lastIndex = 0;
-  for (unsigned int i = 0; i < gps_data.length(); i++)
-  {
-    if (gps_data[i] == '$')
-    {
-      counterDollar += 1;
-      lastIndex = i;
-    }
-  }
-  if (counterDollar > 1)
-  {
-    gps_data = gps_data.substring(lastIndex, gps_data.length());
   }
   //------------------------------------------------------
 
@@ -76,7 +69,7 @@ const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
   {
     String hexV = String(gps_data[size_packet - 2]) + String(gps_data[size_packet - 1]);
     result.checksum = strtoul(hexV.c_str(), 0, 16);
-    result.checksum_valid = _nmea0183_checksum_valid(rmc, result.checksum);
+    result.checksum_valid = _nmea0183_checksum_valid(rmc, size_packet, result.checksum);
   }
   result.gps_success = true;
 
@@ -178,11 +171,11 @@ void gps_nmea::_parse_rmc_date(char *gps_str, char *gpsDate, const unsigned int 
   _generic_parse_nmea(gps_str, gpsDate, 9, size);
 }
 
-bool gps_nmea::_nmea0183_checksum_valid(char *gps_data, int checksum)
+bool gps_nmea::_nmea0183_checksum_valid(char *gps_data, const unsigned int size, const int checksum)
 {
-  int crc = -1;
+  int crc = 0;
   // ignore the first $ sign,  no checksum in sentence
-  for (unsigned int i = 1; i < strlen(gps_data); i++)
+  for (unsigned int i = 1; i < (size - 3); i++)
   { // removed the - 3 because no cksum is present
     crc ^= gps_data[i];
   }

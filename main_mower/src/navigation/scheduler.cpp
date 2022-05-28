@@ -53,40 +53,40 @@ const bool scheduler::is_time_to_mown() const
     bool b_start, b_end;
     switch (day_week_num)
     {
+
     case 1:
-        b_start = _comp_hours(h, m, _shedul.sunday.h_start, _shedul.sunday.m_start);
-        b_end = _comp_hours(h, m, _shedul.sunday.h_end, _shedul.sunday.m_end);
-        return b_start && !b_end;
-    case 2:
         b_start = _comp_hours(h, m, _shedul.monday.h_start, _shedul.monday.m_start);
         b_end = _comp_hours(h, m, _shedul.monday.h_end, _shedul.monday.m_end);
         return b_start && !b_end;
 
-    case 3:
+    case 2:
         b_start = _comp_hours(h, m, _shedul.tuesday.h_start, _shedul.tuesday.m_start);
         b_end = _comp_hours(h, m, _shedul.tuesday.h_end, _shedul.tuesday.m_end);
         return b_start && !b_end;
 
-    case 4:
+    case 3:
         b_start = _comp_hours(h, m, _shedul.wednesday.h_start, _shedul.wednesday.m_start);
         b_end = _comp_hours(h, m, _shedul.wednesday.h_end, _shedul.wednesday.m_end);
         return b_start && !b_end;
 
-    case 5:
+    case 4:
         b_start = _comp_hours(h, m, _shedul.thursday.h_start, _shedul.thursday.m_start);
         b_end = _comp_hours(h, m, _shedul.thursday.h_end, _shedul.thursday.m_end);
         return b_start && !b_end;
 
-    case 6:
+    case 5:
         b_start = _comp_hours(h, m, _shedul.friday.h_start, _shedul.friday.m_start);
         b_end = _comp_hours(h, m, _shedul.friday.h_end, _shedul.friday.m_end);
         return b_start && !b_end;
 
-    case 7:
+    case 6:
         b_start = _comp_hours(h, m, _shedul.saturday.h_start, _shedul.saturday.m_start);
         b_end = _comp_hours(h, m, _shedul.saturday.h_end, _shedul.saturday.m_end);
         return b_start && !b_end;
-
+    case 7:
+        b_start = _comp_hours(h, m, _shedul.sunday.h_start, _shedul.sunday.m_start);
+        b_end = _comp_hours(h, m, _shedul.sunday.h_end, _shedul.sunday.m_end);
+        return b_start && !b_end;
     default:
         break;
     }
@@ -116,26 +116,26 @@ const bool scheduler::is_time_to_return_station() const
 
     switch (day_week_num)
     {
+
     case 1:
-        return _comp_hours(h, m, _shedul.sunday.h_end, _shedul.sunday.m_end);
-    case 2:
         return _comp_hours(h, m, _shedul.monday.h_end, _shedul.monday.m_end);
 
-    case 3:
+    case 2:
         return _comp_hours(h, m, _shedul.tuesday.h_end, _shedul.tuesday.m_end);
 
-    case 4:
+    case 3:
         return _comp_hours(h, m, _shedul.wednesday.h_end, _shedul.wednesday.m_end);
 
-    case 5:
+    case 4:
         return _comp_hours(h, m, _shedul.thursday.h_end, _shedul.thursday.m_end);
 
-    case 6:
+    case 5:
         return _comp_hours(h, m, _shedul.friday.h_end, _shedul.friday.m_end);
 
-    case 7:
+    case 6:
         return _comp_hours(h, m, _shedul.saturday.h_end, _shedul.saturday.m_end);
-
+    case 7:
+        return _comp_hours(h, m, _shedul.sunday.h_end, _shedul.sunday.m_end);
     default:
         break;
     }
@@ -241,41 +241,17 @@ const bool scheduler::_comp_hours(const unsigned char h_01, const unsigned char 
 const String scheduler::_get_string_schedul_day(const schedul_day day) const
 {
     String ret = "";
-    if (day.h_start < 10)
-    {
-        ret += "0" + String(day.h_start);
-    }
-    else
-    {
-        ret += String(day.h_start);
-    }
+    ret += _char_to_time_string(day.h_start);
     ret += ":";
-    if (day.m_start < 10)
-    {
-        ret += "0" + String(day.m_start);
-    }
-    else
-    {
-        ret += String(day.m_start);
-    }
-
+    ret += _char_to_time_string(day.m_start);
     ret += " > ";
-    if (day.h_end < 10)
-    {
-        ret += "0" + String(day.h_end);
-    }
-    else
-    {
-        ret += String(day.h_end);
-    }
+    ret += _char_to_time_string(day.h_end);
     ret += ":";
-    if (day.m_end < 10)
-    {
-        ret += "0" + String(day.m_end);
-    }
-    else
-    {
-        ret += String(day.m_end);
-    }
+    ret += _char_to_time_string(day.m_end);
     return ret;
+}
+
+const String scheduler::_char_to_time_string(const unsigned char value) const
+{
+    return (value < 10) ? "0" + String(value) : String(value);
 }

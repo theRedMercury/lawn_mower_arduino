@@ -23,13 +23,13 @@ struct PACKING schedul_day
 
 struct PACKING schedul_week
 {
-    schedul_day sunday;
     schedul_day monday;
     schedul_day tuesday;
     schedul_day wednesday;
     schedul_day thursday;
     schedul_day friday;
     schedul_day saturday;
+    schedul_day sunday;
 };
 
 class scheduler : public abs_mower_class
@@ -51,6 +51,7 @@ public:
 private:
     const bool _comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const;
     const String _get_string_schedul_day(const schedul_day day) const;
+    const String _char_to_time_string(const unsigned char value) const;
 
     schedul_week _shedul;
     bool _force_to_mown = false; // until return station

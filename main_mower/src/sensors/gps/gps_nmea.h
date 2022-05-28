@@ -48,7 +48,7 @@ private:
   static void _parse_rmc_spd(char *gps_str, char *gpsSpeed, const unsigned int size);
   static void _parse_rmc_cse(char *gps_str, char *gpsCSE, const unsigned int size);
   static void _parse_rmc_date(char *gps_str, char *gpsDate, const unsigned int size);
-  static bool _nmea0183_checksum_valid(char *gps_data, int checksum);
+  static bool _nmea0183_checksum_valid(char *gps_data, const unsigned int size, const int checksum);
 
   gps_nmea();
 };

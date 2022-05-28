@@ -14,10 +14,12 @@
 #include "gps_nmea.h"
 
 #define MAG_ADRESS 0x1E // 0011110b, I2C 7bit address of HMC5883
+#define SERIAL_GPS Serial2
 
 struct PACKING gps_data
 {
     bool success = false;
+    bool checksum_ok = false;
     float lat = 0.f;
     float lon = 0.f;
     float speed = 0.f;

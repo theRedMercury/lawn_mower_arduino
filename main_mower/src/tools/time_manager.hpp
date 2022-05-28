@@ -12,16 +12,16 @@
 
 #include "tools.hpp"
 
-enum class time_day_week : char
+enum class time_day_week : unsigned char
 {
-    Err,
-    Sunday,
-    Monday,
-    Tuesday,
-    Wednesday,
-    Thursday,
-    Friday,
-    Saturday
+    Err = 0,
+    Monday = 1,
+    Tuesday = 2,
+    Wednesday = 3,
+    Thursday = 4,
+    Friday = 5,
+    Saturday = 6,
+    Sunday = 7,
 };
 
 struct PACKING time_element
@@ -29,7 +29,8 @@ struct PACKING time_element
     unsigned char second;
     unsigned char minute;
     unsigned char hour;
-    time_day_week wday; // day of week, sunday is day 1
+    time_day_week wday; // day of week, monday is day 1
+    unsigned char week_num;
     unsigned char day;
     unsigned char month;
     unsigned char year_offset; // offset from 1970;
@@ -57,14 +58,13 @@ public:
     // const time_element *get_current_time() const;
     const char *get_current_day();
     const char *get_current_month();
-    void adjust_time(const unsigned long adjustment);
 
 private:
     void _make_time();
-    void _update_time();
+    void _compute_week_number();
 
     time_element _current_tm;
-    unsigned int _current_time = 0;
+    unsigned long _current_time = 0;
     char _buffer[10];
 };
 #endif
