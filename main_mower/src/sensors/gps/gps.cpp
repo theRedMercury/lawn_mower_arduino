@@ -231,15 +231,15 @@ void gps_sensor::update_gps()
             unsigned short Year = gps_nmea::gps_parse_unsigned_int(_gpsResult.gps_date + 4, 2, mower->time.get_year(), 0, 99);
 
             DEBUG_PRINT("HOUR >\t");
-            DEBUG_PRINT(Hour);
-            DEBUG_PRINT(":");
-            DEBUG_PRINT(Minute);
-            DEBUG_PRINT(":");
-            DEBUG_PRINT(Second);
+            DEBUG_PRINT(DECIMAL_TIME_STR(Hour));
+            DEBUG_PRINT(':');
+            DEBUG_PRINT(DECIMAL_TIME_STR(Minute));
+            DEBUG_PRINT(':');
+            DEBUG_PRINT(DECIMAL_TIME_STR(Second));
             DEBUG_PRINT("  --  ");
-            DEBUG_PRINT(Day);
+            DEBUG_PRINT(DECIMAL_TIME_STR(Day));
             DEBUG_PRINT("/");
-            DEBUG_PRINT(Month);
+            DEBUG_PRINT(DECIMAL_TIME_STR(Month));
             DEBUG_PRINT("/");
             DEBUG_PRINT(Year);
             DEBUG_PRINTLN("");
@@ -250,9 +250,9 @@ void gps_sensor::update_gps()
 
         DEBUG_PRINT("GPS >\t");
         DEBUG_PRINT(mower->time.get_hour());
-        DEBUG_PRINT(":");
+        DEBUG_PRINT(':');
         DEBUG_PRINT(mower->time.get_minute());
-        DEBUG_PRINT(":");
+        DEBUG_PRINT(':');
         DEBUG_PRINTLN(mower->time.get_second());
 
         DEBUG_PRINT("\t");
@@ -261,14 +261,16 @@ void gps_sensor::update_gps()
         DEBUG_PRINT(mower->time.get_month());
         DEBUG_PRINT("/");
         DEBUG_PRINTLN(mower->time.get_year());
+        DEBUG_PRINT("\t");
+        DEBUG_PRINTLN(static_cast<int>(mower->time.get_day_week_num()));
         DEBUG_PRINTLN(_gpsResult.gps_date);
     }
 
     /*DEBUG_PRINT("GPS >\t");
     DEBUG_PRINT(Hour);
-    DEBUG_PRINT(":");
+    DEBUG_PRINT(':');
     DEBUG_PRINT(Minute);
-    DEBUG_PRINT(":");
+    DEBUG_PRINT(':');
     DEBUG_PRINTLN(Second);
 
     DEBUG_PRINT("\t");

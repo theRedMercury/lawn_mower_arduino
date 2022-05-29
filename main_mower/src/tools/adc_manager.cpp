@@ -5,6 +5,7 @@
  */
 
 #include "adc_manager.hpp"
+#include "tools.hpp"
 
 #define CHANNELS 8 // MAX 16
 
@@ -15,7 +16,7 @@
 //#define sbi(sfr, bit) (_SFR_BYTE(sfr) |= _BV(bit))
 //#endif
 
-struct adc_channel
+struct PACKING adc_channel
 {
     unsigned short *values = NULL;
     volatile unsigned char value_size = 0;
@@ -116,8 +117,8 @@ const unsigned short adc_manager::get_avg_channel_value(const unsigned char chan
 // free running ADC fills capture buffer
 ISR(ADC_vect)
 {
-    volatile unsigned char _adcl = ADCL;
-    volatile unsigned char _adch = ADCH;
+    volatile const unsigned char _adcl = ADCL;
+    volatile const unsigned char _adch = ADCH;
 
     if (!_is_capturing)
     {

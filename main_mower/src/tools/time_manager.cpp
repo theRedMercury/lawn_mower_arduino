@@ -230,5 +230,8 @@ void time_manager::_make_time()
     _current_time += _current_tm.hour * SECS_PER_HOUR;
     _current_time += _current_tm.minute * SECS_PER_MIN;
     _current_time += _current_tm.second;
-    _current_tm.wday = static_cast<time_day_week>((((_current_time / 86400) + 4) % 7)); // Monday is 1
+    int day_week = (((_current_time / 86400) + 4) % 7);
+    day_week = day_week < 1 ? 7 : day_week; // Fix monday / sunday
+    day_week = day_week > 7 ? 1 : day_week;
+    _current_tm.wday = static_cast<time_day_week>(day_week); // Monday is 1
 }

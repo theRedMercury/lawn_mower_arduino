@@ -51,7 +51,6 @@ public:
 private:
     const bool _comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const;
     const String _get_string_schedul_day(const schedul_day day) const;
-    const String _char_to_time_string(const unsigned char value) const;
 
     schedul_week _shedul;
     bool _force_to_mown = false; // until return station

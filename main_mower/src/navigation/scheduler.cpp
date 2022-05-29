@@ -241,17 +241,12 @@ const bool scheduler::_comp_hours(const unsigned char h_01, const unsigned char 
 const String scheduler::_get_string_schedul_day(const schedul_day day) const
 {
     String ret = "";
-    ret += _char_to_time_string(day.h_start);
-    ret += ":";
-    ret += _char_to_time_string(day.m_start);
+    ret += DECIMAL_TIME_STR(day.h_start);
+    ret += ':';
+    ret += DECIMAL_TIME_STR(day.m_start);
     ret += " > ";
-    ret += _char_to_time_string(day.h_end);
-    ret += ":";
-    ret += _char_to_time_string(day.m_end);
+    ret += DECIMAL_TIME_STR(day.h_end);
+    ret += ':';
+    ret += DECIMAL_TIME_STR(day.m_end);
     return ret;
-}
-
-const String scheduler::_char_to_time_string(const unsigned char value) const
-{
-    return (value < 10) ? "0" + String(value) : String(value);
 }

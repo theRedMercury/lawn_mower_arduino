@@ -272,17 +272,9 @@ void lcd_control::show_main_info()
 
     // Current Hour
     _lcd_I2C.setCursor(11, 0);
-    if (mower->time.get_hour() < 10)
-    {
-        _lcd_I2C.print('0');
-    }
-    _lcd_I2C.print(String(mower->time.get_hour()));
+    _lcd_I2C.print(DECIMAL_TIME_STR(mower->time.get_hour()));
     _lcd_I2C.print(':');
-    if (mower->time.get_minute() < 10)
-    {
-        _lcd_I2C.print('0');
-    }
-    _lcd_I2C.print(String(mower->time.get_minute()));
+    _lcd_I2C.print(DECIMAL_TIME_STR(mower->time.get_minute()));
 
     // Volt robot
     _lcd_I2C.setCursor(11, 1);

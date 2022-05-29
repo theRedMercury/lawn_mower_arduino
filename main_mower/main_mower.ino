@@ -49,7 +49,7 @@ void timer_watch_dog_handler()
 ///////////////////////////////////////////////////////
 // Debug
 ///////////////////////////////////////////////////////
-void print_debug_stat()
+inline void print_debug_stat()
 {
 #ifdef DEBUG_SPEED_MODE
   DEBUG_PRINTER.print(">>>>>   LOOP TIME : ");
@@ -76,9 +76,9 @@ void setup()
 
   // Mower setup ==================================
   mower.setup();
-  //================================================
+  //===============================================
 
-  // Watchdog Safety //////////////////////////////////////////////////////////////
+  // Watchdog Safety
   if (!ITimer5.attachInterruptInterval(TIMER_INTERVAL_MS, timer_watch_dog_handler))
   {
     // Fail attach interrup : normally, never happen

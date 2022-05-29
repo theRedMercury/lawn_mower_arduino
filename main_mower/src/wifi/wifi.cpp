@@ -21,6 +21,25 @@ const char *mqtt_pass = "";
 
 */
 
+/* MQTT Topic
+ *
+ * IN (from mower) -----------------------------------------
+ * mower/in/ping        : "ping" to inform the server
+ * mower/in/esp         : "ping" to inform the server (from wifi module)
+ * mower/in/is_raining  : 0 / 1
+ * mower/in/elec        : {volt, amp, char}
+ * mower/in/wire        : {in, mag}
+ * mower/in/sensor      : {temp, psi}
+ * mower/in/status      : current mower status (RUNNING, ...)
+ *
+ * OUT (from external controller) --------------------------
+ * mower/out/scheduler :
+ *          "dayWeekNumber/startHour_EndHour" example : "1/8:00_12:00" -> Monday 8 to 12
+ * mower/out/mode :
+ *          "mode" example : "stop" / "run" / "station"
+ *
+ */
+
 void wifi_control::setup()
 {
     DEBUG_PRINT("SETUP : ");
