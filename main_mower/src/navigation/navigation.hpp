@@ -50,7 +50,7 @@ public:
     void update_target_angle();
     const char *get_current_pattern_str(const navigation_pattern n) const;
     navigation_pattern get_nav_pattern();
-    const unsigned short get_target() const;
+    unsigned short get_target() const;
 
     short correction;
 
@@ -70,7 +70,7 @@ private:
 
     void _set_target_angle(const unsigned short target_angle);
 
-    const navigation_pattern _get_pattern_sensor();
+    navigation_pattern _get_pattern_sensor();
 
     void _pattern_find_exit();
     void _pattern_full_reverse();

@@ -23,16 +23,16 @@ public:
     void update();
 
     void set_simulate_is_inside(const bool simulate = false);
-    const bool get_simulate_is_inside() const;
+    bool get_simulate_is_inside() const;
 
-    const short get_magnitude() const;
-    const short get_smooth_magnitude() const;
-    const float get_filter_quality() const;
+    short get_magnitude() const;
+    short get_smooth_magnitude() const;
+    float get_filter_quality() const;
 
-    const bool is_inside() const;
-    const bool is_signal_timed_out() const;
+    bool is_inside() const;
+    bool is_signal_timed_out() const;
 
-    const String get_json() const;
+    String get_json() const;
 
 private:
     bool _is_inside = false;

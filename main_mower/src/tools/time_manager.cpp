@@ -68,53 +68,53 @@ void time_manager::set_time(const unsigned char hr, const unsigned char minute, 
     _make_time();
 }
 
-const unsigned char time_manager::get_second() const
+unsigned char time_manager::get_second() const
 {
     return _current_tm.second;
 }
 
-const unsigned char time_manager::get_minute() const
+unsigned char time_manager::get_minute() const
 {
     return _current_tm.minute;
 }
 
-const unsigned char time_manager::get_hour() const
+unsigned char time_manager::get_hour() const
 {
     return _current_tm.hour;
 }
 
-const unsigned char time_manager::get_day() const
+unsigned char time_manager::get_day() const
 {
     return _current_tm.day;
 }
 
-const time_day_week time_manager::get_day_week_num() const
+time_day_week time_manager::get_day_week_num() const
 {
     return _current_tm.wday;
 }
 
-const unsigned char time_manager::get_month() const
+unsigned char time_manager::get_month() const
 {
     return _current_tm.month;
 }
 
-const unsigned short time_manager::get_year() const
+unsigned short time_manager::get_year() const
 {
     return _current_tm.year_offset + 1970;
 }
 
-const unsigned long time_manager::get_current_time() const
+unsigned long time_manager::get_current_time() const
 {
     return _current_time;
 }
 
-const char *time_manager::get_current_day()
+char *time_manager::get_current_day()
 {
     strcpy_P(_buffer, (PGM_P)pgm_read_ptr(&(_day_names[static_cast<int>(_current_tm.wday)])));
     return _buffer;
 }
 
-const char *time_manager::get_current_month()
+char *time_manager::get_current_month()
 {
     strcpy_P(_buffer, (PGM_P)pgm_read_ptr(&(_month_names[_current_tm.month])));
     return _buffer;

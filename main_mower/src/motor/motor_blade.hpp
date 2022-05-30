@@ -24,7 +24,7 @@ public:
 
     void stop();
     void on();
-    const bool is_on() const;
+    bool is_on() const;
 
 private:
     bool _blade_on = true; // force to stop at setup

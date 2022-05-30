@@ -300,13 +300,13 @@ LiquidCrystal_I2C lcd_control::get_screen() const
     return _lcd_I2C;
 }
 
-const current_flag_input lcd_control::get_current_input() const
+current_flag_input lcd_control::get_current_input() const
 {
     return _current_input;
 }
 
 template <typename T>
-const current_flag_input lcd_control::process_sub_menu_input(T &current_menu, unsigned char max)
+current_flag_input lcd_control::process_sub_menu_input(T &current_menu, unsigned char max)
 {
     on_backlight();
     switch (get_current_input())

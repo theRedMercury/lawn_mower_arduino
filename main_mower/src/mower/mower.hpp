@@ -94,7 +94,7 @@ public:
     void set_error(const mower_status error = mower_status::ERROR);
 
     const char *get_current_status_str() const;
-    const mower_status get_current_status() const;
+    mower_status get_current_status() const;
     void set_current_status(const mower_status new_status);
 
     time_manager time;

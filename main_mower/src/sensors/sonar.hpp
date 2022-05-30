@@ -26,7 +26,7 @@ class _sonar
 public:
     _sonar(const unsigned char pin_trig, const unsigned char pin_echo);
     void update();
-    const float get_value() const;
+    float get_value() const;
 
 private:
     float _value = 0.f;
@@ -46,11 +46,11 @@ public:
     void setup();
     void update();
 
-    const float get_left() const;
-    const float get_center() const;
-    const float get_right() const;
+    float get_left() const;
+    float get_center() const;
+    float get_right() const;
 
-    const void get_collisions(unsigned char *collision, const float threshold = 50.f) const;
+    void get_collisions(unsigned char *collision, const float threshold = 50.f) const;
 
 private:
     _sonar sonar_left{PIN_USOUND_TRIG_03, PIN_USOUND_ECHO_03};

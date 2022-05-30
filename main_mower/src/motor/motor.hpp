@@ -28,9 +28,9 @@ public:
 
     void set(short left_speed = 0, short right_speed = 0);
 
-    const bool is_running() const;
-    const short get_speed_left() const;
-    const short get_speed_right() const;
+    bool is_running() const;
+    short get_speed_left() const;
+    short get_speed_right() const;
 
 private:
     struct PACKING motor_stuct

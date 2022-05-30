@@ -22,12 +22,12 @@ void rain_sensor::update()
     DEBUG_PRINTLN("RAIN >\t" + String(_current_rain_value));
 }
 
-const unsigned short rain_sensor::get_value() const
+unsigned short rain_sensor::get_value() const
 {
     return _current_rain_value;
 }
 
-const bool rain_sensor::is_rainning() const
+bool rain_sensor::is_rainning() const
 {
     return _current_rain_value > THRESHOLD_RAIN;
 }

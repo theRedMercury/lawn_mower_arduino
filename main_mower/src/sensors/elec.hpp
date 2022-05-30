@@ -27,15 +27,15 @@ public:
     void update_volt();
     void update_amp();
 
-    const bool is_battery_charged() const;
-    const bool is_battery_low() const;
-    const bool is_battery_critical() const;
+    bool is_battery_charged() const;
+    bool is_battery_low() const;
+    bool is_battery_critical() const;
 
-    const bool is_charging() const;
-    const float get_curent_volt() const;
-    const float get_curent_amp() const;
+    bool is_charging() const;
+    float get_curent_volt() const;
+    float get_curent_amp() const;
 
-    const String get_json() const;
+    String get_json() const;
 
 private:
     float _current_volt = -1;

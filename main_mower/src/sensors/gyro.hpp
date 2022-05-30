@@ -21,36 +21,36 @@ public:
     void setup();
     void update();
 
-    const float get_temp() const;
-    const float get_pression() const;
+    float get_temp() const;
+    float get_pression() const;
 
-    const bool is_ready() const;
-    const bool have_shock() const;
-    const bool in_safe_status() const;
-    const bool is_moving() const;
+    bool is_ready() const;
+    bool have_shock() const;
+    bool in_safe_status() const;
+    bool is_moving() const;
 
     // a XYZ
-    const float get_ax() const;
-    const float get_ay() const;
-    const float get_az() const;
+    float get_ax() const;
+    float get_ay() const;
+    float get_az() const;
 
     // A XYZ
-    const float get_AX() const;
-    const float get_AY() const;
-    const float get_AZ() const;
+    float get_AX() const;
+    float get_AY() const;
+    float get_AZ() const;
 
-    const float get_ASqrt() const;
+    float get_ASqrt() const;
 
     // gyro
-    const float get_GX() const;
-    const float get_GY() const;
-    const float get_GZ() const;
+    float get_GX() const;
+    float get_GY() const;
+    float get_GZ() const;
 
-    const String get_json() const;
+    String get_json() const;
 
 private:
-    const bool _is_moving() const;
-    const bool _is_safe() const;
+    bool _is_moving() const;
+    bool _is_safe() const;
 
     BMP280 _bmp280;
     MPU9250 _mpu9250;

@@ -72,12 +72,12 @@ void motor_control::set(short left_speed, short right_speed)
     _motor_right.target_speed = right_speed;
 }
 
-const bool motor_control::is_running() const
+bool motor_control::is_running() const
 {
     return get_speed_left() != 0 || get_speed_right() != 0;
 }
 
-const short motor_control::get_speed_left() const
+short motor_control::get_speed_left() const
 {
     if (_motor_left.target_speed < 0)
     {
@@ -85,7 +85,7 @@ const short motor_control::get_speed_left() const
     }
     return static_cast<short>(_motor_left.real_speed);
 }
-const short motor_control::get_speed_right() const
+short motor_control::get_speed_right() const
 {
     if (_motor_right.target_speed < 0)
     {

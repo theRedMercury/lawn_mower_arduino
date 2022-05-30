@@ -49,9 +49,9 @@ public:
     void exit_sub_menu();
 
     LiquidCrystal_I2C get_screen() const;
-    const current_flag_input get_current_input() const;
+    current_flag_input get_current_input() const;
     template <typename T>
-    const current_flag_input process_sub_menu_input(T &current_menu, unsigned char max);
+    current_flag_input process_sub_menu_input(T &current_menu, unsigned char max);
 
 private:
     void _process_input();

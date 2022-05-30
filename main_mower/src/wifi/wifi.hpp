@@ -20,7 +20,7 @@ public:
     void update();
     void send_msg(const char *topic, const char *msg);
 
-    const bool is_ready() const;
+    bool is_ready() const;
     const char *get_last_msg() const;
 
 private:

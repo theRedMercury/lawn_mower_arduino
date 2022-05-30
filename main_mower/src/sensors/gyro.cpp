@@ -120,100 +120,100 @@ void gyro_sensor::update()
     DEBUG_PRINTLN("");
 }
 
-const float gyro_sensor::get_temp() const
+float gyro_sensor::get_temp() const
 {
     return _current_temp;
 }
 
-const float gyro_sensor::get_pression() const
+float gyro_sensor::get_pression() const
 {
     return _current_pression;
 }
 
-const bool gyro_sensor::is_ready() const
+bool gyro_sensor::is_ready() const
 {
     return _gy91Ok;
 }
 
-const bool gyro_sensor::have_shock() const
+bool gyro_sensor::have_shock() const
 {
     return _have_shock;
 }
 
-const bool gyro_sensor::in_safe_status() const
+bool gyro_sensor::in_safe_status() const
 {
     return _cumulation_is_safe > COUNTER_IS_SAFE - 5;
 }
 
-const bool gyro_sensor::is_moving() const
+bool gyro_sensor::is_moving() const
 {
     return _counter_moving > 0;
 }
 
 // a XYZ
-const float gyro_sensor::get_ax() const
+float gyro_sensor::get_ax() const
 {
     return _accel.x;
 }
 
-const float gyro_sensor::get_ay() const
+float gyro_sensor::get_ay() const
 {
     return _accel.y;
 }
 
-const float gyro_sensor::get_az() const
+float gyro_sensor::get_az() const
 {
     return _accel.z;
 }
 
 // A XYZ
-const float gyro_sensor::get_AX() const
+float gyro_sensor::get_AX() const
 {
     return _Accel.x;
 }
-const float gyro_sensor::get_AY() const
+float gyro_sensor::get_AY() const
 {
     return _Accel.y;
 }
-const float gyro_sensor::get_AZ() const
+float gyro_sensor::get_AZ() const
 {
     return _Accel.z;
 }
 
-const float gyro_sensor::get_ASqrt() const
+float gyro_sensor::get_ASqrt() const
 {
     return _aSqrt;
 }
 
 // gyro
-const float gyro_sensor::get_GX() const
+float gyro_sensor::get_GX() const
 {
     return _gyro.x;
 }
 
-const float gyro_sensor::get_GY() const
+float gyro_sensor::get_GY() const
 {
     return _gyro.y;
 }
 
-const float gyro_sensor::get_GZ() const
+float gyro_sensor::get_GZ() const
 {
     return _gyro.z;
 }
 
-const String gyro_sensor::get_json() const
+String gyro_sensor::get_json() const
 {
     return "{\"temp\":\"" + String(_current_temp) + "\",\"psi\":\"" +
            String(_current_pression) + "\"}";
 }
 
-const bool gyro_sensor::_is_moving() const
+bool gyro_sensor::_is_moving() const
 {
     const float threshold_g = 10.f;
     return abs(_gyro.x) > threshold_g || abs(_gyro.y) > threshold_g || abs(_gyro.z) > threshold_g;
 }
 
-const bool gyro_sensor::_is_safe() const
+bool gyro_sensor::_is_safe() const
 {
     const float threshold_a = 15.0f;
     return abs(_Accel.x) < threshold_a && abs(_Accel.y) < threshold_a && abs(_Accel.z) < threshold_a;

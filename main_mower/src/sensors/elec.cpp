@@ -121,37 +121,37 @@ void elec_sensor::update_amp()
     DEBUG_PRINTLN(_current_amp);
 }
 
-const bool elec_sensor::is_battery_charged() const
+bool elec_sensor::is_battery_charged() const
 {
     return (_cumulation_volt_max_time >= BARERRY_TIME_OUT);
 }
 
-const bool elec_sensor::is_battery_low() const
+bool elec_sensor::is_battery_low() const
 {
     return (_cumulation_volt_min_time >= BARERRY_TIME_OUT);
 }
 
-const bool elec_sensor::is_battery_critical() const
+bool elec_sensor::is_battery_critical() const
 {
     return (_current_volt <= BATERRY_CRI);
 }
 
-const bool elec_sensor::is_charging() const
+bool elec_sensor::is_charging() const
 {
     return (_cumulation_charge_max_time >= BARERRY_TIME_OUT - 120);
 }
 
-const float elec_sensor::get_curent_volt() const
+float elec_sensor::get_curent_volt() const
 {
     return _current_volt;
 }
 
-const float elec_sensor::get_curent_amp() const
+float elec_sensor::get_curent_amp() const
 {
     return _current_amp;
 }
 
-const String elec_sensor::get_json() const
+String elec_sensor::get_json() const
 {
     return "{\"volt\":\"" + String(_current_volt) + "\",\"amp\":\"" +
            String(_current_amp) + "\",\"char\":\"" + String(is_charging()) + "\"}";

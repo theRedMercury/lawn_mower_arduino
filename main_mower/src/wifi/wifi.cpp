@@ -161,7 +161,7 @@ void wifi_control::send_msg(const char *topic, const char *msg)
     }
 }
 
-const bool wifi_control::is_ready() const
+bool wifi_control::is_ready() const
 {
     return _is_ready;
 }

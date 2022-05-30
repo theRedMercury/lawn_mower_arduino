@@ -26,7 +26,7 @@ void _sonar::update()
     interrupts();
 }
 
-const float _sonar::get_value() const
+float _sonar::get_value() const
 {
     return _value;
 }
@@ -51,22 +51,22 @@ void sonar_sensor::update()
     DEBUG_PRINTLN("");
 }
 
-const float sonar_sensor::get_left() const
+float sonar_sensor::get_left() const
 {
     return sonar_left.get_value();
 }
 
-const float sonar_sensor::get_center() const
+float sonar_sensor::get_center() const
 {
     return sonar_center.get_value();
 }
 
-const float sonar_sensor::get_right() const
+float sonar_sensor::get_right() const
 {
     return sonar_right.get_value();
 }
 
-const void sonar_sensor::get_collisions(unsigned char *collision, const float threshold) const
+void sonar_sensor::get_collisions(unsigned char *collision, const float threshold) const
 {
     collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(collision[0] + 1, 0, 10) : 0;
     collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(collision[1] + 1, 0, 10) : 0;
