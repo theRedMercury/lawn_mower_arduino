@@ -13,6 +13,15 @@ jobs:
       # This step makes the contents of the repository available to the workflow
       - name: Checkout repository
         uses: actions/checkout@v2
+        
+      - name: Create conf file for wifi
+        run: |
+          echo "const char *ssid = \"\";" > ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *password = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_port = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_ip = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_user = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_pass = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
 
       # For more information: https://github.com/arduino/compile-sketches#readme
       - name: Compile Main Mower 
