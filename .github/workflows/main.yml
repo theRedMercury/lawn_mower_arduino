@@ -55,7 +55,7 @@ jobs:
       - name: Compile Wifi Mower 
         uses: arduino/compile-sketches@v1
         with:
-          fqbn: 'esp8266:esp8266:huzzah'
+          fqbn: '"esp8266:esp8266:huzzah" "https://arduino.esp8266.com/stable/package_esp8266com_index.json"'
           # The default is to compile for the Arduino Uno board. If you want to compile for other boards, use the `fqbn` input.
           sketch-paths: |
             # Configure the action to search all folders under the root of the repository for sketches and compile them.
