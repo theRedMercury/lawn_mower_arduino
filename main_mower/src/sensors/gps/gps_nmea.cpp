@@ -23,7 +23,7 @@ unsigned int gps_nmea::gps_parse_unsigned_int(const char *s, unsigned char len, 
 bool gps_nmea::gps_reset(HardwareSerial &ser)
 {
   char temp;
-  unsigned int counter_loop = 0;
+  unsigned long counter_loop = 0;
   while (true)
   {
     counter_loop++;
