@@ -1,0 +1,54 @@
+name: Compile Arduino Lawn Mower
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  compile-sketch:
+    runs-on: ubuntu-latest
+
+    steps:
+      # This step makes the contents of the repository available to the workflow
+      - name: Checkout repository
+        uses: actions/checkout@v2
+        
+      - name: Create conf file for wifi (compilation test)
+        run: |
+          echo "const char *ssid = \"\";" > ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *password = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_port = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_ip = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_user = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+          echo "const char *mqtt_pass = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
+
+      # For more information: https://github.com/arduino/compile-sketches#readme
+      - name: Compile Main Mower 
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: 'arduino:avr:mega'
+          sketch-paths: |
+            - ./main_mower
+            
+          libraries: |
+            -
+
+      - name: Compile Station Mower 
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: 'arduino:avr:nano'
+          sketch-paths: |
+            - ./station_mower
+            
+          libraries: |
+            -
+   
+      - name: Compile Wifi Mower 
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: '"esp8266:esp8266:huzzah" "https://arduino.esp8266.com/stable/package_esp8266com_index.json"'
+          sketch-paths: |
+            - ./wifi_mower
+            
+          libraries: |
+            -

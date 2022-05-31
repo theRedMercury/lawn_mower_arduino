@@ -20,8 +20,8 @@ public:
     void setup();
     void update();
 
-    const unsigned short get_value() const;
-    const bool is_rainning() const;
+    unsigned short get_value() const;
+    bool is_rainning() const;
 
 private:
     unsigned short _current_rain_value = 0;

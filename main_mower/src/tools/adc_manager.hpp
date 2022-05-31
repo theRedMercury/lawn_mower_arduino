@@ -18,9 +18,9 @@ public:
                                                   const unsigned char sample = DEFAULT_ADC_SAMPLE);
     static unsigned short *read_data_channel(const unsigned char channel);
 
-    static const unsigned short analogue_read_channel(const unsigned char channel,
-                                                      const unsigned char sample = DEFAULT_ADC_SAMPLE);
-    static const unsigned short get_avg_channel_value(const unsigned char channel);
+    static unsigned short analogue_read_channel(const unsigned char channel,
+                                                const unsigned char sample = DEFAULT_ADC_SAMPLE);
+    static unsigned short get_avg_channel_value(const unsigned char channel);
 
 private:
     static void define_channel_to_capture(const unsigned char channel, unsigned char sampleCount);

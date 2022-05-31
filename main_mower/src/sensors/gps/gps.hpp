@@ -38,17 +38,17 @@ public:
     void update_gps();
     void update_mag();
     const gps_data *get_gps_data() const;
-    const unsigned short get_heading_deg() const;
+    unsigned short get_heading_deg() const;
 
-    const bool is_ready() const;
-    const bool is_time_valid() const;
-    const bool is_lat_lon_valid() const;
-    const bool is_updated() const;
+    bool is_ready() const;
+    bool is_time_valid() const;
+    bool is_lat_lon_valid() const;
+    bool is_updated() const;
 
-    const String get_json() const;
+    String get_json() const;
 
 private:
-    const float _convert_nmea_to_lat_lon(const char *nmeaPos, char quadrant);
+    float _convert_nmea_to_lat_lon(const char *nmeaPos, char quadrant);
 
     gps_data _gps_data;
     unsigned long _last_gps_update = 0;

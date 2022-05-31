@@ -345,38 +345,38 @@ const gps_data *gps_sensor::get_gps_data() const
     return &_gps_data;
 }
 
-const unsigned short gps_sensor::get_heading_deg() const
+unsigned short gps_sensor::get_heading_deg() const
 {
     return _heading_deg;
 }
 
-const bool gps_sensor::is_ready() const
+bool gps_sensor::is_ready() const
 {
     return _is_ready && _is_init_ok;
 }
 
-const bool gps_sensor::is_time_valid() const
+bool gps_sensor::is_time_valid() const
 {
     return _time_is_valid;
 }
 
-const bool gps_sensor::is_lat_lon_valid() const
+bool gps_sensor::is_lat_lon_valid() const
 {
     return _gps_data.lat != 0.0 && _gps_data.lon != 0.0;
 }
 
-const bool gps_sensor::is_updated() const
+bool gps_sensor::is_updated() const
 {
     return _is_updated;
 }
 
-const String gps_sensor::get_json() const
+String gps_sensor::get_json() const
 {
     return "{\"lat\":\"" + String(_gps_data.lat, 7) + "\",\"lon\":\"" +
            String(_gps_data.lon, 7) + "\",\"speed\":\"" + String(_gps_data.speed) + "\",\"hed\":\"" + String(_heading_deg) + "\"}";
 }
 
-const float gps_sensor::_convert_nmea_to_lat_lon(const char *nmeaPos, char quadrant)
+float gps_sensor::_convert_nmea_to_lat_lon(const char *nmeaPos, char quadrant)
 {
     float v = 0;
     if (strlen(nmeaPos) > 5)

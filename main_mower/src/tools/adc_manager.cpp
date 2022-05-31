@@ -93,7 +93,7 @@ unsigned short *adc_manager::read_data_channel(const unsigned char channel)
     return _analogChannels[channel - PIN_A0].values;
 }
 
-const unsigned short adc_manager::analogue_read_channel(const unsigned char channel, const unsigned char sample)
+unsigned short adc_manager::analogue_read_channel(const unsigned char channel, const unsigned char sample)
 {
     adc_manager::define_channel_to_capture(channel, sample);
     while (_is_capturing)
@@ -103,7 +103,7 @@ const unsigned short adc_manager::analogue_read_channel(const unsigned char chan
     return adc_manager::get_avg_channel_value(channel);
 }
 
-const unsigned short adc_manager::get_avg_channel_value(const unsigned char channel)
+unsigned short adc_manager::get_avg_channel_value(const unsigned char channel)
 {
     unsigned int _value = 0;
     const unsigned char _channel = channel - PIN_A0;

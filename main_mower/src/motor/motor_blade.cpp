@@ -63,7 +63,7 @@ void motor_control_blade::on()
     }
 }
 
-const bool motor_control_blade::is_on() const
+bool motor_control_blade::is_on() const
 {
     return _blade_on;
 }

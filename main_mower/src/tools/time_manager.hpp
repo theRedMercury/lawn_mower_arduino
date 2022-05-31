@@ -46,18 +46,18 @@ public:
     time_manager &operator=(time_manager &&) = delete;
 
     void set_time(const unsigned char hr, const unsigned char min, const unsigned char sec, const unsigned char dy, const unsigned char mnth, const unsigned short yr);
-    const unsigned char get_second() const;
-    const unsigned char get_minute() const;
-    const unsigned char get_hour() const;
-    const unsigned char get_day() const;
-    const time_day_week get_day_week_num() const;
-    const unsigned char get_month() const;
-    const unsigned short get_year() const;
-    const unsigned long get_current_time() const;
+    unsigned char get_second() const;
+    unsigned char get_minute() const;
+    unsigned char get_hour() const;
+    unsigned char get_day() const;
+    time_day_week get_day_week_num() const;
+    unsigned char get_month() const;
+    unsigned short get_year() const;
+    unsigned long get_current_time() const;
 
-    // const time_element *get_current_time() const;
-    const char *get_current_day();
-    const char *get_current_month();
+    // time_element *get_current_time() const;
+    char *get_current_day();
+    char *get_current_month();
 
 private:
     void _make_time();

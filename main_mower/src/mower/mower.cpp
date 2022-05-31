@@ -104,7 +104,7 @@ const char *mower_manager::get_current_status_str() const
     }
 }
 
-const mower_status mower_manager::get_current_status() const
+mower_status mower_manager::get_current_status() const
 {
     return _current_status;
 }

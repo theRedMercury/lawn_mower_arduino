@@ -122,27 +122,27 @@ void perimeter::set_simulate_is_inside(const bool simulate)
     _simulate_is_inside = simulate;
 }
 
-const bool perimeter::get_simulate_is_inside() const
+bool perimeter::get_simulate_is_inside() const
 {
     return _simulate_is_inside;
 }
 
-const short perimeter::get_magnitude() const
+short perimeter::get_magnitude() const
 {
     return _magnitude;
 }
 
-const short perimeter::get_smooth_magnitude() const
+short perimeter::get_smooth_magnitude() const
 {
     return _smooth_magnitude;
 }
 
-const float perimeter::get_filter_quality() const
+float perimeter::get_filter_quality() const
 {
     return _filter_quality;
 }
 
-const bool perimeter::is_inside() const
+bool perimeter::is_inside() const
 {
 #ifdef DEBUG_SIMULATE_WIRE
     return true;
@@ -154,7 +154,7 @@ const bool perimeter::is_inside() const
     return _is_inside;
 }
 
-const bool perimeter::is_signal_timed_out() const
+bool perimeter::is_signal_timed_out() const
 {
 #ifdef DEBUG_SIMULATE_WIRE
     return false;
@@ -170,7 +170,7 @@ const bool perimeter::is_signal_timed_out() const
     return (millis() - _last_inside_time > SIGNAL_TIME_OUT_MS);
 }
 
-const String perimeter::get_json() const
+String perimeter::get_json() const
 {
     return "{\"in\":\"" + String(is_inside()) + "\",\"mag\":\"" +
            String(_magnitude) + "\"}";

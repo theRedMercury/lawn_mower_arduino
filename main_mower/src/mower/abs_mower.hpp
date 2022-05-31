@@ -36,7 +36,7 @@ class delay_time_out
 public:
     delay_time_out(const unsigned long ms_delay = 250);
     void reset_delay(const unsigned long ms_delay_overwrite = 0);
-    const bool is_time_out(const bool reset = false, const unsigned long add_delay = 0);
+    bool is_time_out(const bool reset = false, const unsigned long add_delay = 0);
 
     delay_time_out() = delete;
     delay_time_out(const delay_time_out &) = delete;

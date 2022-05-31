@@ -166,7 +166,7 @@ void navigation::update_target_angle()
     _set_target_angle(mower->gps.get_heading_deg());
 }
 
-const unsigned short navigation::get_target() const
+unsigned short navigation::get_target() const
 {
     return _target_angle;
 }
@@ -336,7 +336,7 @@ void navigation::_process_pattern()
     }
 }
 
-const navigation::navigation_pattern navigation::_get_pattern_sensor()
+navigation::navigation_pattern navigation::_get_pattern_sensor()
 {
     const float speed = static_cast<float>(abs(mower->motor.get_speed_left()) + abs(mower->motor.get_speed_right())) / 2.4f;
     mower->sonar.get_collisions(_collision, constrain(speed, 75.f, 220.f));

@@ -32,7 +32,7 @@ void scheduler::reset_force_mowing()
     _force_to_mown = false;
 }
 
-const bool scheduler::is_time_to_mown() const
+bool scheduler::is_time_to_mown() const
 {
 #ifdef DEBUG_IS_TIME_TO_MOWN
     return true;
@@ -93,7 +93,7 @@ const bool scheduler::is_time_to_mown() const
     return false;
 }
 
-const bool scheduler::is_time_to_return_station() const
+bool scheduler::is_time_to_return_station() const
 {
 
 #ifdef DEBUG_IS_TIME_TO_MOWN
@@ -147,7 +147,7 @@ const schedul_week *scheduler::get_schedul() const
     return &_shedul;
 }
 
-const String scheduler::get_string_schedul_day(const unsigned char day_week_num) const
+String scheduler::get_string_schedul_day(const unsigned char day_week_num) const
 {
     switch (day_week_num)
     {
@@ -233,12 +233,12 @@ void scheduler::set_scheduler(const unsigned char day_week_num, const unsigned c
     DEBUG_PRINTLN("scheduler save");
 }
 
-const bool scheduler::_comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const
+bool scheduler::_comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const
 {
     return ((h_01 * 100) + m_01) >= ((h_02 * 100) + m_02);
 }
 
-const String scheduler::_get_string_schedul_day(const schedul_day day) const
+String scheduler::_get_string_schedul_day(const schedul_day day) const
 {
     String ret = "";
     ret += DECIMAL_TIME_STR(day.h_start);

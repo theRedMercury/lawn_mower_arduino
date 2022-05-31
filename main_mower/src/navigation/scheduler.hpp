@@ -41,16 +41,16 @@ public:
 
     void force_mowing();
     void reset_force_mowing();
-    const bool is_time_to_mown() const;
-    const bool is_time_to_return_station() const;
+    bool is_time_to_mown() const;
+    bool is_time_to_return_station() const;
 
-    const String get_string_schedul_day(const unsigned char day_week_num) const;
+    String get_string_schedul_day(const unsigned char day_week_num) const;
     const schedul_week *get_schedul() const;
     void set_scheduler(const unsigned char day_week_num, const unsigned char h_start, const unsigned char m_start, const unsigned char h_end, const unsigned char m_end);
 
 private:
-    const bool _comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const;
-    const String _get_string_schedul_day(const schedul_day day) const;
+    bool _comp_hours(const unsigned char h_01, const unsigned char m_01, const unsigned char h_02, const unsigned char m_02) const;
+    String _get_string_schedul_day(const schedul_day day) const;
 
     schedul_week _shedul;
     bool _force_to_mown = false; // until return station

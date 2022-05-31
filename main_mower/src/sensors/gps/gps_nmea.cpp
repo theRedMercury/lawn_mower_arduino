@@ -6,7 +6,7 @@
 
 #include "gps_nmea.h"
 
-const unsigned int gps_nmea::gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int default_int, unsigned int min_int, unsigned int max_int)
+unsigned int gps_nmea::gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int default_int, unsigned int min_int, unsigned int max_int)
 {
   unsigned int r = 0;
   while (len--)
@@ -20,10 +20,10 @@ const unsigned int gps_nmea::gps_parse_unsigned_int(const char *s, unsigned char
   return r;
 }
 
-const bool gps_nmea::gps_reset(HardwareSerial &ser)
+bool gps_nmea::gps_reset(HardwareSerial &ser)
 {
   char temp;
-  unsigned int counter_loop = 0;
+  unsigned long counter_loop = 0;
   while (true)
   {
     counter_loop++;
@@ -46,7 +46,7 @@ const bool gps_nmea::gps_reset(HardwareSerial &ser)
   return true;
 }
 
-const void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
+void gps_nmea::gps_parse(HardwareSerial &ser, gps_result &result)
 {
   char rmc[NMEA_SIZE_PACKET] = {'\0'};
   unsigned int size_packet = 0;

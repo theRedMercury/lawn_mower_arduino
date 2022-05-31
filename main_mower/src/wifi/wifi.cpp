@@ -113,7 +113,7 @@ void wifi_control::update()
 
         for (unsigned short i = 0; i <= message.length(); i++)
         {
-            if (message.charAt(i) < 0x20 || message.charAt(i) > 0x7f) // ASCII
+            if (message.charAt(i) < 0x20) // ASCII
             {
                 message.setCharAt(i, ' ');
             }
@@ -161,7 +161,7 @@ void wifi_control::send_msg(const char *topic, const char *msg)
     }
 }
 
-const bool wifi_control::is_ready() const
+bool wifi_control::is_ready() const
 {
     return _is_ready;
 }
