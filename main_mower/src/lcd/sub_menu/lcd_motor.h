@@ -159,8 +159,10 @@ void _test_motor_left(mower_manager *mower)
         break;
     case 20:
         mower->motor.set(0, 0);
+        break;
     case 21:
         mower->motor.set(-255, 0);
+        break;
     case 40:
         mower->motor.set(0, 0);
         _motor_test_on = false;
