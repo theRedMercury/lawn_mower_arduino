@@ -1,6 +1,5 @@
-name: Compile Sketch
+name: Compile Arduino Lawn Mower
 
-# The workflow will run on every push and pull request to the repository
 on:
   - push
   - pull_request
@@ -14,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
-      - name: Create conf file for wifi
+      - name: Create conf file for wifi (compilation test)
         run: |
           echo "const char *ssid = \"\";" > ./main_mower/src/wifi/_personal_conf.h
           echo "const char *password = \"\";" >> ./main_mower/src/wifi/_personal_conf.h
@@ -28,40 +27,28 @@ jobs:
         uses: arduino/compile-sketches@v1
         with:
           fqbn: 'arduino:avr:mega'
-          # The default is to compile for the Arduino Uno board. If you want to compile for other boards, use the `fqbn` input.
           sketch-paths: |
-            # Configure the action to search all folders under the root of the repository for sketches and compile them.
-            # This is formatted as a YAML list, which makes it possible to have multiple sketch paths if needed.
             - ./main_mower
             
           libraries: |
-            # The "blink" sketch being compiled in this demo doesn't use any libraries, so just use an empty list
             -
 
       - name: Compile Station Mower 
         uses: arduino/compile-sketches@v1
         with:
           fqbn: 'arduino:avr:nano'
-          # The default is to compile for the Arduino Uno board. If you want to compile for other boards, use the `fqbn` input.
           sketch-paths: |
-            # Configure the action to search all folders under the root of the repository for sketches and compile them.
-            # This is formatted as a YAML list, which makes it possible to have multiple sketch paths if needed.
             - ./station_mower
             
           libraries: |
-            # The "blink" sketch being compiled in this demo doesn't use any libraries, so just use an empty list
             -
-            
+   
       - name: Compile Wifi Mower 
         uses: arduino/compile-sketches@v1
         with:
           fqbn: '"esp8266:esp8266:huzzah" "https://arduino.esp8266.com/stable/package_esp8266com_index.json"'
-          # The default is to compile for the Arduino Uno board. If you want to compile for other boards, use the `fqbn` input.
           sketch-paths: |
-            # Configure the action to search all folders under the root of the repository for sketches and compile them.
-            # This is formatted as a YAML list, which makes it possible to have multiple sketch paths if needed.
             - ./wifi_mower
             
           libraries: |
-            # The "blink" sketch being compiled in this demo doesn't use any libraries, so just use an empty list
             -
