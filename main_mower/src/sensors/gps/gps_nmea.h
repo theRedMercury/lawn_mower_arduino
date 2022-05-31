@@ -33,9 +33,9 @@ struct PACKING gps_result
 class gps_nmea
 {
 public:
-  static const unsigned int gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int defaultInt = 0, unsigned int minInt = 0, unsigned int maxInt = 60);
-  static const bool gps_reset(HardwareSerial &ser);
-  static const void gps_parse(HardwareSerial &ser, gps_result &result);
+  static unsigned int gps_parse_unsigned_int(const char *s, unsigned char len, unsigned int defaultInt = 0, unsigned int minInt = 0, unsigned int maxInt = 60);
+  static bool gps_reset(HardwareSerial &ser);
+  static void gps_parse(HardwareSerial &ser, gps_result &result);
 
 private:
   static void _generic_parse_nmea(char gps_nmea[], char *gps_out, unsigned int pos_coma, const unsigned int size);
