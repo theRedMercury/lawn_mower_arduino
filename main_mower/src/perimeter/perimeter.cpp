@@ -13,7 +13,9 @@ void perimeter::setup()
     DEBUG_PRINT("SETUP : ");
     DEBUG_PRINT(class_name);
     DEBUG_PRINTLN(" : DONE");
-    // Serial.begin(115200);
+#ifdef LOG_WIRE_PERIM_PRINTER
+    LOG_WIRE_PERIM_PRINTER.begin(115200);
+#endif
 }
 
 void perimeter::update()
@@ -38,10 +40,12 @@ void perimeter::update()
     }*/
 
     // Debug
-    /*for (int i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
+#ifdef LOG_WIRE_PERIM_PRINTER
+    for (int i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
-        Serial.println(signal_read[i]);
-    }*/
+        LOG_WIRE_PERIM_PRINTER.println(signal_read[i]);
+    }
+#endif
 
     int sum_max = 0; // max correlation sum
     int sum_min = 0; // min correlation sum

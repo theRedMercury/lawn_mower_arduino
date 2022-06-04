@@ -25,7 +25,9 @@
 //#define DEBUG_SPEED_MODE 0   // Comment if RELEASE
 //#define DEBUG_SIMULATE_WIRE 0   // Comment if RELEASE
 //#define DEBUG_IS_TIME_TO_MOWN 0 // Comment if RELEASE
+//#define DEBUG_PERIM_SIGNAL_ONLY 0
 
+////////////////////////////////////////////////////////
 #ifdef DEBUG_MODE
 #define DEBUG_PRINT(...)                  \
     {                                     \
@@ -42,6 +44,10 @@
 #define DEBUG_PRINTLN(...) \
     {                      \
     }
+#endif
+
+#if defined DEBUG_PERIM_SIGNAL_ONLY && !defined DEBUG_PRINTER
+#define LOG_WIRE_PERIM_PRINTER Serial
 #endif
 
 ///////////////////////////////////////////////////////
@@ -74,6 +80,7 @@ enum class mower_status : char
 #include "../perimeter/perimeter.hpp"
 #include "../sensors/elec.hpp"
 #include "../sensors/gps/gps.hpp"
+#include "../sensors/gps/compass.h"
 #include "../sensors/gyro.hpp"
 #include "../sensors/sonar.hpp"
 #include "../sensors/rain.hpp"
@@ -104,6 +111,7 @@ public:
     motor_control_blade motor_blade{*this, "MOTOR BLADE"};
     elec_sensor elec{*this, "ELEC"};
     gps_sensor gps{*this, "GPS"};
+    compass_sensor compass{*this, "COMPAS"};
     gyro_sensor gyro{*this, "GYRO"};
     navigation nav{*this, "NAVIGATION"};
     perimeter perim{*this, "PERIMETER"};

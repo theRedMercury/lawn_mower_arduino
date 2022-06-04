@@ -23,9 +23,12 @@ void delay_time_out::reset_delay(const unsigned long ms_delay_overwrite)
 {
     if (ms_delay_overwrite != 0)
     {
-        _ms_delay = ms_delay_overwrite;
+        _next_millis = millis() + ms_delay_overwrite;
     }
-    _next_millis = millis() + _ms_delay;
+    else
+    {
+        _next_millis = millis() + _ms_delay;
+    }
 }
 
 bool delay_time_out::is_time_out(const bool reset, const unsigned long add_delay)

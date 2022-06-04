@@ -31,9 +31,6 @@ void gyro_sensor::setup()
 
 void gyro_sensor::update()
 {
-    _mpu9250.accelUpdate();
-    _mpu9250.gyroUpdate();
-
     char result = _bmp280.startMeasurment();
     if (result != 0 && _counter_temp == COUNTER_MAX_TEMP_REFRESH)
     {
@@ -42,6 +39,9 @@ void gyro_sensor::update()
         _counter_temp = 0;
     }
     _counter_temp++;
+
+    _mpu9250.accelUpdate();
+    _mpu9250.gyroUpdate();
 
     _accel.x = _mpu9250.accelX();
     _accel.y = _mpu9250.accelY();
@@ -57,10 +57,10 @@ void gyro_sensor::update()
     _gyro.y = _mpu9250.gyroY();
     _gyro.z = _mpu9250.gyroZ();
 
-    // Convert radians to degrees
-    _Accel.x = atan(_accel.x / (sqrt(_accel.y * _accel.y + _accel.z * _accel.z))) * 180.f / M_PI;
-    _Accel.y = atan(_accel.y / (sqrt(_accel.x * _accel.x + _accel.z * _accel.z))) * 180.f / M_PI;
-    _Accel.z = atan((sqrt(_accel.x * _accel.x + _accel.y * _accel.y)) / _accel.z) * 180.f / M_PI;
+    // Convert Pitch Roll Yaw radians
+    _Accel.x = atan(_accel.x / (sqrt(_accel.y * _accel.y + _accel.z * _accel.z))); // * 180.f / M_PI;
+    _Accel.y = atan(_accel.y / (sqrt(_accel.x * _accel.x + _accel.z * _accel.z))); // * 180.f / M_PI;
+    _Accel.z = atan((sqrt(_accel.x * _accel.x + _accel.y * _accel.y)) / _accel.z); // * 180.f / M_PI;
 
     // is_moving
     if (_is_moving())

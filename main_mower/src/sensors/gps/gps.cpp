@@ -142,31 +142,17 @@ void gps_sensor::setup()
     delay(250);
     // SERIAL_GPS.begin(9600);*/
 
-    delay(100);
-    Wire.begin();
-    // Put the HMC5883 IC into the correct operating mode
-    Wire.beginTransmission(MAG_ADRESS); // open communication with HMC5883
-    Wire.write(0x02);                   // select mode register
-    Wire.write(0x00);                   // continuous measurement mode
-    Wire.endTransmission();
-
-    _is_init_ok = gps_nmea::gps_reset(SERIAL_GPS);
-    DEBUG_PRINTLN(_is_init_ok ? " : DONE" : " : FAIL");
-
+    _is_ready = gps_nmea::gps_reset(SERIAL_GPS);
+    DEBUG_PRINTLN(_is_ready ? " : DONE" : " : FAIL");
     SERIAL_GPS.setTimeout(5);
 }
 
 void gps_sensor::update()
 {
-    if (_is_init_ok)
+    if (!_is_ready)
     {
-        update_gps();
+        return;
     }
-    update_mag();
-}
-
-void gps_sensor::update_gps()
-{
     _is_updated = false;
     _counter_gps_update++;
     if (SERIAL_GPS.available() > 13)
@@ -290,69 +276,14 @@ void gps_sensor::update_gps()
     DEBUG_PRINTLN(" ");
 }
 
-void gps_sensor::update_mag()
-{
-    // Tell the HMC5883 where to begin reading data
-    Wire.beginTransmission(MAG_ADRESS);
-    Wire.write(0x03); // select register 3, X MSB register
-    Wire.endTransmission();
-
-    // Read data from each axis, 2 registers per axis
-    Wire.requestFrom(MAG_ADRESS, 6);
-    if (Wire.available() >= 6)
-    {
-        _magne.x = Wire.read() << 8; // X msb
-        _magne.x |= Wire.read();     // X lsb
-        _magne.z = Wire.read() << 8; // Z msb
-        _magne.z |= Wire.read();     // Z lsb
-        _magne.y = Wire.read() << 8; // Y msb
-        _magne.y |= Wire.read();     // Y lsb
-
-        float heading = atan2(_magne.y, _magne.x) + 1.115192f;
-        // Once you have your heading, you must then add your 'Declination Angle', which is the 'Error' of the magnetic field in your location.
-        // Find yours here: http://www.magnetic-declination.com/
-        // Mine is: -13* 2' W, which is ~13 Degrees, or (which we need) 0.22 radians
-        // If you cannot find your Declination, comment out these two lines, your compass will be slightly off.
-        // float declinationAngle = 0.22;
-
-        // Correct for when signs are reversed.
-        if (heading < 0.f)
-        {
-            heading += 2.f * PI;
-        }
-
-        // Check for wrap due to addition of declination.
-        if (heading > 2.f * PI)
-        {
-            heading -= 2.f * PI;
-        }
-
-        // Convert radians to degrees for readability.
-        _heading_deg = static_cast<unsigned short>(abs(round(360.f - (heading * 180.f / PI))));
-        _is_ready = true;
-    }
-
-    DEBUG_PRINT("MAG >")
-    DEBUG_PRINT("\tX: " + String(_magne.x));
-    DEBUG_PRINT("\tY: " + String(_magne.y));
-    DEBUG_PRINT("\tZ: " + String(_magne.z));
-    DEBUG_PRINT("\tDeg: " + String(get_heading_deg()));
-    DEBUG_PRINTLN("");
-}
-
 const gps_data *gps_sensor::get_gps_data() const
 {
     return &_gps_data;
 }
 
-unsigned short gps_sensor::get_heading_deg() const
-{
-    return _heading_deg;
-}
-
 bool gps_sensor::is_ready() const
 {
-    return _is_ready && _is_init_ok;
+    return _is_ready;
 }
 
 bool gps_sensor::is_time_valid() const
@@ -373,7 +304,8 @@ bool gps_sensor::is_updated() const
 String gps_sensor::get_json() const
 {
     return "{\"lat\":\"" + String(_gps_data.lat, 7) + "\",\"lon\":\"" +
-           String(_gps_data.lon, 7) + "\",\"speed\":\"" + String(_gps_data.speed) + "\",\"hed\":\"" + String(_heading_deg) + "\"}";
+           String(_gps_data.lon, 7) + "\",\"speed\":\"" + String(_gps_data.speed) +
+           "\",\"hed\":\"" + String(mower->compass.get_heading_deg()) + "\"}";
 }
 
 float gps_sensor::_convert_nmea_to_lat_lon(const char *nmeaPos, char quadrant)

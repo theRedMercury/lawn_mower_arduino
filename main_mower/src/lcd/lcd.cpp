@@ -192,8 +192,9 @@ void lcd_control::update()
         break;
 
     case lcd_menu::DEBUG:
+        _lcd_I2C.clear();
         _lcd_I2C.setCursor(0, 0);
-        _lcd_I2C.print(mower->gps.get_heading_deg());
+        _lcd_I2C.print(mower->compass.get_heading_deg());
         _lcd_I2C.setCursor(5, 0);
         _lcd_I2C.print(mower->nav.get_target());
         _lcd_I2C.setCursor(10, 0);
@@ -268,7 +269,7 @@ void lcd_control::show_main_info()
 {
     // Current wire status
     _lcd_I2C.setCursor(7, 0);
-    _lcd_I2C.print(mower->perim.is_inside() ? "IN" : "OUT");
+    _lcd_I2C.print(mower->perim.is_inside() ? "IN " : "OUT");
 
     // Current Hour
     _lcd_I2C.setCursor(11, 0);

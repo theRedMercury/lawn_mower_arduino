@@ -10,45 +10,33 @@
 
 enum lcd_menu_sensor : char
 {
-    SENSOR_SONAR_LEFT = 0,
-    SENSOR_SONAR_CENTER = 1,
-    SENSOR_SONAR_RIGHT = 2,
-    SENSOR_RAIN = 3,
-    SENSOR_TEMP = 4,
-    SENSOR_GYRO_AA = 5,
-    SENSOR_GYRO_A = 6,
-    SENSOR_GYRO_G = 7,
-    SENSOR_GYRO_A_SQRT = 8,
-    SENSOR_GYRO_SAFE = 9,
-    SENSOR_ELEC = 10,
+    SENSOR_SONAR = 0,
+    SENSOR_RAIN = 1,
+    SENSOR_TEMP = 2,
+    SENSOR_GYRO_AA = 3,
+    SENSOR_GYRO_A = 4,
+    SENSOR_GYRO_G = 5,
+    SENSOR_GYRO_A_SQRT = 6,
+    SENSOR_GYRO_SAFE = 7,
+    SENSOR_ELEC = 8,
     // SENSOR_BUMPER = 4
 };
 lcd_menu_sensor _currentSensorMenu;
 
 void Lcd_navigation_menu_sensor(mower_manager *mower)
 {
-    mower->lcd.process_sub_menu_input(_currentSensorMenu, 10);
+    mower->lcd.process_sub_menu_input(_currentSensorMenu, 8);
     mower->lcd.get_screen().setCursor(7, 0);
     switch (_currentSensorMenu)
     {
-    case SENSOR_SONAR_LEFT:
-        mower->lcd.get_screen().print("> SONAR L");
+    case SENSOR_SONAR:
+        mower->lcd.get_screen().print("> SONAR");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
         mower->lcd.get_screen().print(mower->sonar.get_left());
-        break;
-
-    case SENSOR_SONAR_CENTER:
-        mower->lcd.get_screen().print("> SONAR C");
-        mower->lcd.clear_line(1);
-        mower->lcd.get_screen().setCursor(0, 1);
+        mower->lcd.get_screen().setCursor(6, 1);
         mower->lcd.get_screen().print(mower->sonar.get_center());
-        break;
-
-    case SENSOR_SONAR_RIGHT:
-        mower->lcd.get_screen().print("> SONAR R");
-        mower->lcd.clear_line(1);
-        mower->lcd.get_screen().setCursor(0, 1);
+        mower->lcd.get_screen().setCursor(12, 1);
         mower->lcd.get_screen().print(mower->sonar.get_right());
         break;
 

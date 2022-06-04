@@ -14,6 +14,7 @@ void mower_manager::setup()
     motor.setup();
     elec.setup();
     gyro.setup();
+    compass.setup();
     gps.setup();
     rain.setup();
     sonar.setup();
@@ -27,7 +28,7 @@ void mower_manager::setup()
     lcd.on_backlight();
 
     _current_status = mower_status::READY;
-    if (!gyro.is_ready() || !gps.is_ready())
+    if (!gyro.is_ready() || !gps.is_ready() || !compass.is_ready())
     {
         _current_status = mower_status::ERROR_INIT;
     }
@@ -42,10 +43,11 @@ void mower_manager::update()
     }
 
     // UPDATE SENSOR ================================
+    gyro.update();
     gps.update();
+    compass.update();
     rain.update();
     sonar.update();
-    gyro.update();
     elec.update();
     perim.update();
 
@@ -136,5 +138,10 @@ void mower_manager::set_current_status(const mower_status new_status)
     }
 
     _current_status = new_status;
+    if (_current_status == mower_status::RETURN_STATION || _current_status == mower_status::LEAVING_STATION)
+    {
+        nav.start_move();
+    }
+
     wifi.send_msg("status", get_current_status_str());
 }

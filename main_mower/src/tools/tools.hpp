@@ -9,6 +9,13 @@
 
 #define PACKING __attribute__((packed)) // Pack the struct
 
+struct PACKING XYZ_SHORT
+{
+    short x = 0;
+    short y = 0;
+    short z = 0;
+};
+
 struct PACKING XYZ_INT
 {
     int x = 0;

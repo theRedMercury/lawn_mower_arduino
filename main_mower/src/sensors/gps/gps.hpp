@@ -13,7 +13,6 @@
 #include <HardwareSerial.h>
 #include "gps_nmea.h"
 
-#define MAG_ADRESS 0x1E // 0011110b, I2C 7bit address of HMC5883
 #define SERIAL_GPS Serial2
 
 struct PACKING gps_data
@@ -35,8 +34,6 @@ public:
 
     void retry_init();
 
-    void update_gps();
-    void update_mag();
     const gps_data *get_gps_data() const;
     unsigned short get_heading_deg() const;
 
@@ -52,9 +49,6 @@ private:
 
     gps_data _gps_data;
     unsigned long _last_gps_update = 0;
-    XYZ_INT _magne;
-    float _heading_deg = 0;
-    bool _is_init_ok = false;
     bool _is_ready = false;
     bool _time_is_valid = false;
     bool _is_updated = false;

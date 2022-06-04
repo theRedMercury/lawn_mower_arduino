@@ -8,8 +8,8 @@
 #define NAVIGATION_H
 #include "../mower/abs_mower.hpp"
 
-#define MAX_DELAY_PATTERN_MS 250
-#define MAX_DELAY_PATTERN_EXIT_MS 500
+#define MAX_DELAY_PATTERN_MS 750
+#define MAX_DELAY_PATTERN_EXIT_MS 100
 #define MAX_DELAY_NOT_MOUVING_MS 20 * 1000 // 20 sec
 #define MAX_CIRCLE_DELAY_COUNTER 5000
 #define MIN_COLLITION_DETECT 3
@@ -45,6 +45,7 @@ public:
     void setup();
     void update();
 
+    void start_move();
     void start_mowing();
 
     void update_target_angle();
@@ -58,6 +59,7 @@ private:
     unsigned short _target_angle = 0;
     unsigned char _collision[3] = {0, 0, 0};
     bool _wire_find = false;
+    bool _follow_wire_return_in = false;
     navigation_pattern _nav_patter = navigation_pattern::BYPASS;
     navigation_exit _nav_exit = navigation_exit::BYPASS;
 

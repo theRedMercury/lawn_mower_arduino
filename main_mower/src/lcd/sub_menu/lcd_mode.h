@@ -95,6 +95,7 @@ void Lcd_navigation_menu_mode(mower_manager *mower)
             else
             {
                 mower->set_current_status(mower_status::RETURN_STATION);
+                mower->lcd.return_main_info();
             }
         }
         break;

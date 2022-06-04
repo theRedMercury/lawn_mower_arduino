@@ -62,7 +62,7 @@ void Lcd_navigation_menu_gps(mower_manager *mower)
         mower->lcd.get_screen().print("> HEADING");
         mower->lcd.clear_line(1);
         mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->gps.get_heading_deg());
+        mower->lcd.get_screen().print(mower->compass.get_heading_deg());
         break;
 
     case GPS_STATUS:

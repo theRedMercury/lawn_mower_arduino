@@ -53,7 +53,8 @@ private:
     bool _is_safe() const;
 
     BMP280 _bmp280;
-    MPU9250 _mpu9250;
+    MPU9250 _mpu9250; // it's a mpu6050
+    // MPU6050 _mpu6050;
     bool _gy91Ok = false;
     bool _have_shock = false;
 
@@ -64,7 +65,7 @@ private:
     float _aSqrt = 0.f;
     double _current_temp, _current_pression = 0; // degC, mBar
     XYZ_FLOAT _accel;
-    XYZ_FLOAT _Accel;
+    XYZ_FLOAT _Accel; // Pitch Roll Yaw in degree
     XYZ_FLOAT _gyro;
 };
 #endif
