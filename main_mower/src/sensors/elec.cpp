@@ -96,7 +96,7 @@ void elec_sensor::update_volt()
     // 460 = 12
     // 505 = 13
 
-    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT, 16);
+    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_VOLT);
     _current_volt = constrain(static_cast<float>(val) / 38.3f, 0, 24); //(R2 / (R1 + R2));
 
     DEBUG_PRINT("Volt brut >\t");
@@ -111,7 +111,7 @@ void elec_sensor::update_amp()
     // 510 = 0.00  - 0
     // 516 = 0.32  - 7
     // 524 = 0.76  - 14
-    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP, 16);
+    const unsigned short val = adc_manager::analogue_read_channel(PIN_A_AMP);
     _current_amp = constrain((static_cast<float>(val) - 510), 0, 512) * 0.05f;
 
     DEBUG_PRINT("Amp brut  >\t");

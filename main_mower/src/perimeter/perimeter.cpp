@@ -22,7 +22,7 @@ void perimeter::update()
 {
     // https://github.com/kwrtz/PerimeterSensorUNO
     // http://grauonline.de/alexwww/ardumower/filter/filter.html
-    unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE);
+    unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE, adc_manager::adc_div_factor_32);
 
     // Normalize
     /*int16_t Hsum = 0;

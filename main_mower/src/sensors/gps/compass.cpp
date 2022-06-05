@@ -5,6 +5,7 @@
  */
 
 #include <Wire.h>
+#include <limits.h>
 
 #include "compass.h"
 #include "../../mower/mower.hpp"
@@ -16,12 +17,13 @@ void compass_sensor::setup()
 
   _is_ready = true;
 
-  _max.x = __FLT_MIN__;
-  _max.y = __FLT_MIN__;
-  _max.z = __FLT_MIN__;
-  _min.x = __FLT_MAX__;
-  _min.y = __FLT_MAX__;
-  _min.z = __FLT_MAX__;
+  // TODO : maybe save min / max in EEPROM
+  _max.x = SHRT_MIN;
+  _max.y = SHRT_MIN;
+  _max.z = SHRT_MIN;
+  _min.x = SHRT_MAX;
+  _min.y = SHRT_MAX;
+  _min.z = SHRT_MAX;
 
   // Check if compass_sensor is alive
   if (_read_register(HMC5883L_REG_A) != 0b01001000 ||
