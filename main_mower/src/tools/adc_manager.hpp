@@ -44,7 +44,7 @@ public:
                                           unsigned short &min, unsigned short &max);
 
 private:
-    static void define_channel_to_capture(const unsigned char channel, unsigned char sampleCount,
+    static void define_channel_to_capture(const unsigned char channel, const unsigned char sampleCount,
                                           const adc_manager_div_factor div_factor,
                                           const adc_manager_ref_volt ref_volt);
 

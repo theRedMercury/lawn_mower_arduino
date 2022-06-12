@@ -38,7 +38,8 @@ private:
     bool _is_inside = false;
     bool _simulate_is_inside = false;
     int _signal_counter, _magnitude, _smooth_magnitude = 0;
-    int _magnitude_min, _magnitude_max = NAN;
+    int _magnitude_min = INT32_MAX;
+    int _magnitude_max = INT32_MIN;
     unsigned long _last_inside_time = 0;
     float _filter_quality = 0.f;
 

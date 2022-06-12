@@ -27,14 +27,18 @@ volatile unsigned char _current_cha_index;
 volatile unsigned char _current_position;
 volatile adc_channel _analogChannels[CHANNELS];
 
-void adc_manager::define_channel_to_capture(const unsigned char channel, unsigned char sampleCount,
+void adc_manager::define_channel_to_capture(const unsigned char channel, const unsigned char sampleCount,
                                             const adc_manager_div_factor div_factor,
                                             const adc_manager_ref_volt ref_volt)
 {
     _is_capturing = false;
     _current_cha_index = (channel - PIN_A0);
     _current_position = 0;
-    sampleCount = constrain(sampleCount, 1, 255); // minimun 1, max 255
+
+    if (sampleCount == 0)
+    {
+        return;
+    }
 
     if (sampleCount > _analogChannels[_current_cha_index].value_size)
     {
