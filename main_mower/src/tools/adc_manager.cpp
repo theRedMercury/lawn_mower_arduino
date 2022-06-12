@@ -34,7 +34,7 @@ void adc_manager::define_channel_to_capture(const unsigned char channel, unsigne
     _is_capturing = false;
     _current_cha_index = (channel - PIN_A0);
     _current_position = 0;
-    sampleCount = constrain(sampleCount, 1, 255);
+    sampleCount = constrain(sampleCount, 1, 255); // minimun 1, max 255
 
     if (sampleCount > _analogChannels[_current_cha_index].value_size)
     {

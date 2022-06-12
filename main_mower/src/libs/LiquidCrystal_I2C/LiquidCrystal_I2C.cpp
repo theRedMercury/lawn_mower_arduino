@@ -61,10 +61,10 @@ void LiquidCrystal_I2C::init_priv()
 {
 	Wire.begin();
 	_displayfunction = LCD_4BITMODE | LCD_1LINE | LCD_5x8DOTS;
-	begin(_cols, _rows);
+	begin(_rows);
 }
 
-void LiquidCrystal_I2C::begin(unsigned char cols, unsigned char lines, unsigned char dotsize)
+void LiquidCrystal_I2C::begin(unsigned char lines, unsigned char dotsize)
 {
 	if (lines > 1)
 	{
@@ -332,14 +332,3 @@ void LiquidCrystal_I2C::printstr(const char c[])
 	// it's here so the user sketch doesn't have to be changed
 	print(c);
 }
-
-// unsupported API functions
-void LiquidCrystal_I2C::off() {}
-void LiquidCrystal_I2C::on() {}
-void LiquidCrystal_I2C::setDelay(int cmdDelay, int charDelay) {}
-unsigned char LiquidCrystal_I2C::status() { return 0; }
-unsigned char LiquidCrystal_I2C::keypad() { return 0; }
-unsigned char LiquidCrystal_I2C::init_bargraph(unsigned char graphtype) { return 0; }
-void LiquidCrystal_I2C::draw_horizontal_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_col_end) {}
-void LiquidCrystal_I2C::draw_vertical_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_row_end) {}
-void LiquidCrystal_I2C::setContrast(unsigned char new_val) {}

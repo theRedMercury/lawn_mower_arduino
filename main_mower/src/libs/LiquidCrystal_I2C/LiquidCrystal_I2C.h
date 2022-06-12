@@ -56,7 +56,7 @@ class LiquidCrystal_I2C : public Print
 {
 public:
   LiquidCrystal_I2C(unsigned char lcd_Addr, unsigned char lcd_cols, unsigned char lcd_rows);
-  void begin(unsigned char cols, unsigned char rows, unsigned char charsize = LCD_5x8DOTS);
+  void begin(unsigned char rows, unsigned char charsize = LCD_5x8DOTS);
   void clear();
   void home();
   void noDisplay();
@@ -95,17 +95,6 @@ public:
   void setBacklight(unsigned char new_val);                                // alias for backlight() and nobacklight()
   void load_custom_character(unsigned char char_num, unsigned char *rows); // alias for createChar()
   void printstr(const char[]);
-
-  ////Unsupported API functions (not implemented in this library)
-  unsigned char status();
-  void setContrast(unsigned char new_val);
-  unsigned char keypad();
-  void setDelay(int, int);
-  void on();
-  void off();
-  unsigned char init_bargraph(unsigned char graphtype);
-  void draw_horizontal_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_col_end);
-  void draw_vertical_graph(unsigned char row, unsigned char column, unsigned char len, unsigned char pixel_col_end);
 
 private:
   void init_priv();

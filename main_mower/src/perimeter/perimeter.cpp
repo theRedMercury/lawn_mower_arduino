@@ -24,6 +24,20 @@ void perimeter::update()
     // http://grauonline.de/alexwww/ardumower/filter/filter.html
     unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE, adc_manager::adc_div_factor_32);
 
+    // Offset
+    /*int32_t ADCSignalOffset = 512; // ADC zero offset
+    short signal_offset[RAW_SIGNAL_SAMPLE_SIZE] = {0};
+
+    for (unsigned char i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
+    {
+        ADCSignalOffset += signal_read[i];
+    }
+    ADCSignalOffset = ADCSignalOffset / RAW_SIGNAL_SAMPLE_SIZE;
+    for (unsigned char i = 1; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
+    {
+        signal_offset[i] = signal_read[i] - ADCSignalOffset;
+    }
+*/
     // Normalize
     /*int16_t Hsum = 0;
     for (unsigned char i = 0; i < SENDER_ARRAY_SIZE; i++)
@@ -56,7 +70,7 @@ void perimeter::update()
         sum = 0;
         for (unsigned char j = 0; j < SENDER_ARRAY_SIZE; j++)
         {
-            sum += static_cast<short>(_signal_code[j]) * static_cast<short>(signal_read[i + j]);
+            sum += static_cast<short>(_signal_code[j]) * signal_read[i + j];
         } // end inner loop
         _correlation_signal[i] = sum;
         if (sum > sum_max)
@@ -112,6 +126,9 @@ void perimeter::update()
     {
         // Large signal, the in/out detection is reliable.
         // Using mag yields very fast in/out transition reporting.
+        _magnitude_max = _magnitude > _magnitude_max ? _magnitude : _magnitude_max;
+        _magnitude_min = _magnitude < _magnitude_min ? _magnitude : _magnitude_min;
+
         _is_inside = (_magnitude < 0);
     }
     else

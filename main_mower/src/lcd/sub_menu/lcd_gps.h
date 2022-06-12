@@ -55,7 +55,7 @@ void Lcd_navigation_menu_gps(mower_manager *mower)
         mower->lcd.get_screen().print('/');
         mower->lcd.get_screen().print(DECIMAL_TIME_STR(mower->time.get_month()));
         mower->lcd.get_screen().print('/');
-        mower->lcd.get_screen().print(constrain(mower->time.get_year() - 2000, 0, 99)); // Show only last two number
+        mower->lcd.get_screen().print(mower->time.get_year() - 2000); // Show only last two number
         break;
 
     case GPS_HEADING:

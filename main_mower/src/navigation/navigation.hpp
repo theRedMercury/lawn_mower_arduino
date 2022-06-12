@@ -77,13 +77,16 @@ private:
     void _pattern_find_exit();
     void _pattern_full_reverse();
     void _pattern_return_in_perim();
-    void _pattern_keep_target(bool high_keeping = false, unsigned char max_speed = 255);
+    void _pattern_keep_target(bool high_keeping = false, short max_speed = 255);
     void _pattern_turn_target();
     void _pattern_follow_wire();
     void _pattern_leaving_station();
     void _pattern_entering_station();
+
+    void _drive_motor(short correction = 0, short max_speed = 255);
     void _charching();
 
+    delay_time_out _delay_drive_motor{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_next_pattern{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_exit_pattern{MAX_DELAY_PATTERN_EXIT_MS};
     delay_time_out _delay_not_moving{MAX_DELAY_NOT_MOUVING_MS};

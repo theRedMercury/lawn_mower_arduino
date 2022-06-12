@@ -215,6 +215,6 @@ bool gyro_sensor::_is_moving() const
 
 bool gyro_sensor::_is_safe() const
 {
-    const float threshold_a = 15.0f;
+    const float threshold_a = 0.24f; // +- 15 degree
     return abs(_Accel.x) < threshold_a && abs(_Accel.y) < threshold_a && abs(_Accel.z) < threshold_a;
 }
