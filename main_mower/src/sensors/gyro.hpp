@@ -13,6 +13,9 @@
 #include "../libs/BMP280/BMP280.h"
 #include "../libs/MPU9250/MPU9250.h"
 
+#define MAX_TEMP_WARNING 45.5f
+#define MAX_TEMP_CRITICAL 55.f
+
 class gyro_sensor : public abs_mower_class
 {
 public:
@@ -28,6 +31,9 @@ public:
     bool have_shock() const;
     bool in_safe_status() const;
     bool is_moving() const;
+
+    bool is_temp_warning() const;
+    bool is_temp_critical() const;
 
     // a XYZ
     float get_ax() const;
@@ -48,6 +54,10 @@ public:
 
     String get_json() const;
 
+    void start_init_gyro();
+    void stop_init_gyro();
+    void reset_init_gyro();
+
 private:
     bool _is_moving() const;
     bool _is_safe() const;
@@ -58,14 +68,17 @@ private:
     bool _gy91Ok = false;
     bool _have_shock = false;
 
-    unsigned char _counter_moving = 0;
+    short _counter_moving = 0;
     unsigned char _counter_temp = 0;
-    unsigned short _cumulation_is_safe = 0;
+    short _cumulation_is_safe = 0;
 
     float _aSqrt = 0.f;
     double _current_temp, _current_pression = 0; // degC, mBar
     XYZ_FLOAT _accel;
     XYZ_FLOAT _Accel; // Pitch Roll Yaw in degree
     XYZ_FLOAT _gyro;
+    XYZ_FLOAT _gyro_min;
+    XYZ_FLOAT _gyro_max;
+    bool _set_gyro_min_max = false;
 };
 #endif

@@ -63,9 +63,11 @@ enum class mower_status : char
     TESTING_NAV,
     TESTING_NAV_02,
     ERROR_INIT,
+    ERROR_NOT_SAFE,
     ERROR_LOST_WIRE,
     ERROR_STUCK,
     ERROR_POWER,
+    ERROR_TEMP,
     ERROR
 };
 

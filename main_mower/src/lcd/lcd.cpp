@@ -114,6 +114,18 @@ void lcd_control::update()
         }
         break;
 
+    case lcd_menu::WIRE:
+        if (_in_sub_menu)
+        {
+            show_message(">WIRE ", "");
+            Lcd_navigation_menu_wire(mower);
+        }
+        else
+        {
+            show_message("> WIRE          ", LCD_CLEAR_FIELD);
+        }
+        break;
+
     case lcd_menu::SENSOR:
         if (_in_sub_menu)
         {
@@ -135,18 +147,6 @@ void lcd_control::update()
         else
         {
             show_message("> GPS           ", LCD_CLEAR_FIELD);
-        }
-        break;
-
-    case lcd_menu::WIRE:
-        if (_in_sub_menu)
-        {
-            show_message(">WIRE ", "");
-            Lcd_navigation_menu_wire(mower);
-        }
-        else
-        {
-            show_message("> WIRE          ", LCD_CLEAR_FIELD);
         }
         break;
 

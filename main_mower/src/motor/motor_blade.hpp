@@ -13,7 +13,7 @@
 #define PIN_L_EN 12
 #define PIN_R_EN 11
 #define PIN_RELAY 26
-#define MAX_RPWW_SPEED 220
+#define BLADE_MAX_SPEED 180
 
 class motor_control_blade : public abs_mower_class
 {

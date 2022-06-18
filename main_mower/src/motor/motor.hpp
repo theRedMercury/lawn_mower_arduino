@@ -10,6 +10,7 @@
 #include "../mower/abs_mower.hpp"
 #include "../tools/tools.hpp"
 
+#define MOTOR_MAX_SPEED 230
 #define PIN_MOTOR_LEFT_FORWARD 6
 #define PIN_MOTOR_LEFT_BACKWARD 7
 #define PIN_MOTOR_LEFT_SPEED 5

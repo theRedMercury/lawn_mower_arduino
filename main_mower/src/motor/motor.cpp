@@ -34,7 +34,7 @@ void motor_control::update()
     if (!mower->gyro.in_safe_status())
     {
         DEBUG_PRINTLN("Motor: OFF Safety");
-        mower->set_error();
+        mower->set_error(mower_status::ERROR_NOT_SAFE);
         return;
     }
     if (_security_count < 10 * 60 * 2)
@@ -60,8 +60,8 @@ void motor_control::stop()
 
 void motor_control::set(short left_speed, short right_speed)
 {
-    left_speed = constrain(left_speed, -255, 255);
-    right_speed = constrain(right_speed, -255, 255);
+    left_speed = constrain(left_speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
+    right_speed = constrain(right_speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
 
     if (abs(left_speed) > 180 || abs(right_speed) > 180)
     {
@@ -142,7 +142,7 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     }
 
     motor->computed_speed += TaC * (motor->target_speed - motor->computed_speed) / 2000.0f; // 2000 is Accel (not change < 2000)
-    const unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, 255);
+    const unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, MOTOR_MAX_SPEED);
     switch (real_m)
     {
     case 0 ... 20:

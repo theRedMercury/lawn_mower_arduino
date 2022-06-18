@@ -25,14 +25,14 @@ void motor_control_blade::update()
     if (!mower->gyro.in_safe_status())
     {
         DEBUG_PRINTLN("Blades: OFF Safety");
-        mower->set_error();
+        mower->set_error(mower_status::ERROR_NOT_SAFE);
         return;
     }
 
-    if (_blade_on && _speed <= MAX_RPWW_SPEED)
+    if (_blade_on && _speed <= BLADE_MAX_SPEED)
     {
         _speed += 4; // Linear acceleration
-        analogWrite(PIN_RPWM, constrain(_speed, 0, MAX_RPWW_SPEED));
+        analogWrite(PIN_RPWM, constrain(_speed, 0, BLADE_MAX_SPEED));
     }
 }
 

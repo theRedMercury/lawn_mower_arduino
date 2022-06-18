@@ -60,9 +60,9 @@ private:
     {
         STATUS = 0,
         MODE = 1,
-        SENSOR = 2,
-        GPS = 3,
-        WIRE = 4,
+        WIRE = 2,
+        SENSOR = 3,
+        GPS = 4,
         MOTOR = 5,
         WIFI = 6,
         TEST = 7,

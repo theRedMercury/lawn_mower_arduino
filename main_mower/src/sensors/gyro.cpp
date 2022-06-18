@@ -32,7 +32,7 @@ void gyro_sensor::setup()
 void gyro_sensor::update()
 {
     char result = _bmp280.startMeasurment();
-    if (result != 0 && _counter_temp == COUNTER_MAX_TEMP_REFRESH)
+    if (result != 0 && _counter_temp >= COUNTER_MAX_TEMP_REFRESH)
     {
         delay(result);
         _bmp280.getTemperatureAndPressure(_current_temp, _current_pression);
@@ -57,6 +57,17 @@ void gyro_sensor::update()
     _gyro.y = _mpu9250.gyroY();
     _gyro.z = _mpu9250.gyroZ();
 
+    // Save min / max during motor blade on
+    if (_set_gyro_min_max)
+    {
+        _gyro_max.x = _gyro.x > _gyro_max.x ? _gyro.x : _gyro_max.x;
+        _gyro_min.x = _gyro.x < _gyro_min.x ? _gyro.x : _gyro_min.x;
+        _gyro_max.y = _gyro.y > _gyro_max.y ? _gyro.y : _gyro_max.y;
+        _gyro_min.y = _gyro.y < _gyro_min.y ? _gyro.y : _gyro_min.y;
+        _gyro_max.z = _gyro.z > _gyro_max.z ? _gyro.z : _gyro_max.z;
+        _gyro_min.z = _gyro.z < _gyro_min.z ? _gyro.z : _gyro_min.z;
+    }
+
     // Convert Pitch Roll Yaw radians
     _Accel.x = atan(_accel.x / (sqrt(_accel.y * _accel.y + _accel.z * _accel.z))); // * 180.f / M_PI;
     _Accel.y = atan(_accel.y / (sqrt(_accel.x * _accel.x + _accel.z * _accel.z))); // * 180.f / M_PI;
@@ -69,32 +80,32 @@ void gyro_sensor::update()
     }
     else
     {
-        if (_counter_moving == 0)
+        if (_counter_moving != 0)
         {
-            _counter_moving++;
+            _counter_moving--;
         }
-        _counter_moving--;
     }
+    _counter_moving = constrain(_counter_moving, 0, COUNTER_MOVING_REFRESH);
 
     // is_safe
     if (_is_safe())
     {
         _cumulation_is_safe++;
-        if (_cumulation_is_safe > COUNTER_IS_SAFE)
+    }
+    else
+    {
+        if (_cumulation_is_safe != 0)
         {
             _cumulation_is_safe--;
         }
     }
-    else
-    {
-        _cumulation_is_safe--;
-        if (_cumulation_is_safe == 0)
-        {
-            _cumulation_is_safe = 0;
-        }
-    }
+    _cumulation_is_safe = constrain(_cumulation_is_safe, 0, COUNTER_IS_SAFE);
 
     // Print degrees
+    DEBUG_PRINT("SAFE > ");
+    DEBUG_PRINTLN(_cumulation_is_safe);
+    DEBUG_PRINT("MOVING > ");
+    DEBUG_PRINTLN(_counter_moving);
     DEBUG_PRINT("ACCEL > ");
     DEBUG_PRINT("AX = ");
     DEBUG_PRINT(_Accel.x);
@@ -148,6 +159,15 @@ bool gyro_sensor::in_safe_status() const
 bool gyro_sensor::is_moving() const
 {
     return _counter_moving > 0;
+}
+
+bool gyro_sensor::is_temp_warning() const
+{
+    return _current_temp >= MAX_TEMP_WARNING;
+}
+bool gyro_sensor::is_temp_critical() const
+{
+    return _current_temp >= MAX_TEMP_CRITICAL;
 }
 
 // a XYZ
@@ -207,14 +227,42 @@ String gyro_sensor::get_json() const
            String(_current_pression) + "\"}";
 }
 
+void gyro_sensor::start_init_gyro()
+{
+    _gyro_min.x = _gyro.x;
+    _gyro_min.y = _gyro.y;
+    _gyro_min.z = _gyro.z;
+    _gyro_max.x = _gyro.x;
+    _gyro_max.y = _gyro.y;
+    _gyro_max.z = _gyro.z;
+    _set_gyro_min_max = true;
+}
+void gyro_sensor::stop_init_gyro()
+{
+    _set_gyro_min_max = false;
+}
+void gyro_sensor::reset_init_gyro()
+{
+    _gyro_min.x = 0.f;
+    _gyro_min.y = 0.f;
+    _gyro_min.z = 0.f;
+    _gyro_max.x = 0.f;
+    _gyro_max.y = 0.f;
+    _gyro_max.z = 0.f;
+    _set_gyro_min_max = false;
+}
+
 bool gyro_sensor::_is_moving() const
 {
     const float threshold_g = 10.f;
-    return abs(_gyro.x) > threshold_g || abs(_gyro.y) > threshold_g || abs(_gyro.z) > threshold_g;
+    bool x = _gyro.x > (_gyro_max.x + threshold_g) || _gyro.x < (_gyro_min.x - threshold_g);
+    bool y = _gyro.y > (_gyro_max.y + threshold_g) || _gyro.y < (_gyro_min.y - threshold_g);
+    bool z = _gyro.z > (_gyro_max.z + threshold_g) || _gyro.z < (_gyro_min.z - threshold_g);
+    return x || y || z;
 }
 
 bool gyro_sensor::_is_safe() const
 {
-    const float threshold_a = 0.24f; // +- 15 degree
+    const float threshold_a = 0.31f; // +- 18 degree
     return abs(_Accel.x) < threshold_a && abs(_Accel.y) < threshold_a && abs(_Accel.z) < threshold_a;
 }

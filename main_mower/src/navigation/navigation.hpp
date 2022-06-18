@@ -9,8 +9,9 @@
 #include "../mower/abs_mower.hpp"
 
 #define MAX_DELAY_PATTERN_MS 750
-#define MAX_DELAY_PATTERN_EXIT_MS 100
-#define MAX_DELAY_NOT_MOUVING_MS 20 * 1000 // 20 sec
+#define MAX_DELAY_PATTERN_EXIT_MS 150
+#define MAX_DELAY_START_MOW_INIT_MS 1000 * 4 // 4 sec
+#define MAX_DELAY_NOT_MOUVING_MS 20 * 1000   // 20 sec
 #define MAX_CIRCLE_DELAY_COUNTER 5000
 #define MIN_COLLITION_DETECT 3
 
@@ -90,5 +91,7 @@ private:
     delay_time_out _delay_next_pattern{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_exit_pattern{MAX_DELAY_PATTERN_EXIT_MS};
     delay_time_out _delay_not_moving{MAX_DELAY_NOT_MOUVING_MS};
+    delay_time_out _delay_start_mowing_init{MAX_DELAY_START_MOW_INIT_MS};
+    bool _save_gyro_state = false;
 };
 #endif

@@ -67,9 +67,9 @@ void mower_manager::update()
 
 void mower_manager::set_error(const mower_status error)
 {
-    motor.stop();
     motor_blade.stop();
-    set_current_status(error);
+    motor.stop();
+    set_current_status(error >= mower_status::ERROR_INIT ? error : mower_status::ERROR);
 }
 
 const char *mower_manager::get_current_status_str() const
@@ -93,12 +93,16 @@ const char *mower_manager::get_current_status_str() const
         return "TESTING ";
     case mower_status::ERROR_INIT:
         return "ERR INIT";
+    case mower_status::ERROR_NOT_SAFE:
+        return "ERR !SAF";
     case mower_status::ERROR_STUCK:
         return "ERR STUC";
     case mower_status::ERROR_LOST_WIRE:
         return "ERLOST W";
     case mower_status::ERROR_POWER:
         return "ERR POWE";
+    case mower_status::ERROR_TEMP:
+        return "ERR TEMP";
     case mower_status::ERROR:
         return "ERROR   ";
     default:
