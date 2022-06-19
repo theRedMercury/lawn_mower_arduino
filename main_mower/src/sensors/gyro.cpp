@@ -254,7 +254,7 @@ void gyro_sensor::reset_init_gyro()
 
 bool gyro_sensor::_is_moving() const
 {
-    const float threshold_g = 5.f;
+    const float threshold_g = 15.f;
     bool x = _gyro.x > (_gyro_max.x + threshold_g) || _gyro.x < (_gyro_min.x - threshold_g);
     bool y = _gyro.y > (_gyro_max.y + threshold_g) || _gyro.y < (_gyro_min.y - threshold_g);
     bool z = _gyro.z > (_gyro_max.z + threshold_g) || _gyro.z < (_gyro_min.z - threshold_g);

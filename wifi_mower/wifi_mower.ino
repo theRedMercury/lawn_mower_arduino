@@ -58,7 +58,10 @@ void topic_callback(char *topic, unsigned char *payload, unsigned int length)
     char buf[length];
     memset(buf, 0, length);
     memcpy(buf, payload, length);
-    print_topic(topic, buf);
+    String data(buf);
+    data = data.substring(0, length);
+    data.trim();
+    print_topic(topic, data.c_str());
 }
 
 void init_wifi()

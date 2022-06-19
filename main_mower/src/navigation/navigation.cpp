@@ -92,6 +92,9 @@ void navigation::update()
         {
             _save_gyro_state = true;
             mower->gyro.stop_init_gyro();
+            _nav_patter = navigation_pattern::KEEP_TARGET;
+            _delay_next_pattern.reset_delay();
+            _delay_exit_pattern.reset_delay();
             _delay_not_moving.reset_delay();
             _delay_start_mowing_init.reset_delay();
         }
