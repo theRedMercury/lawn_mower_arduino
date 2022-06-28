@@ -8,10 +8,12 @@
 #define NAVIGATION_H
 #include "../mower/abs_mower.hpp"
 
-#define MAX_DELAY_PATTERN_MS 750
-#define MAX_DELAY_PATTERN_EXIT_MS 150
-#define MAX_DELAY_START_MOW_INIT_MS 4500   // 4.5 sec
-#define MAX_DELAY_NOT_MOUVING_MS 20 * 1000 // 20 sec
+#define MAX_DELAY_PATTERN_MS 1000
+#define MAX_DELAY_PATTERN_EXIT_MS 500
+#define MAX_DELAY_PATTERN_FULL_R_MS 1200
+#define MAX_DELAY_START_MOW_INIT_MS 4500       // 4.5 sec
+#define MAX_DELAY_NOT_MOUVING_MS 3 * 1000      // 3 sec
+#define MAX_DELAY_NOT_MOUVING_CRI_MS 20 * 1000 // 20 sec
 #define MAX_CIRCLE_DELAY_COUNTER 5000
 #define MIN_COLLITION_DETECT 3
 
@@ -20,7 +22,6 @@ class navigation : public abs_mower_class
 public:
     enum class navigation_pattern : char
     {
-        BYPASS,
         STOP,
         KEEP_TARGET,
         TURN_TO_TARGET,
@@ -35,7 +36,6 @@ public:
 
     enum class navigation_exit : char
     {
-        BYPASS,
         FULL_REVERSE,
         TURN_LEFT,
         TURN_RIGHT
@@ -61,8 +61,7 @@ private:
     unsigned char _collision[3] = {0, 0, 0};
     bool _wire_find = false;
     bool _follow_wire_return_in = false;
-    navigation_pattern _nav_patter = navigation_pattern::BYPASS;
-    navigation_exit _nav_exit = navigation_exit::BYPASS;
+    navigation_pattern _nav_patter = navigation_pattern::STOP;
 
     unsigned long _circle_milli = 0;
 
@@ -90,7 +89,9 @@ private:
     delay_time_out _delay_drive_motor{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_next_pattern{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_exit_pattern{MAX_DELAY_PATTERN_EXIT_MS};
+    delay_time_out _delay_full_reverse_pattern{MAX_DELAY_PATTERN_FULL_R_MS};
     delay_time_out _delay_not_moving{MAX_DELAY_NOT_MOUVING_MS};
+    delay_time_out _delay_not_moving_cri{MAX_DELAY_NOT_MOUVING_CRI_MS};
     delay_time_out _delay_start_mowing_init{MAX_DELAY_START_MOW_INIT_MS};
     bool _save_gyro_state = false;
 };

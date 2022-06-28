@@ -63,7 +63,7 @@ void motor_control::set(short left_speed, short right_speed)
     left_speed = constrain(left_speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
     right_speed = constrain(right_speed, -MOTOR_MAX_SPEED, MOTOR_MAX_SPEED);
 
-    if (abs(left_speed) > 180 || abs(right_speed) > 180)
+    if (abs(left_speed) > 90 || abs(right_speed) > 90)
     {
         _security_count++;
     }
@@ -148,8 +148,8 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     case 0 ... 20:
         motor->real_speed = 0;
         break;
-    case 21 ... 60:
-        motor->real_speed = 60;
+    case 21 ... 90:
+        motor->real_speed = 90;
         break;
     case 244 ... 255:
         motor->real_speed = 255;

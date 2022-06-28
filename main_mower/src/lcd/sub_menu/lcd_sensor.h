@@ -11,13 +11,13 @@
 enum lcd_menu_sensor : char
 {
     SENSOR_SONAR = 0,
-    SENSOR_RAIN = 1,
-    SENSOR_TEMP = 2,
-    SENSOR_GYRO_AA = 3,
-    SENSOR_GYRO_A = 4,
-    SENSOR_GYRO_G = 5,
-    SENSOR_GYRO_A_SQRT = 6,
-    SENSOR_GYRO_SAFE = 7,
+    SENSOR_GYRO_AA = 1,
+    SENSOR_GYRO_A = 2,
+    SENSOR_GYRO_G = 3,
+    SENSOR_GYRO_A_SQRT = 4,
+    SENSOR_GYRO_SAFE = 5,
+    SENSOR_RAIN = 6,
+    SENSOR_TEMP = 7,
     SENSOR_ELEC = 8,
     // SENSOR_BUMPER = 4
 };
@@ -38,27 +38,6 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().print(mower->sonar.get_center());
         mower->lcd.get_screen().setCursor(12, 1);
         mower->lcd.get_screen().print(mower->sonar.get_right());
-        break;
-
-    case SENSOR_RAIN:
-        mower->lcd.get_screen().print("> RAIN");
-        mower->lcd.clear_line(1);
-        mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->rain.get_value());
-        mower->lcd.get_screen().setCursor(7, 1);
-        mower->lcd.get_screen().print("> ");
-        mower->lcd.get_screen().print(mower->rain.is_rainning() ? "True" : "False");
-        break;
-
-    case SENSOR_TEMP:
-        mower->lcd.get_screen().print("> TEMP");
-        mower->lcd.clear_line(1);
-        mower->lcd.get_screen().setCursor(0, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_temp());
-        mower->lcd.get_screen().print(" C");
-        mower->lcd.get_screen().setCursor(8, 1);
-        mower->lcd.get_screen().print(mower->gyro.get_pression());
-        mower->lcd.get_screen().print(" mBar");
         break;
 
     case SENSOR_GYRO_AA:
@@ -101,6 +80,8 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().print(mower->gyro.get_ASqrt());
         mower->lcd.get_screen().setCursor(7, 1);
         mower->lcd.get_screen().print(mower->gyro.have_shock());
+        mower->lcd.get_screen().setCursor(9, 1);
+        mower->lcd.get_screen().print(mower->gyro.is_taken());
         break;
 
     case SENSOR_GYRO_SAFE:
@@ -112,6 +93,27 @@ void Lcd_navigation_menu_sensor(mower_manager *mower)
         mower->lcd.get_screen().setCursor(8, 1);
         mower->lcd.get_screen().print(">M: ");
         mower->lcd.get_screen().print(mower->gyro.is_moving() ? "yes" : "no");
+        break;
+
+    case SENSOR_RAIN:
+        mower->lcd.get_screen().print("> RAIN");
+        mower->lcd.clear_line(1);
+        mower->lcd.get_screen().setCursor(0, 1);
+        mower->lcd.get_screen().print(mower->rain.get_value());
+        mower->lcd.get_screen().setCursor(7, 1);
+        mower->lcd.get_screen().print("> ");
+        mower->lcd.get_screen().print(mower->rain.is_rainning() ? "True" : "False");
+        break;
+
+    case SENSOR_TEMP:
+        mower->lcd.get_screen().print("> TEMP");
+        mower->lcd.clear_line(1);
+        mower->lcd.get_screen().setCursor(0, 1);
+        mower->lcd.get_screen().print(mower->gyro.get_temp());
+        mower->lcd.get_screen().print(" C");
+        mower->lcd.get_screen().setCursor(8, 1);
+        mower->lcd.get_screen().print(mower->gyro.get_pression());
+        mower->lcd.get_screen().print(" mBar");
         break;
 
     case SENSOR_ELEC:

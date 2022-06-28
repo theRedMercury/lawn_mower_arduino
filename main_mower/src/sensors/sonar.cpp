@@ -68,13 +68,17 @@ unsigned short sonar_sensor::get_right() const
 
 void sonar_sensor::get_collisions(unsigned char *collision, const unsigned short threshold) const
 {
-    collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(collision[0] + 1, 0, 10) : 0;
-    collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(collision[1] + 1, 0, 10) : 0;
-    collision[2] = (get_right() < threshold && get_right() != 0) ? constrain(collision[2] + 1, 0, 10) : 0;
+    const unsigned char v0 = collision[0];
+    const unsigned char v1 = collision[1];
+    const unsigned char v2 = collision[2];
+    collision[0] = (get_left() < threshold && get_left() != 0) ? constrain(v0 + 1, 0, 10) : 0;
+    collision[1] = (get_center() < threshold && get_center() != 0) ? constrain(v1 + 1, 0, 10) : 0;
+    collision[2] = (get_right() < threshold && get_right() != 0) ? constrain(v2 + 1, 0, 10) : 0;
 
     DEBUG_PRINT("COLLISION >");
-    DEBUG_PRINT("\tLeft : " + String(collision[0]));
-    DEBUG_PRINT("\tCenter: " + String(collision[1]));
-    DEBUG_PRINT("\tRight: " + String(collision[2]));
+    DEBUG_PRINT("\tLeft  : " + String(static_cast<int>(collision[0])) + " / " + String(get_left()));
+    DEBUG_PRINT("\tCenter: " + String(static_cast<int>(collision[1])) + " / " + String(get_center()));
+    DEBUG_PRINT("\tRight : " + String(static_cast<int>(collision[2])) + " / " + String(get_right()));
+    DEBUG_PRINT("\tThreshold " + String(threshold));
     DEBUG_PRINTLN("");
 }

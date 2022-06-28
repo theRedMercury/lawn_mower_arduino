@@ -29,6 +29,7 @@ public:
 
     bool is_ready() const;
     bool have_shock() const;
+    bool is_taken() const;
     bool in_safe_status() const;
     bool is_moving() const;
 
@@ -67,10 +68,12 @@ private:
     // MPU6050 _mpu6050;
     bool _gy91Ok = false;
     bool _have_shock = false;
+    bool _is_taken = false;
 
     short _counter_moving = 0;
     unsigned char _counter_temp = 0;
     short _cumulation_is_safe = 0;
+    short _cumulation_is_taken = 0;
 
     float _aSqrt = 0.f;
     double _current_temp, _current_pression = 0; // degC, mBar

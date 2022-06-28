@@ -8,8 +8,8 @@
 #include "../mower/mower.hpp"
 
 #define SPEED_MAX 255
-#define SPEED_REVERSE 90
-#define SPEED_ROTATION 85
+#define SPEED_REVERSE 110
+#define SPEED_ROTATION 100
 #define TOLERANCE_TARGET 30
 
 void navigation::setup()
@@ -21,7 +21,8 @@ void navigation::setup()
 
 void navigation::update()
 {
-    DEBUG_PRINTLN("NAVI  > " + String(get_current_pattern_str(_nav_patter)) + " > " + String(static_cast<int>(_nav_exit)));
+    DEBUG_PRINTLN("NAVI  > " + String(get_current_pattern_str(_nav_patter)));
+    _get_pattern_sensor();
     // MAIN NAVIGATION SWITCH
     switch (mower->get_current_status())
     {
@@ -45,7 +46,6 @@ void navigation::update()
 
     case mower_status::RETURN_STATION:
         mower->motor_blade.stop();
-        _nav_patter = navigation_pattern::FOLLOW_WIRE;
 
         // Safety lost mower
         if (mower->perim.is_signal_timed_out())
@@ -96,6 +96,7 @@ void navigation::update()
             _delay_next_pattern.reset_delay();
             _delay_exit_pattern.reset_delay();
             _delay_not_moving.reset_delay();
+            _delay_not_moving_cri.reset_delay();
             _delay_start_mowing_init.reset_delay();
         }
         //==========================================
@@ -121,8 +122,6 @@ const char *navigation::get_current_pattern_str(const navigation_pattern n) cons
 {
     switch (n)
     {
-    case navigation_pattern::BYPASS:
-        return "BYPASS ";
     case navigation_pattern::STOP:
         return "STOP   ";
     case navigation_pattern::KEEP_TARGET:
@@ -156,12 +155,14 @@ void navigation::start_move()
 {
     update_target_angle();
     _delay_not_moving.reset_delay();
+    _delay_not_moving_cri.reset_delay();
     _delay_next_pattern.reset_delay();
 }
 
 void navigation::start_mowing()
 {
     _delay_not_moving.reset_delay();
+    _delay_not_moving_cri.reset_delay();
     _delay_start_mowing_init.reset_delay();
     _save_gyro_state = false;
     mower->gyro.start_init_gyro();
@@ -170,6 +171,11 @@ void navigation::start_mowing()
 
 void navigation::_start_mowing(const bool wait_target, const unsigned short target)
 {
+    if (mower->get_current_status() == mower_status::RETURN_STATION)
+    {
+        _nav_patter = navigation_pattern::FOLLOW_WIRE;
+        return;
+    }
     if (!mower->schedul.is_time_to_mown())
     {
         mower->set_current_status(mower_status::RETURN_STATION);
@@ -178,7 +184,8 @@ void navigation::_start_mowing(const bool wait_target, const unsigned short targ
 
     if (target != 1000) // default value
     {
-        _set_target_angle(target);
+        //_set_target_angle(target);
+        update_target_angle();
     }
     else
     {
@@ -187,7 +194,7 @@ void navigation::_start_mowing(const bool wait_target, const unsigned short targ
 
     _wire_find = false;
     _nav_patter = wait_target ? navigation_pattern::FIND_EXIT : navigation_pattern::KEEP_TARGET;
-    _nav_exit = navigation_exit::BYPASS;
+    _nav_patter = navigation_pattern::KEEP_TARGET;
     _delay_next_pattern.reset_delay();
     _delay_exit_pattern.reset_delay();
 
@@ -216,15 +223,15 @@ void navigation::_update_navigation()
 {
     const navigation_pattern collision_pattern = _get_pattern_sensor();
     DEBUG_PRINTLN("NAVI SENSOR > " + String(get_current_pattern_str(collision_pattern)));
-
     // Critical mower stuck somewhere
-    if (_delay_not_moving.is_time_out())
+    if (_delay_not_moving_cri.is_time_out())
     {
         mower->set_error(mower_status::ERROR_STUCK);
         return;
     }
-    if (mower->gyro.is_moving())
+    if (mower->gyro.is_moving() || mower->gps.get_gps_data()->speed > 1.f)
     {
+        _delay_not_moving_cri.reset_delay();
         _delay_not_moving.reset_delay();
     }
 
@@ -232,11 +239,13 @@ void navigation::_update_navigation()
     if ((_nav_patter == navigation_pattern::FIND_EXIT ||
          _nav_patter == navigation_pattern::KEEP_TARGET ||
          _nav_patter == navigation_pattern::FOLLOW_WIRE) &&
-        _delay_next_pattern.is_time_out(true, 3000) && !mower->gyro.is_moving())
+        _delay_not_moving.is_time_out(true) && !mower->gyro.is_moving())
     {
         DEBUG_PRINTLN("NAVI > Mower Stuck");
+        _delay_full_reverse_pattern.reset_delay();
         _nav_patter = navigation_pattern::FULL_REVERSE;
         _delay_exit_pattern.reset_delay(3500); // time reverse
+        _delay_not_moving.reset_delay();
         _process_pattern();
         return;
     }
@@ -252,17 +261,16 @@ void navigation::_update_navigation()
             return;
         }
 
-        if (_nav_patter == navigation_pattern::TURN_TO_TARGET && _delay_next_pattern.is_time_out(true, 3500))
+        /*if (_nav_patter == navigation_pattern::TURN_TO_TARGET && _delay_next_pattern.is_time_out(true, 3500))
         {
             _start_mowing();
             return;
-        }
+        }*/
     }
     ///////////////////////////
     if (_nav_patter != navigation_pattern::FIND_EXIT && collision_pattern == navigation_pattern::FIND_EXIT)
     {
         _nav_patter = navigation_pattern::FIND_EXIT;
-        _nav_exit = navigation_exit::BYPASS;
         _delay_next_pattern.reset_delay();
         _delay_exit_pattern.reset_delay();
     }
@@ -270,24 +278,21 @@ void navigation::_update_navigation()
     if (_nav_patter != navigation_pattern::FIND_EXIT && collision_pattern == navigation_pattern::FULL_REVERSE)
     {
         _nav_patter = navigation_pattern::FULL_REVERSE;
-        _nav_exit = navigation_exit::BYPASS;
         _delay_next_pattern.reset_delay();
         _delay_exit_pattern.reset_delay();
+        _delay_full_reverse_pattern.reset_delay();
     }
 
-    if (_nav_patter == navigation_pattern::FIND_EXIT && collision_pattern == navigation_pattern::KEEP_TARGET && _delay_exit_pattern.is_time_out()) // Exit found
+    // Exit found
+    if (_nav_patter == navigation_pattern::FIND_EXIT && collision_pattern == navigation_pattern::KEEP_TARGET && _delay_exit_pattern.is_time_out())
     {
         update_target_angle();
         _nav_patter = navigation_pattern::KEEP_TARGET;
         _delay_next_pattern.reset_delay();
+        _delay_exit_pattern.reset_delay();
     }
 
-    if (_nav_patter == navigation_pattern::BYPASS && collision_pattern == navigation_pattern::KEEP_TARGET)
-    {
-        _nav_patter = navigation_pattern::KEEP_TARGET;
-        _delay_next_pattern.reset_delay();
-    }
-
+    // Not working for now
     if (_nav_patter == navigation_pattern::CIRCLE)
     {
         if (collision_pattern == navigation_pattern::KEEP_TARGET)
@@ -305,7 +310,6 @@ void navigation::_update_navigation()
         else
         {
             _nav_patter = navigation_pattern::FIND_EXIT;
-            _nav_exit = navigation_exit::BYPASS;
             _delay_next_pattern.reset_delay();
             _delay_exit_pattern.reset_delay();
         }
@@ -334,10 +338,6 @@ void navigation::_process_pattern()
 {
     switch (_nav_patter)
     {
-    case navigation_pattern::BYPASS:
-        return;
-        break;
-
     case navigation_pattern::FIND_EXIT:
         _pattern_find_exit();
         break;
@@ -389,7 +389,7 @@ navigation::navigation_pattern navigation::_get_pattern_sensor()
     // Todo : optimize this
     const unsigned short speed = static_cast<unsigned short>(round(static_cast<float>(abs(mower->motor.get_speed_left()) + abs(mower->motor.get_speed_right())) / 2.4f));
     const unsigned short min_threshold = _nav_patter != navigation_pattern::FOLLOW_WIRE ? 75 : 65;
-    const unsigned short max_threshold = _nav_patter != navigation_pattern::FOLLOW_WIRE ? 200 : 75;
+    const unsigned short max_threshold = _nav_patter != navigation_pattern::FOLLOW_WIRE ? 160 : 75;
 
     mower->sonar.get_collisions(_collision, constrain(speed, min_threshold, max_threshold));
 
@@ -406,39 +406,35 @@ navigation::navigation_pattern navigation::_get_pattern_sensor()
 
 void navigation::_pattern_find_exit()
 {
-    if (_delay_exit_pattern.is_time_out())
+    if (_delay_exit_pattern.is_time_out(true))
     {
         if (_collision[0] == 0 && _collision[1] == 0 && _collision[2] == 0)
         {
             _start_mowing();
             return;
         }
-        _start_mowing(false, _target_angle + 35);
-        return;
-    }
-
-    if (_collision[0] >= MIN_COLLITION_DETECT && _collision[1] >= MIN_COLLITION_DETECT && _collision[2] >= MIN_COLLITION_DETECT)
-    {
-        _delay_exit_pattern.reset_delay(2500);
+        _delay_full_reverse_pattern.reset_delay();
+        _nav_patter = navigation_pattern::FULL_REVERSE;
         _pattern_full_reverse();
         return;
     }
 
     if ((_collision[0] >= MIN_COLLITION_DETECT || _collision[1] >= MIN_COLLITION_DETECT) && _collision[2] == 0)
     {
-        _nav_exit = navigation_exit::TURN_RIGHT;
         mower->motor.set(SPEED_ROTATION, -SPEED_ROTATION);
-        _delay_exit_pattern.reset_delay(MAX_DELAY_PATTERN_EXIT_MS);
+        _delay_exit_pattern.reset_delay();
         return;
     }
 
     if (_collision[0] == 0 && _collision[1] == 0 && _collision[2] >= MIN_COLLITION_DETECT)
     {
-        _nav_exit = navigation_exit::TURN_LEFT;
         mower->motor.set(-SPEED_ROTATION, SPEED_ROTATION);
-        _delay_exit_pattern.reset_delay(MAX_DELAY_PATTERN_EXIT_MS);
+        _delay_exit_pattern.reset_delay();
         return;
     }
+
+    float speed = abs(SPEED_REVERSE * (mower->gyro.get_AY() + 1.0f));
+    mower->motor.set(-speed, -speed);
 }
 
 void navigation::_pattern_full_reverse()
@@ -448,9 +444,15 @@ void navigation::_pattern_full_reverse()
         _start_mowing(true, mower->compass.get_heading_deg() - 45);
         return;
     }
+    if (_delay_full_reverse_pattern.is_time_out())
+    {
+        _start_mowing(true, mower->compass.get_heading_deg() - 45);
+        return;
+    }
 
-    _nav_exit = navigation_exit::FULL_REVERSE;
-    mower->motor.set(-SPEED_REVERSE, -SPEED_REVERSE);
+    // Add factor mower angle position
+    float speed = abs(SPEED_REVERSE * (mower->gyro.get_AY() + 1.0f));
+    mower->motor.set(-speed, -speed);
 }
 
 void navigation::_pattern_return_in_perim()
@@ -460,8 +462,8 @@ void navigation::_pattern_return_in_perim()
         _start_mowing(true, mower->compass.get_heading_deg() - 45);
         return;
     }
-    _nav_exit = navigation_exit::FULL_REVERSE;
-    mower->motor.set(-SPEED_REVERSE, -SPEED_REVERSE);
+    float speed = abs(SPEED_REVERSE * (mower->gyro.get_AY() + 1.0f));
+    mower->motor.set(-speed, -speed);
 }
 
 void navigation::_pattern_keep_target(bool high_keeping, short max_speed)
@@ -590,7 +592,8 @@ void navigation::_pattern_follow_wire()
                 _delay_next_pattern.reset_delay(1600);
                 return;
             }*/
-            mower->motor.set(-SPEED_REVERSE, -SPEED_REVERSE);
+            float speed = abs(SPEED_REVERSE * (mower->gyro.get_AY() + 1.0f));
+            mower->motor.set(-speed, -speed);
             return;
         }
         return;

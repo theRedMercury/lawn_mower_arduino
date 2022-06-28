@@ -16,6 +16,7 @@ void gyro_sensor::setup()
     DEBUG_PRINT("SETUP : ");
     DEBUG_PRINT(class_name);
     _have_shock = false;
+    _is_taken = false;
 
     // GY-91 is ok
     _gy91Ok = _bmp280.begin();
@@ -26,6 +27,7 @@ void gyro_sensor::setup()
     _counter_temp = COUNTER_MAX_TEMP_REFRESH;
     _counter_moving = 0;
     _cumulation_is_safe = COUNTER_IS_SAFE;
+    _cumulation_is_safe = 0;
     DEBUG_PRINTLN(" : DONE");
 }
 
@@ -51,6 +53,10 @@ void gyro_sensor::update()
     if (_aSqrt > 2.5f) // Force 5G
     {
         _have_shock = true;
+    }
+    if (_aSqrt < 0.5f)
+    {
+        _is_taken = true;
     }
 
     _gyro.x = _mpu9250.gyroX();
@@ -149,6 +155,12 @@ bool gyro_sensor::is_ready() const
 bool gyro_sensor::have_shock() const
 {
     return _have_shock;
+}
+
+bool gyro_sensor::is_taken() const
+{
+    return false;
+    // return _cumulation_is_taken > COUNTER_IS_SAFE - 5;
 }
 
 bool gyro_sensor::in_safe_status() const
@@ -254,7 +266,7 @@ void gyro_sensor::reset_init_gyro()
 
 bool gyro_sensor::_is_moving() const
 {
-    const float threshold_g = 15.f;
+    const float threshold_g = 12.f;
     bool x = _gyro.x > (_gyro_max.x + threshold_g) || _gyro.x < (_gyro_min.x - threshold_g);
     bool y = _gyro.y > (_gyro_max.y + threshold_g) || _gyro.y < (_gyro_min.y - threshold_g);
     bool z = _gyro.z > (_gyro_max.z + threshold_g) || _gyro.z < (_gyro_min.z - threshold_g);
@@ -263,6 +275,6 @@ bool gyro_sensor::_is_moving() const
 
 bool gyro_sensor::_is_safe() const
 {
-    const float threshold_a = 0.31f; // +- 18 degree
+    const float threshold_a = 0.40f; // +- 22 degree
     return abs(_Accel.x) < threshold_a && abs(_Accel.y) < threshold_a && abs(_Accel.z) < threshold_a;
 }
