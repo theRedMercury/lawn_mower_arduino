@@ -182,7 +182,8 @@ void gps_sensor::update()
 
         const float lat = _convert_nmea_to_lat_lon(_gpsResult.gps_lat, _gpsResult.gps_ns);
         const float lon = _convert_nmea_to_lat_lon(_gpsResult.gps_lon, _gpsResult.gps_ew);
-        const float speed = atof(_gpsResult.gps_spd);
+        const double speed_g = atof(_gpsResult.gps_spd);
+        const float speed = speed_g > 0.8 ? (float)speed_g * 1.852f : 0.f; // Convert Knot to KpH
         const bool success = _gpsResult.gps_success;
         const bool checksum_valid = _gpsResult.checksum_valid;
 
@@ -192,9 +193,9 @@ void gps_sensor::update()
         if ((_gps_data.lat != lat || _gps_data.lon != lon || _gps_data.speed != speed || _gps_data.success != success) &&
             (_gps_data.lat == 0.f && _gps_data.lon == 0.f && lat != 0.f && lon != 0.f))
         {
-            _gps_data.lat = _convert_nmea_to_lat_lon(_gpsResult.gps_lat, _gpsResult.gps_ns);
-            _gps_data.lon = _convert_nmea_to_lat_lon(_gpsResult.gps_lon, _gpsResult.gps_ew);
-            _gps_data.speed = atof(_gpsResult.gps_spd);
+            _gps_data.lat = lat;
+            _gps_data.lon = lon;
+            _gps_data.speed = speed;
 
             _is_updated = true;
             _counter_gps_update = 0;

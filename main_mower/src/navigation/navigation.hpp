@@ -9,8 +9,10 @@
 #include "../mower/abs_mower.hpp"
 
 #define MAX_DELAY_PATTERN_MS 1000
-#define MAX_DELAY_PATTERN_EXIT_MS 500
-#define MAX_DELAY_PATTERN_FULL_R_MS 1200
+#define MAX_DELAY_PATTERN_EXIT_MS 1600
+#define MAX_DELAY_PATTERN_FULL_R_MS 2500
+#define MAX_DELAY_FOLLOW_WIRE 1000
+#define MAX_DELAY_PATTERN_EXIT_WIRE_MS 2000
 #define MAX_DELAY_START_MOW_INIT_MS 4500       // 4.5 sec
 #define MAX_DELAY_NOT_MOUVING_MS 3 * 1000      // 3 sec
 #define MAX_DELAY_NOT_MOUVING_CRI_MS 20 * 1000 // 20 sec
@@ -24,7 +26,6 @@ public:
     {
         STOP,
         KEEP_TARGET,
-        TURN_TO_TARGET,
         FIND_EXIT,
         EXIT_WIRE_DETECT,
         FULL_REVERSE,
@@ -51,7 +52,7 @@ public:
 
     void update_target_angle();
     const char *get_current_pattern_str(const navigation_pattern n) const;
-    navigation_pattern get_nav_pattern();
+    navigation_pattern get_nav_pattern() const;
     unsigned short get_target() const;
 
     short correction;
@@ -59,8 +60,11 @@ public:
 private:
     unsigned short _target_angle = 0;
     unsigned char _collision[3] = {0, 0, 0};
+    int _correction_follow_wire = 0;
     bool _wire_find = false;
+    bool _out_wire = false;
     bool _follow_wire_return_in = false;
+    bool _wire_exit_detected = false;
     navigation_pattern _nav_patter = navigation_pattern::STOP;
 
     unsigned long _circle_milli = 0;
@@ -78,18 +82,17 @@ private:
     void _pattern_full_reverse();
     void _pattern_return_in_perim();
     void _pattern_keep_target(bool high_keeping = false, short max_speed = 255);
-    void _pattern_turn_target();
     void _pattern_follow_wire();
     void _pattern_leaving_station();
     void _pattern_entering_station();
 
-    void _drive_motor(short correction = 0, short max_speed = 255);
     void _charching();
 
-    delay_time_out _delay_drive_motor{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_next_pattern{MAX_DELAY_PATTERN_MS};
     delay_time_out _delay_exit_pattern{MAX_DELAY_PATTERN_EXIT_MS};
     delay_time_out _delay_full_reverse_pattern{MAX_DELAY_PATTERN_FULL_R_MS};
+    delay_time_out _delay_follow_wire{MAX_DELAY_FOLLOW_WIRE};
+    delay_time_out _delay_exit_wire{MAX_DELAY_PATTERN_EXIT_WIRE_MS};
     delay_time_out _delay_not_moving{MAX_DELAY_NOT_MOUVING_MS};
     delay_time_out _delay_not_moving_cri{MAX_DELAY_NOT_MOUVING_CRI_MS};
     delay_time_out _delay_start_mowing_init{MAX_DELAY_START_MOW_INIT_MS};

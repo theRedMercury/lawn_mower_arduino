@@ -23,7 +23,7 @@
 //#define DEBUG_PRINTER Serial // Comment if RELEASE
 //#define DEBUG_MODE 0         // Comment if RELEASE
 //#define DEBUG_SPEED_MODE 0   // Comment if RELEASE
-//#define DEBUG_SIMULATE_WIRE 0   // Comment if RELEASE
+#define DEBUG_SIMULATE_WIRE 0 // Comment if RELEASE
 //#define DEBUG_IS_TIME_TO_MOWN 0 // Comment if RELEASE
 //#define DEBUG_PERIM_SIGNAL_ONLY 0
 
@@ -60,8 +60,6 @@ enum class mower_status : char
     LEAVING_STATION,
     RETURN_STATION,
     CHARGING,
-    TESTING_NAV,
-    TESTING_NAV_02,
     ERROR_INIT,
     ERROR_NOT_SAFE,
     ERROR_LOST_WIRE,
@@ -77,6 +75,7 @@ enum class mower_status : char
 #include "../lcd/lcd.hpp"
 #include "../motor/motor.hpp"
 #include "../motor/motor_blade.hpp"
+#include "../navigation/movement.hpp"
 #include "../navigation/navigation.hpp"
 #include "../navigation/scheduler.hpp"
 #include "../perimeter/perimeter.hpp"
@@ -116,6 +115,7 @@ public:
     compass_sensor compass{*this, "COMPAS"};
     gyro_sensor gyro{*this, "GYRO"};
     navigation nav{*this, "NAVIGATION"};
+    movement mov{*this, "MOVEMENT"};
     perimeter perim{*this, "PERIMETER"};
     sonar_sensor sonar{*this, "SONAR"};
     scheduler schedul{*this, "SCHEDULER"};

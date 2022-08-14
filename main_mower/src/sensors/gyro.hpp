@@ -78,7 +78,7 @@ private:
     float _aSqrt = 0.f;
     double _current_temp, _current_pression = 0; // degC, mBar
     XYZ_FLOAT _accel;
-    XYZ_FLOAT _Accel; // Pitch Roll Yaw in degree
+    XYZ_FLOAT _Accel; // Pitch Roll Yaw in radian
     XYZ_FLOAT _gyro;
     XYZ_FLOAT _gyro_min;
     XYZ_FLOAT _gyro_max;

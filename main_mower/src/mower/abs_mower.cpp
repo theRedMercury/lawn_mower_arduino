@@ -34,9 +34,28 @@ void delay_time_out::reset_delay(const unsigned long ms_delay_overwrite)
 bool delay_time_out::is_time_out(const bool reset, const unsigned long add_delay)
 {
     const bool is_timeout = (_next_millis + add_delay) <= millis();
-    if (is_timeout && reset)
+    if (is_timeout)
     {
-        reset_delay();
+        if (reset)
+        {
+            reset_delay();
+            if (_next_millis + add_delay <= millis())
+            {
+                if (!_overload)
+                {
+                    _overload = true;
+                    return true;
+                }
+                return false;
+            }
+        }
+        else
+        {
+            // Keep in timeout
+            _next_millis = 0;
+        }
     }
+
+    _overload = false;
     return is_timeout;
 }

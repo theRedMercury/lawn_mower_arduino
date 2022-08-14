@@ -37,11 +37,9 @@ void motor_control::update()
         mower->set_error(mower_status::ERROR_NOT_SAFE);
         return;
     }
-    if (_security_count < 10 * 60 * 2)
-    {
-        _update_motor_speed(&_motor_left);
-        _update_motor_speed(&_motor_right);
-    }
+
+    _update_motor_speed(&_motor_left);
+    _update_motor_speed(&_motor_right);
     /*else
     {
         mower->set_error();
@@ -70,6 +68,13 @@ void motor_control::set(short left_speed, short right_speed)
     DEBUG_PRINTLN("set_motor :" + String(left_speed) + " / " + String(right_speed));
     _motor_left.target_speed = left_speed;
     _motor_right.target_speed = right_speed;
+}
+
+void motor_control::clear_speed()
+{
+    DEBUG_PRINTLN("motor_control::clear_speed");
+    _motor_left.computed_speed = 0.f;
+    _motor_right.computed_speed = 0.f;
 }
 
 bool motor_control::is_running() const
@@ -105,33 +110,6 @@ void motor_control::_stop_motor(motor_stuct *motor)
     motor->is_stop = true;
 }
 
-void motor_control::_update_motor_pin(motor_stuct *motor)
-{
-    DEBUG_PRINTLN("computed_speed : " + String(motor->computed_speed) + " / " + String(motor->target_speed));
-
-    switch (motor->target_speed)
-    {
-    case 1 ... 255:
-        motor->is_stop = false;
-        digitalWrite(motor->PIN_FORWARD, HIGH);
-        digitalWrite(motor->PIN_BACKWARD, LOW);
-        break;
-
-    case -255 ... - 1:
-        motor->is_stop = false;
-        digitalWrite(motor->PIN_FORWARD, LOW);
-        digitalWrite(motor->PIN_BACKWARD, HIGH);
-        break;
-
-    default:
-        digitalWrite(motor->PIN_FORWARD, LOW);
-        digitalWrite(motor->PIN_BACKWARD, LOW);
-        break;
-    }
-
-    analogWrite(motor->PIN_SPEED, motor->real_speed);
-}
-
 void motor_control::_update_motor_speed(motor_stuct *motor)
 {
     unsigned long TaC = (millis() - motor->last_set_speed_time); // sampling time in millis
@@ -142,14 +120,18 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     }
 
     motor->computed_speed += TaC * (motor->target_speed - motor->computed_speed) / 2000.0f; // 2000 is Accel (not change < 2000)
-    const unsigned char real_m = constrain(abs(round(motor->computed_speed)), 0, MOTOR_MAX_SPEED);
+    DEBUG_PRINTLN("computed_speed : " + String(motor->computed_speed) + " / " + String(motor->target_speed));
+
+    const unsigned char real_m = constrain(abs(round(motor->computed_speed)),
+                                           0,
+                                           mower->perim.is_inside() ? MOTOR_MAX_SPEED : MOTOR_MAX_SPEED_OUTSIDE);
     switch (real_m)
     {
     case 0 ... 20:
         motor->real_speed = 0;
         break;
-    case 21 ... 90:
-        motor->real_speed = 90;
+    case 21 ... 120:
+        motor->real_speed = 120;
         break;
     case 244 ... 255:
         motor->real_speed = 255;
@@ -158,5 +140,24 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
         motor->real_speed = real_m;
         break;
     }
-    _update_motor_pin(motor);
+
+    switch (motor->target_speed)
+    {
+    case -255 ... - 1:
+        motor->is_stop = false;
+        digitalWrite(motor->PIN_FORWARD, LOW);
+        digitalWrite(motor->PIN_BACKWARD, HIGH);
+        break;
+    case 1 ... 255:
+        motor->is_stop = false;
+        digitalWrite(motor->PIN_FORWARD, HIGH);
+        digitalWrite(motor->PIN_BACKWARD, LOW);
+        break;
+    default:
+        digitalWrite(motor->PIN_FORWARD, LOW);
+        digitalWrite(motor->PIN_BACKWARD, LOW);
+        break;
+    }
+
+    analogWrite(motor->PIN_SPEED, motor->real_speed);
 }

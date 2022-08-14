@@ -126,8 +126,8 @@ void perimeter::update()
     {
         // Large signal, the in/out detection is reliable.
         // Using mag yields very fast in/out transition reporting.
-        _magnitude_max = _magnitude > _magnitude_max ? _magnitude : _magnitude_max;
-        _magnitude_min = _magnitude < _magnitude_min ? _magnitude : _magnitude_min;
+        _magnitude_max = abs(_magnitude) > _magnitude_max ? abs(_magnitude) : _magnitude_max;
+        _magnitude_min = abs(_magnitude) < _magnitude_min ? abs(_magnitude) : _magnitude_min;
 
         _is_inside = (_magnitude < 0);
     }
@@ -145,6 +145,9 @@ void perimeter::set_simulate_is_inside(const bool simulate)
 
 bool perimeter::get_simulate_is_inside() const
 {
+#ifdef DEBUG_SIMULATE_WIRE
+    return true;
+#endif
     return _simulate_is_inside;
 }
 

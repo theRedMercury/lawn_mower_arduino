@@ -11,6 +11,7 @@
 #include "../tools/tools.hpp"
 
 #define MOTOR_MAX_SPEED 230
+#define MOTOR_MAX_SPEED_OUTSIDE 180
 #define PIN_MOTOR_LEFT_FORWARD 6
 #define PIN_MOTOR_LEFT_BACKWARD 7
 #define PIN_MOTOR_LEFT_SPEED 5
@@ -28,6 +29,8 @@ public:
     void stop();
 
     void set(short left_speed = 0, short right_speed = 0);
+
+    void clear_speed();
 
     bool is_running() const;
     short get_speed_left() const;
@@ -47,7 +50,6 @@ private:
     };
 
     void _stop_motor(motor_stuct *motor);
-    void _update_motor_pin(motor_stuct *motor);
     void _update_motor_speed(motor_stuct *motor);
 
     motor_stuct _motor_left;

@@ -47,6 +47,7 @@ public:
 
     void return_main_info();
     void exit_sub_menu();
+    void return_debug_info();
 
     LiquidCrystal_I2C get_screen() const;
     current_flag_input get_current_input() const;

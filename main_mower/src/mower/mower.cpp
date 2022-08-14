@@ -21,6 +21,7 @@ void mower_manager::setup()
     lcd.setup();
     perim.setup();
     nav.setup();
+    mov.setup();
     wifi.setup();
     schedul.setup();
 
@@ -53,6 +54,7 @@ void mower_manager::update()
 
     // NAV ===========================================
     nav.update();
+    mov.update();
 
     // MOTOR =========================================
     motor.update();
@@ -88,9 +90,6 @@ const char *mower_manager::get_current_status_str() const
         return "RETURN_S";
     case mower_status::CHARGING:
         return "CHARGING";
-    case mower_status::TESTING_NAV:
-    case mower_status::TESTING_NAV_02:
-        return "TESTING ";
     case mower_status::ERROR_INIT:
         return "ERR INIT";
     case mower_status::ERROR_NOT_SAFE:

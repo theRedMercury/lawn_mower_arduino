@@ -10,7 +10,7 @@
 #include "../mower/abs_mower.hpp"
 
 #define PIN_A_WIRE PIN_A5       // A5
-#define SIGNAL_TIME_OUT_MS 8000 // 8 sec
+#define SIGNAL_TIME_OUT_MS 6000 // 6 sec
 #define RAW_SIGNAL_SAMPLE_SIZE 96
 #define SENDER_ARRAY_SIZE 24
 #define CORELLATION_ARRAY_SIZE (RAW_SIGNAL_SAMPLE_SIZE - SENDER_ARRAY_SIZE + 1)
@@ -28,6 +28,9 @@ public:
     short get_magnitude() const;
     short get_smooth_magnitude() const;
     float get_filter_quality() const;
+
+    int get_max_magnitude() const { return _magnitude_max; };
+    int get_min_magnitude() const { return _magnitude_min; };
 
     bool is_inside() const;
     bool is_signal_timed_out() const;

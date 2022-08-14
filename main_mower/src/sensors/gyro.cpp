@@ -86,10 +86,7 @@ void gyro_sensor::update()
     }
     else
     {
-        if (_counter_moving != 0)
-        {
-            _counter_moving--;
-        }
+        _counter_moving--;
     }
     _counter_moving = constrain(_counter_moving, 0, COUNTER_MOVING_REFRESH);
 
@@ -100,10 +97,7 @@ void gyro_sensor::update()
     }
     else
     {
-        if (_cumulation_is_safe != 0)
-        {
-            _cumulation_is_safe--;
-        }
+        _cumulation_is_safe--;
     }
     _cumulation_is_safe = constrain(_cumulation_is_safe, 0, COUNTER_IS_SAFE);
 

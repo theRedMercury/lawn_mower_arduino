@@ -47,5 +47,6 @@ public:
 private:
     unsigned long _next_millis = 0;
     unsigned long _ms_delay;
+    bool _overload = false;
 };
 #endif

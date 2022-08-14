@@ -198,16 +198,19 @@ void lcd_control::update()
         _lcd_I2C.setCursor(5, 0);
         _lcd_I2C.print(mower->nav.get_target());
         _lcd_I2C.setCursor(10, 0);
-        _lcd_I2C.print(mower->nav.correction);
+        _lcd_I2C.print(mower->perim.is_inside());
+
+        _lcd_I2C.setCursor(15, 0);
+        _lcd_I2C.print(mower->mov.get_current_pattern_str(mower->mov.get_current_movement()));
         //_lcd_I2C.print(mower->sonar.);
         _lcd_I2C.setCursor(0, 1);
         _lcd_I2C.print(mower->motor.get_speed_left());
         _lcd_I2C.setCursor(5, 1);
         _lcd_I2C.print(mower->motor.get_speed_right());
         _lcd_I2C.setCursor(9, 1);
-
         _lcd_I2C.print(String(mower->nav.get_current_pattern_str(mower->nav.get_nav_pattern())));
 
+        _counter_loop_idle = 0;
         break;
 
     default:
@@ -289,6 +292,13 @@ void lcd_control::return_main_info()
     _in_sub_menu = false;
     clear();
     _current_main_menu = lcd_menu::STATUS;
+}
+
+void lcd_control::return_debug_info()
+{
+    _in_sub_menu = false;
+    clear();
+    _current_main_menu = lcd_menu::DEBUG;
 }
 
 void lcd_control::exit_sub_menu()
