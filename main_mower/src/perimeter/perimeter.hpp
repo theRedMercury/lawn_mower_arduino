@@ -48,6 +48,7 @@ private:
 
     short _correlation_signal[CORELLATION_ARRAY_SIZE];
     const char _signal_code[SENDER_ARRAY_SIZE] = {1, 1, -1, -1, 1, -1, 1, -1, -1, 1, -1, 1, 1, -1, -1, 1, -1, -1, 1, -1, -1, 1, 1, -1};
+    //{1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1, -1, -1, 1, -1, -1, 1, -1};
 };
 
 #endif

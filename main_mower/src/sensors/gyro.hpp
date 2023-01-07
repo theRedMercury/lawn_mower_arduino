@@ -82,6 +82,7 @@ private:
     XYZ_FLOAT _gyro;
     XYZ_FLOAT _gyro_min;
     XYZ_FLOAT _gyro_max;
+    XYZ_FLOAT _accel_not_moving;
     bool _set_gyro_min_max = false;
 };
 #endif

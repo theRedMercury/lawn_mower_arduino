@@ -27,7 +27,6 @@ void gyro_sensor::setup()
     _counter_temp = COUNTER_MAX_TEMP_REFRESH;
     _counter_moving = 0;
     _cumulation_is_safe = COUNTER_IS_SAFE;
-    _cumulation_is_safe = 0;
     DEBUG_PRINTLN(" : DONE");
 }
 
@@ -241,12 +240,19 @@ void gyro_sensor::start_init_gyro()
     _gyro_max.x = _gyro.x;
     _gyro_max.y = _gyro.y;
     _gyro_max.z = _gyro.z;
+
+    _accel_not_moving.x = _accel.x;
+    _accel_not_moving.y = _accel.y;
+    _accel_not_moving.z = _accel.z;
+
     _set_gyro_min_max = true;
 }
+
 void gyro_sensor::stop_init_gyro()
 {
     _set_gyro_min_max = false;
 }
+
 void gyro_sensor::reset_init_gyro()
 {
     _gyro_min.x = 0.f;
@@ -264,7 +270,14 @@ bool gyro_sensor::_is_moving() const
     bool x = _gyro.x > (_gyro_max.x + threshold_g) || _gyro.x < (_gyro_min.x - threshold_g);
     bool y = _gyro.y > (_gyro_max.y + threshold_g) || _gyro.y < (_gyro_min.y - threshold_g);
     bool z = _gyro.z > (_gyro_max.z + threshold_g) || _gyro.z < (_gyro_min.z - threshold_g);
-    return x || y || z;
+
+    // acelX: 0.01	accelY: 0.11	accelZ: -1.02
+    const float threshold_a = 0.1f;
+    bool ax = abs(_accel_not_moving.x - _accel.x) > 0.1f;
+    bool ay = abs(_accel_not_moving.y - _accel.y) > 0.1f;
+    bool az = abs(_accel_not_moving.z - _accel.z) > 0.1f;
+
+    return x || y || z || ax || ay || az;
 }
 
 bool gyro_sensor::_is_safe() const

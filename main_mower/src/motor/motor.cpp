@@ -66,8 +66,36 @@ void motor_control::set(short left_speed, short right_speed)
         _security_count++;
     }
     DEBUG_PRINTLN("set_motor :" + String(left_speed) + " / " + String(right_speed));
-    _motor_left.target_speed = left_speed;
-    _motor_right.target_speed = right_speed;
+
+    // From zero to new value left motor
+    if (_motor_left.target_speed == 0 && left_speed != 0)
+    {
+        _motor_left.new_speed_from_0.reset_delay();
+        _motor_left.last_set_speed_time = millis() + 3000;
+        _motor_left.target_speed = left_speed > 0 ? MOTOR_MAX_SPEED : -MOTOR_MAX_SPEED;
+    }
+    else
+    {
+        if (_motor_left.new_speed_from_0.is_time_out())
+        {
+            _motor_left.target_speed = left_speed;
+        }
+    }
+
+    // For right motor
+    if (_motor_right.target_speed == 0 && right_speed != 0)
+    {
+        _motor_right.new_speed_from_0.reset_delay();
+        _motor_right.last_set_speed_time = millis() + 3000;
+        _motor_right.target_speed = right_speed > 0 ? MOTOR_MAX_SPEED : -MOTOR_MAX_SPEED;
+    }
+    else
+    {
+        if (_motor_right.new_speed_from_0.is_time_out())
+        {
+            _motor_right.target_speed = left_speed;
+        }
+    }
 }
 
 void motor_control::clear_speed()
@@ -112,6 +140,7 @@ void motor_control::_stop_motor(motor_stuct *motor)
 
 void motor_control::_update_motor_speed(motor_stuct *motor)
 {
+    constexpr float accel_tac = 800.0F;                          // 2000 is Accel (not change < 2000)
     unsigned long TaC = (millis() - motor->last_set_speed_time); // sampling time in millis
     motor->last_set_speed_time = millis();
     if (TaC > 1000)
@@ -119,13 +148,14 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
         TaC = 1;
     }
 
-    motor->computed_speed += TaC * (motor->target_speed - motor->computed_speed) / 2000.0f; // 2000 is Accel (not change < 2000)
+    motor->computed_speed += static_cast<float>(TaC) * (static_cast<float>(motor->target_speed) - motor->computed_speed) / accel_tac;
+
     DEBUG_PRINTLN("computed_speed : " + String(motor->computed_speed) + " / " + String(motor->target_speed));
 
-    const unsigned char real_m = constrain(abs(round(motor->computed_speed)),
-                                           0,
-                                           mower->perim.is_inside() ? MOTOR_MAX_SPEED : MOTOR_MAX_SPEED_OUTSIDE);
-    switch (real_m)
+    motor->real_speed = constrain(abs(round(motor->computed_speed)),
+                                  0,
+                                  mower->perim.is_inside() ? MOTOR_MAX_SPEED : MOTOR_MAX_SPEED_OUTSIDE);
+    /*switch (real_m)
     {
     case 0 ... 20:
         motor->real_speed = 0;
@@ -139,7 +169,7 @@ void motor_control::_update_motor_speed(motor_stuct *motor)
     default:
         motor->real_speed = real_m;
         break;
-    }
+    }*/
 
     switch (motor->target_speed)
     {

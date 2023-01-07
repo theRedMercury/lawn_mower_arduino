@@ -11,6 +11,7 @@
 
 #define DEFAULT_DELAY_MOVEMENT_MS 1800
 #define SIZE_LIST_MOVEMENT 3
+#define MOVEMENT_MAX_SPEED 250
 
 class movement : public abs_mower_class
 {
@@ -36,6 +37,7 @@ public:
 
     void setup();
     void update();
+    void stop();
 
     const char get_current_pattern_str(const movement_process n) const;
     movement_process get_current_movement() const { return _current_movement; };
@@ -43,12 +45,12 @@ public:
     bool not_task() const;
     bool is_waiting() const;
 
-    void forward(bool stack_list = false, short max_delay_ms = -1, unsigned short max_speed = 230);
-    void turn_left(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = 230);
-    void turn_right(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = 230);
-    void reverse(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = 230);
+    void forward(bool stack_list = false, short max_delay_ms = -1, unsigned short max_speed = MOVEMENT_MAX_SPEED);
+    void turn_left(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = MOVEMENT_MAX_SPEED);
+    void turn_right(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = MOVEMENT_MAX_SPEED);
+    void reverse(bool stack_list = false, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = MOVEMENT_MAX_SPEED);
 
-    void with_correction(short correction = 0, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = 230);
+    void with_correction(short correction = 0, short max_delay_ms = DEFAULT_DELAY_MOVEMENT_MS, unsigned short max_speed = MOVEMENT_MAX_SPEED);
 
 private:
     void _apply_current_mouvement();

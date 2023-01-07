@@ -25,8 +25,8 @@ void perimeter::update()
     unsigned short *signal_read = adc_manager::analogue_reads_channel(PIN_A_WIRE, RAW_SIGNAL_SAMPLE_SIZE, adc_manager::adc_div_factor_32);
 
     // Offset
-    /*int32_t ADCSignalOffset = 512; // ADC zero offset
-    short signal_offset[RAW_SIGNAL_SAMPLE_SIZE] = {0};
+    int ADCSignalOffset = 512; // ADC zero offset
+    int signal_offset[RAW_SIGNAL_SAMPLE_SIZE] = {0};
 
     for (unsigned char i = 0; i < RAW_SIGNAL_SAMPLE_SIZE; i++)
     {
@@ -37,9 +37,9 @@ void perimeter::update()
     {
         signal_offset[i] = signal_read[i] - ADCSignalOffset;
     }
-*/
+
     // Normalize
-    /*int16_t Hsum = 0;
+    /*int Hsum = 0;
     for (unsigned char i = 0; i < SENDER_ARRAY_SIZE; i++)
     {
         Hsum += abs(_signal_code[i]);
@@ -70,7 +70,7 @@ void perimeter::update()
         sum = 0;
         for (unsigned char j = 0; j < SENDER_ARRAY_SIZE; j++)
         {
-            sum += static_cast<short>(_signal_code[j]) * signal_read[i + j];
+            sum += static_cast<int>(_signal_code[j]) * signal_read[i + j];
         } // end inner loop
         _correlation_signal[i] = sum;
         if (sum > sum_max)
@@ -83,17 +83,17 @@ void perimeter::update()
         }
         // Divide by the length of the operator
     } // end outer loop
-
-    // Serial.println("CORRELATION :");
-    /*for (int i = 0; i < CORELLATION_ARRAY_SIZE; i++)
-    {
-      Serial.println(_correlation_signal[i]);
-    }*/
+      /*
+          // Serial.println("CORRELATION :");
+          for (int i = 0; i < CORELLATION_ARRAY_SIZE; i++)
+          {
+              Serial.println(_correlation_signal[i]);
+          }*/
 
     // normalize to 4095
     // Divide by the length of the operator = senderAnzEinsen
-    // sum_min = static_cast<float>(sum_min) / static_cast<float>(Hsum * 127) * 4095.0;
-    // sum_max = static_cast<float>(sum_max) / static_cast<float>(Hsum * 127) * 4095.0;
+    // sum_min = static_cast<int>(static_cast<float>(sum_min) / static_cast<float>(Hsum * 127) * 4095.f);
+    // sum_max = static_cast<int>(static_cast<float>(sum_max) / static_cast<float>(Hsum * 127) * 4095.f);
 
     if (sum_max > -sum_min)
     {
@@ -136,6 +136,8 @@ void perimeter::update()
         // Low signal, use filtered value for increased reliability
         _is_inside = (_signal_counter < 0);
     }
+    DEBUG_PRINTLN("WIRE > is inside " + String(_is_inside));
+    DEBUG_PRINTLN("WIRE > min / max  : " + String(_magnitude_min) + " / " + String(_magnitude_max));
 }
 
 void perimeter::set_simulate_is_inside(const bool simulate)

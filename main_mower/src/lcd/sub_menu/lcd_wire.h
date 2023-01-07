@@ -34,7 +34,7 @@ void Lcd_navigation_menu_wire(mower_manager *mower)
         }
         mower->lcd.get_screen().print(mower->perim.get_magnitude());
         mower->lcd.get_screen().setCursor(7, 1);
-        mower->lcd.get_screen().print(mower->perim.get_max_magnitude());
+        mower->lcd.get_screen().print(mower->perim.get_filter_quality());
         mower->lcd.get_screen().setCursor(14, 1);
         mower->lcd.get_screen().print(mower->perim.is_signal_timed_out() ? "TO" : "OK");
         break;

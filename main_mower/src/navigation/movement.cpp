@@ -23,8 +23,8 @@ void movement::update()
      * AX = left/right
      */
 
-    float speed = abs(_max_speed * ((mower->gyro.get_AY() * 1.2f) - 1.0f));
-    float r_speed = abs(120 * ((mower->gyro.get_AY() * 1.2f) - 1.0f));
+    float speed = abs(_max_speed * ((mower->gyro.get_AY() * 1.4f) - 1.0f));
+    float r_speed = abs(140 * ((mower->gyro.get_AY() * 1.4f) - 1.0f));
 
     switch (_current_movement)
     {
@@ -68,12 +68,12 @@ void movement::update()
 
         if (_correction > 0)
         {
-            mower->motor.set(speed, speed - _correction);
+            mower->motor.set(speed, speed - float(_correction));
             break;
         }
         if (_correction < 0)
         {
-            mower->motor.set(speed - abs(_correction), speed);
+            mower->motor.set(speed - float(abs(_correction)), speed);
             break;
         }
         mower->motor.set(speed, speed);
@@ -86,6 +86,14 @@ void movement::update()
     default:
         break;
     }
+}
+
+void movement::stop()
+{
+    _current_movement == movement_process::WAIT;
+    _list_index = 0;
+    _list_inde_proced = 0;
+    _delay_current_movement.reset_delay(1);
 }
 
 void movement::_apply_current_mouvement()
@@ -141,8 +149,8 @@ void movement::_apply_current_mouvement()
         _current_movement = movement_process::WAIT;
     }
 
-    DEBUG_PRINT("Current mov : ");
-    DEBUG_PRINTLN((int)_current_movement);
+    DEBUG_PRINTLN("MOVEMENT Current : " + String(get_current_pattern_str(_current_movement)));
+    DEBUG_PRINTLN("MOVEMENT Delay : " + String(_current_delay));
 }
 
 const char movement::get_current_pattern_str(const movement_process n) const
@@ -158,7 +166,7 @@ const char movement::get_current_pattern_str(const movement_process n) const
     case movement_process::TURN_RIGHT:
         return 'R';
     case movement_process::FULL_REVERSE:
-        return 'R';
+        return 'B';
     case movement_process::WITH_CORRECTION:
         return 'C';
     default:
@@ -173,7 +181,8 @@ bool movement::not_task() const
 
 bool movement::is_waiting() const
 {
-    return _current_movement == movement_process::WAIT && not_task();
+    return ((_current_movement == movement_process::WAIT && not_task()) ||
+            _current_movement == movement_process::WITH_CORRECTION);
 }
 
 void movement::forward(bool stack_list, short max_delay_ms, unsigned short max_speed)
@@ -255,6 +264,7 @@ void movement::reverse(bool stack_list, short max_delay_ms, unsigned short max_s
 void movement::with_correction(short correction, short max_delay_ms, unsigned short max_speed)
 {
     _next_movement = movement_process::WITH_CORRECTION;
+    _current_delay = -1;
     _next_delay = max_delay_ms;
     _max_speed = max_speed;
     _correction = correction;

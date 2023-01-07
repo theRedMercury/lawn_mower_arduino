@@ -31,9 +31,9 @@ void motor_control_blade::update()
 
     if (_blade_on && _speed <= BLADE_MAX_SPEED)
     {
-        _speed += 4;              // Linear acceleration
-        analogWrite(PIN_RPWM, 0); // TODO : REMOVE
-        // analogWrite(PIN_RPWM, constrain(_speed, 0, BLADE_MAX_SPEED));
+        _speed += 4; // Linear acceleration
+        // analogWrite(PIN_RPWM, 0); // TODO : REMOVE
+        analogWrite(PIN_RPWM, constrain(_speed, 0, BLADE_MAX_SPEED));
     }
 }
 

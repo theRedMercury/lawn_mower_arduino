@@ -15,7 +15,7 @@
 #define MAX_DELAY_PATTERN_EXIT_WIRE_MS 2000
 #define MAX_DELAY_START_MOW_INIT_MS 4500       // 4.5 sec
 #define MAX_DELAY_NOT_MOUVING_MS 3 * 1000      // 3 sec
-#define MAX_DELAY_NOT_MOUVING_CRI_MS 20 * 1000 // 20 sec
+#define MAX_DELAY_NOT_MOUVING_CRI_MS 10 * 1000 // 20 sec
 #define MAX_CIRCLE_DELAY_COUNTER 5000
 #define MIN_COLLITION_DETECT 3
 
@@ -60,7 +60,7 @@ public:
 private:
     unsigned short _target_angle = 0;
     unsigned char _collision[3] = {0, 0, 0};
-    int _correction_follow_wire = 0;
+    short _correction_follow_wire = 0;
     bool _wire_find = false;
     bool _out_wire = false;
     bool _follow_wire_return_in = false;
